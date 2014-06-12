@@ -1,0 +1,36 @@
+{
+    "author": "Dmitry Kachaev, Matthew McCall and Afsin Ustundag",
+    "name": "blue-record-record",
+    "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
+    "version": "0.1.0",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:amida-tech/blue-button-record.git"
+    },
+    "bugs": {
+        "url": "https://github.com/amida-tech/blue-button-record/issues"
+    },
+    "licenses": [{
+        "type": "Apache 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }],
+    "dependencies": {
+        "mongodb": "1.4.x",
+        "mongoose": "3.8.8",
+        "underscore": "1.6.x",
+        "async": "0.9.x",
+        "blue-button": ">=1.0.0"
+    },
+    "devDependencies": {
+        "grunt": "0.4.x",
+        "grunt-contrib-jshint": "0.8.x",
+        "grunt-contrib-watch": "0.6.x",
+        "grunt-express-server": "0.4.x",
+        "grunt-mocha-test": "0.10.x",
+        "mocha": "1.18.x",
+        "chai": "1.9.x"
+    },
+    "engines": {
+        "node": "0.10.x"
+    }
+}
