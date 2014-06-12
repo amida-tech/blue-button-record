@@ -3,10 +3,10 @@ blue-button-record.js
 
 Master Health Record and Data Reconciliation Engine Persistance Layer (MongoDB)
 
-[![NPM](https://nodei.co/npm/blue-button-match.png)](https://nodei.co/npm/blue-button-record/)
+[![NPM](https://nodei.co/npm/blue-button-record.png)](https://nodei.co/npm/blue-button-record/)
 
-[![Build Status](https://travis-ci.org/amida-tech/blue-button-match.svg)](https://travis-ci.org/amida-tech/blue-button-record)
-[![Coverage Status](https://coveralls.io/repos/amida-tech/blue-button-match/badge.png)](https://coveralls.io/r/amida-tech/blue-button-record)
+[![Build Status](https://travis-ci.org/amida-tech/blue-button-record.svg)](https://travis-ci.org/amida-tech/blue-button-record)
+[![Coverage Status](https://coveralls.io/repos/amida-tech/blue-button-record/badge.png)](https://coveralls.io/r/amida-tech/blue-button-record)
 
 ## Library interfaces/APIs
 
