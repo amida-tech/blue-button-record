@@ -196,7 +196,14 @@ describe('section.js methods', function() {
     });
 
     after(function(done) {
-        context.dbinfo.db.dropDatabase();
-        done();
+        context.dbinfo.db.dropDatabase(function(err) {
+            if (err) {
+                done(err);
+            } else {
+                context.dbinfo.connection.close(function(err) {
+                    done(err);
+                });
+            }
+        });
     });
 });

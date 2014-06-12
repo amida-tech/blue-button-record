@@ -186,7 +186,14 @@ describe('storage.js methods', function() {
     });
 
     after(function(done) {
-        dbinfo.db.dropDatabase();
-        done();
+        dbinfo.db.dropDatabase(function(err) {
+            if (err) {
+                done(err);
+            } else {
+                dbinfo.connection.close(function(err) {
+                    done(err);
+                });
+            }
+        });
     });
 });
