@@ -18,10 +18,6 @@ exports.connectDatabase = function connectDatabase(server, options, callback) {
         callback = options;
         options = {};
     }
-    if (dbinfo) { // temporary until moved to it own repo
-        callback(null, dbinfo);
-        return;
-    }
     db.connect(server, options, function(err, result) {
         if (err) {
             callback(err);
@@ -29,6 +25,13 @@ exports.connectDatabase = function connectDatabase(server, options, callback) {
             dbinfo = result;
             callback(null, dbinfo);
         }    
+    });
+};
+
+exports.disconnect = function(callback) {
+    dbinfo.connection.close(function(err) {
+        dbinfo = null;
+        callback(err);
     });
 };
 

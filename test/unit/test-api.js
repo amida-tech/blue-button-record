@@ -500,4 +500,10 @@ describe('API', function() {
             }
         );
     });
+
+    after(function(done) {
+        bbr.disconnect(function(err) {
+            done(err);
+        });
+    });
 });
