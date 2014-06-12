@@ -1,6 +1,6 @@
 {
     "author": "Dmitry Kachaev, Matthew McCall and Afsin Ustundag",
-    "name": "blue-record-record",
+    "name": "blue-button-record",
     "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
     "version": "0.1.0",
     "repository": {
