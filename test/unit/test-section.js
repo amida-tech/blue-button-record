@@ -60,7 +60,6 @@ describe('section.js methods', function() {
 
     var checkPatientNFile = function(result, ptKey, filename) {
         result.forEach(function(entry) {
-            expect(entry.patKey).to.equal(ptKey);
             expect(entry.metadata.attribution[0].record_id.filename).to.equal(filename);                       
         });
     };
@@ -140,7 +139,6 @@ describe('section.js methods', function() {
     
                     var cntFilename = {};
                     results[3].forEach(function(entry) {
-                        expect(entry.patKey).to.equal('pat1');
                         var filename = refmodel.propertyToFilename(entry.name);
                         expect(entry.metadata.attribution[0].record_id.filename).to.equal(filename);                       
                         cntFilename[filename] = (cntFilename[filename] || 0) + 1; 
@@ -182,7 +180,6 @@ describe('section.js methods', function() {
                     expect(results[1]).to.have.length(3);
                     var cntFilename = {};
                     results[1].forEach(function(entry) {
-                        expect(entry.patKey).to.equal('pat1');
                         var filename = refmodel.propertyToFilename(entry.name);
                         expect(entry.metadata.attribution[0].record_id.filename).to.equal(filename);                       
                         cntFilename[filename] = (cntFilename[filename] || 0) + 1; 

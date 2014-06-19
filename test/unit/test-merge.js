@@ -492,6 +492,7 @@ describe('merge.js methods', function() {
         var r = modelutil.mongooseToBBModelDocument(result);
         delete r.reviewed;
         delete r.__v;
+        delete r.patKey;
 
         var suffix = '_' + recordIndex + '.' + index;
         var expected = refmodel.testObjectInstance[secName](suffix);

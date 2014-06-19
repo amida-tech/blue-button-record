@@ -288,6 +288,7 @@ describe('match.js methods', function() {
         delete resultEntry.__v;
         delete resultEntry.reviewed;
         delete resultEntry.archived;
+        delete resultEntry.patKey;
         expect(resultEntry).to.deep.equal(entry);
 
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
@@ -295,7 +296,8 @@ describe('match.js methods', function() {
         var destResultEntry = modelutil.mongooseToBBModelDocument(result.entry_id);
         delete destResultEntry.__v;
         delete destResultEntry.reviewed;
-        delete resultEntry.archived;        
+        delete destResultEntry.archived;        
+        delete destResultEntry.patKey;        
         expect(destResultEntry).to.deep.equal(destEntry);
 
         if (reason) {
