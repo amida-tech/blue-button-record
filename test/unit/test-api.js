@@ -157,7 +157,7 @@ describe('API', function() {
                 Object.keys(allSections).forEach(function(secName) {
                     var actual = bbr.cleanSection(allSections[secName]);
                     var expected = ccd[secName];
-                    if (secName === 'demographics') {
+                    if (secName === 'demographics' || secName === 'social_history') {
                         expected = [expected];
                     }
                     expect(actual).to.deep.include.members(expected);
@@ -333,7 +333,7 @@ describe('API', function() {
                 var expected = [partialInput[0].partial_array, partialInput[1].partial_array];
                 expect(actual).to.deep.include.members(expected);
                 expect(expected).to.deep.include.members(actual);
-                partialAllergyIds = [result[0]._id, result[1]._id];
+                partialAllergyIds = [result[0]._id.toString(), result[1]._id.toString()];
                 done(err);
             }
         });
@@ -382,8 +382,7 @@ describe('API', function() {
                 done(err);
             } else {
                 expect(result.entry_id._id.toString()).to.equal(allergyIds[1].toString());
-                expect(result.match_entry_id._id.toString()).to.equal(partialAllergyIds[0].toString());
-
+                expect(partialAllergyIds).to.include.members(new Array(result.match_entry_id._id.toString()));
                 expect(result.entry_id.name).to.equal(allergyNames[1]);
                 expect(result.entry_id.severity).to.equal(allergySeverities[1]);
                 expect(result.entry_id.status).to.equal(allergyStatuses[1]);
