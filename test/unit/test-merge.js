@@ -99,7 +99,7 @@ describe('merge.js methods', function() {
                     expect([r0[0].entry_id.name, r0[1].entry_id.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
                     expect([r0[0].entry_id.severity, r0[1].entry_id.severity]).to.include.members(['severity_0.0.0', 'severity_0.0.1']);
                     for (i=0; i<2; ++i) {
-                        expect(r0[i].record_id.filename).to.equal('c00.xml');
+                        expect(r0[i].record.filename).to.equal('c00.xml');
                         expect(r0[i].entry_type).to.equal('testallergy');
                         expect(r0[i].merge_reason).to.equal('new');
                         expect(r0[i].patKey).to.equal('pat0');
@@ -112,8 +112,8 @@ describe('merge.js methods', function() {
                     expect([r2[0].entry_id.name, r2[1].entry_id.name, r2[2].entry_id.name]).to.include.members(['name_2.0.0', 'name_2.0.1', 'name_2.0.2']);
                     expect([r2[0].entry_id.value.code, r2[1].entry_id.value.code, r2[2].entry_id.value.code]).to.include.members(['code_2.0.0', 'code_2.0.1', 'code_2.0.2']);
                     for (i=0; i<3; ++i) {
-                        expect(r2[i].record_id.filename).to.equal('c20.xml');
-                        expect(r2[i].record_id.metadata.fileClass).to.equal('ccda');
+                        expect(r2[i].record.filename).to.equal('c20.xml');
+                        expect(r2[i].record.metadata.fileClass).to.equal('ccda');
                         expect(r2[i].entry_type).to.equal('testallergy');
                         expect(r2[i].merge_reason).to.equal('new');
                         expect(r2[i].patKey).to.equal('pat2');
@@ -124,7 +124,7 @@ describe('merge.js methods', function() {
                     expect([r3[0].entry_id.name, r3[1].entry_id.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
                     expect([r3[0].entry_id.proc_type, r3[1].entry_id.proc_type]).to.include.members(['proc_type_0.0.0', 'proc_type_0.0.1']);
                     for (i=0; i<2; ++i) {
-                        expect(r3[i].record_id.filename).to.equal('c00.xml');
+                        expect(r3[i].record.filename).to.equal('c00.xml');
                         expect(r3[i].entry_type).to.equal('testprocedure');
                         expect(r3[i].merge_reason).to.equal('new');
                         expect(r3[i].patKey).to.equal('pat0');
@@ -135,7 +135,7 @@ describe('merge.js methods', function() {
                     expect([r4[0].entry_id.name, r4[1].entry_id.name, r4[2].entry_id.name]).to.include.members(['name_1.0.0', 'name_1.0.1', 'name_1.0.2']);
                     expect([r4[0].entry_id.proc_value.display, r4[1].entry_id.proc_value.display, r4[2].entry_id.proc_value.display]).to.include.members(['display_1.0.0', 'display_1.0.1', 'display_1.0.2']);
                     for (i=0; i<3; ++i) {
-                        expect(r4[i].record_id.filename).to.equal('c10.xml');
+                        expect(r4[i].record.filename).to.equal('c10.xml');
                         expect(r4[i].entry_type).to.equal('testprocedure');
                         expect(r4[i].merge_reason).to.equal('new');
                         expect(r4[i].patKey).to.equal('pat1');
@@ -157,7 +157,7 @@ describe('merge.js methods', function() {
             sourceIndex = recordIndex;
         }
         expect(result).to.exist;
-        expect(result.record_id._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyGetAllNegative = function(context, resultsById, secName, recordIndex, index) {
@@ -332,7 +332,7 @@ describe('merge.js methods', function() {
             sourceIndex = recordIndex;
         }
         expect(result).to.exist;
-        expect(result.record_id._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyGetAllPartialNegative = function(context, resultsById, secName, recordIndex, index) {
@@ -463,7 +463,7 @@ describe('merge.js methods', function() {
         if (! sourceIndex) {
             sourceIndex = recordIndex;
         }
-        expect(result.record_id._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyEntryGetPartial = function(context, result, secName, recordIndex, index, sourceIndex) {
@@ -472,7 +472,7 @@ describe('merge.js methods', function() {
         if (! sourceIndex) {
             sourceIndex = recordIndex;
         }
-        expect(result.record_id._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyMergeReason = function(attr, expectedReasons) {

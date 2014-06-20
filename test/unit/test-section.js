@@ -60,7 +60,7 @@ describe('section.js methods', function() {
 
     var checkPatientNFile = function(result, ptKey, filename) {
         result.forEach(function(entry) {
-            expect(entry.metadata.attribution[0].record_id.filename).to.equal(filename);                       
+            expect(entry.metadata.attribution[0].record.filename).to.equal(filename);                       
         });
     };
     
@@ -86,7 +86,7 @@ describe('section.js methods', function() {
                             expect(entry.metadata.attribution).to.exist;
                             expect(entry.metadata.attribution).to.have.length(1);
                             expect(entry.metadata.attribution[0].merge_reason).to.equal('new');
-                            expect(entry.metadata.attribution[0].record_id).to.exist;                       
+                            expect(entry.metadata.attribution[0].record).to.exist;                       
                         });
                     });
     
@@ -129,7 +129,7 @@ describe('section.js methods', function() {
                             expect(entry.metadata.attribution).to.exist;
                             expect(entry.metadata.attribution).to.have.length(1);
                             expect(entry.metadata.attribution[0].merge_reason).to.equal('new');
-                            expect(entry.metadata.attribution[0].record_id).to.exist;                       
+                            expect(entry.metadata.attribution[0].record).to.exist;                       
                         });
                     });
     
@@ -140,7 +140,7 @@ describe('section.js methods', function() {
                     var cntFilename = {};
                     results[3].forEach(function(entry) {
                         var filename = refmodel.propertyToFilename(entry.name);
-                        expect(entry.metadata.attribution[0].record_id.filename).to.equal(filename);                       
+                        expect(entry.metadata.attribution[0].record.filename).to.equal(filename);                       
                         cntFilename[filename] = (cntFilename[filename] || 0) + 1; 
                     });
                     expect(cntFilename['c11.xml']).to.equal(2);
@@ -181,7 +181,7 @@ describe('section.js methods', function() {
                     var cntFilename = {};
                     results[1].forEach(function(entry) {
                         var filename = refmodel.propertyToFilename(entry.name);
-                        expect(entry.metadata.attribution[0].record_id.filename).to.equal(filename);                       
+                        expect(entry.metadata.attribution[0].record.filename).to.equal(filename);                       
                         cntFilename[filename] = (cntFilename[filename] || 0) + 1; 
                     });
                     expect(cntFilename['c11.xml']).to.equal(2);

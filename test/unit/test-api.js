@@ -242,7 +242,7 @@ describe('API', function() {
             expect(result.metadata).to.exist;
             expect(result.metadata.attribution).to.exist;
             var reasons = result.metadata.attribution.map(function(a) {return a.merge_reason;});
-            var sources = result.metadata.attribution.map(function(a) {return a.record_id._id.toString();});
+            var sources = result.metadata.attribution.map(function(a) {return a.record._id.toString();});
             expect(reasons).to.deep.equal(['new', 'duplicate', 'update']);
             var expectedSources = sourceIds.slice(3, 6);
             expect(sources).to.deep.equal(expectedSources);
@@ -259,7 +259,7 @@ describe('API', function() {
                 results.forEach(function(result) {
                     expect(allergyNames).to.include(result.entry_id.allergen.name);
                     expect(allergySeverities).to.include(result.entry_id.severity);
-                    var filename = result.record_id.filename;
+                    var filename = result.record.filename;
                     if (filename === 'ccd_3.xml') {
                         expect(result.merge_reason).to.equal('new');
                     } else if (filename === 'ccd_4.xml') {
