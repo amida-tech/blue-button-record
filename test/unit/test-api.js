@@ -256,6 +256,7 @@ describe('API', function() {
                 done(err);
             } else {
                 expect(results).to.have.length(5);
+                console.log(JSON.stringify(results[0], undefined, 2));
                 results.forEach(function(result) {
                     expect(allergyNames).to.include(result.entry.allergen.name);
                     expect(allergySeverities).to.include(result.entry.severity);

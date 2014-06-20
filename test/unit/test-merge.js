@@ -102,7 +102,6 @@ describe('merge.js methods', function() {
                         expect(r0[i].record.filename).to.equal('c00.xml');
                         expect(r0[i].entry_type).to.equal('testallergy');
                         expect(r0[i].merge_reason).to.equal('new');
-                        expect(r0[i].patKey).to.equal('pat0');
                     }
             
                     expect(results[1]).to.have.length(0);
@@ -116,7 +115,6 @@ describe('merge.js methods', function() {
                         expect(r2[i].record.metadata.fileClass).to.equal('ccda');
                         expect(r2[i].entry_type).to.equal('testallergy');
                         expect(r2[i].merge_reason).to.equal('new');
-                        expect(r2[i].patKey).to.equal('pat2');
                     }
            
                     var r3 = results[3];
@@ -127,7 +125,6 @@ describe('merge.js methods', function() {
                         expect(r3[i].record.filename).to.equal('c00.xml');
                         expect(r3[i].entry_type).to.equal('testprocedure');
                         expect(r3[i].merge_reason).to.equal('new');
-                        expect(r3[i].patKey).to.equal('pat0');
                     }
             
                     var r4 = results[4];
@@ -138,7 +135,6 @@ describe('merge.js methods', function() {
                         expect(r4[i].record.filename).to.equal('c10.xml');
                         expect(r4[i].entry_type).to.equal('testprocedure');
                         expect(r4[i].merge_reason).to.equal('new');
-                        expect(r4[i].patKey).to.equal('pat1');
                     }
 
                     expect(results[5]).to.have.length(0);
