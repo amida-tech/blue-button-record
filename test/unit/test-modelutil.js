@@ -9,7 +9,7 @@ var expect = chai.expect;
 describe('modelutil.js', function() {
     it('empty array/inside object/inside object', function(done) {
         var input = [{
-            "patKey": "pat1",
+            "pat_key": "pat1",
             "precondition": {
                 "value": {
                     "translations": []

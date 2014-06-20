@@ -164,10 +164,10 @@ var pushToContext = exports.pushToContext = function(context, keyGen, secName, r
     }
 };
 
-var saveSection = exports.saveSection = function(context, secName, patKey, recordIndex, count, callback) {
+var saveSection = exports.saveSection = function(context, secName, pat_key, recordIndex, count, callback) {
     var data = createTestSection(secName, recordIndex, count);
     var sourceId = context.storageIds[recordIndex];
-    section.save(context.dbinfo, secName, patKey, data, sourceId, function(err, ids) {
+    section.save(context.dbinfo, secName, pat_key, data, sourceId, function(err, ids) {
         if (! err) {
             pushToContext(context, newEntriesContextKey, secName, recordIndex, ids);
         }
@@ -175,7 +175,7 @@ var saveSection = exports.saveSection = function(context, secName, patKey, recor
     });
 };
 
-exports.savePartialSection = function(context, secName, patKey, recordIndex, destRecordIndex, extraContent, callback) {
+exports.savePartialSection = function(context, secName, pat_key, recordIndex, destRecordIndex, extraContent, callback) {
     var data = createTestSection(secName, recordIndex, extraContent.length);
     var sourceId = context.storageIds[recordIndex];
     var key = newEntriesContextKey(secName, destRecordIndex);
@@ -188,7 +188,7 @@ exports.savePartialSection = function(context, secName, patKey, recordIndex, des
         r.push(v);
         return r;
     }, []);
-    section.savePartial(context.dbinfo, secName, patKey, extendedData, sourceId, function(err, result) {
+    section.savePartial(context.dbinfo, secName, pat_key, extendedData, sourceId, function(err, result) {
         if (! err) {
             pushToContext(context, partialEntriesContextKey, secName, recordIndex, result);
         }
@@ -228,11 +228,11 @@ exports.prepareConnection = function(dbname, context) {
 
 var addRecordsPerPatient = exports.addRecordsPerPatient = function(context, countPerPatient, callback) {
     var fs = countPerPatient.reduce(function(r, fileCount, i) {
-        var patKey = util.format('pat%d', i);
+        var pat_key = util.format('pat%d', i);
         return _.range(fileCount).reduce(function(q, j) {
             var filename = util.format('c%d%d.xml', i, j);
             var recordIndex = util.format('%d.%d', i, j);
-            var f = function(cb) {createStorage(context, patKey, filename, recordIndex, cb);};
+            var f = function(cb) {createStorage(context, pat_key, filename, recordIndex, cb);};
             q.push(f);
             return q;
         }, r);

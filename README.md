@@ -265,13 +265,13 @@ var schema = {
   contentType: String,
   uploadDate: Date,
   metadata: {
-    patKey: String,
+    pat_key: String,
     fileClass: String
   }
 };
 ```
 
-'contentType' is the file MIME type such as 'application/xml'.  'patKey' is used to identify the patient file belongs to.  If it exists 'fileClass' can only have the value of 'ccda' and indicates that file was read as a ccda document succesfully.  
+'contentType' is the file MIME type such as 'application/xml'.  'pat_key' is used to identify the patient file belongs to.  If it exists 'fileClass' can only have the value of 'ccda' and indicates that file was read as a ccda document succesfully.  
 
 ### Patient data and metadata
 
@@ -295,7 +295,7 @@ var schema = {
      severity: String
   }],
   
-  patKey: String,
+  pat_key: String,
   metadata: {
     attribution: [{type: ObjectId, ref: 'allergymerges'}]
   },
@@ -304,7 +304,7 @@ var schema = {
 };
 ```
 
-All the fields before 'patKey' directly comes from [blue-button](https://github.com/amida-tech/blue-button) models and is documented there.  Remaining fields are identical for all collections.  'patKey' is the key for the patient whom this entry belongs.  'metadata.attribution' links patient data collections to merge history collections.  'reviewed=false' identifies all partial entries.  'archieved=true' identifies all partial entries that are ignored or merged and is not part of the health record.
+All the fields before 'pat_key' directly comes from [blue-button](https://github.com/amida-tech/blue-button) models and is documented there.  Remaining fields are identical for all collections.  'pat_key' is the key for the patient whom this entry belongs.  'metadata.attribution' links patient data collections to merge history collections.  'reviewed=false' identifies all partial entries.  'archieved=true' identifies all partial entries that are ignored or merged and is not part of the health record.
 
 Since schema for all other collections follows the same pattern they will not be explicitly shown here.
 
@@ -315,7 +315,7 @@ Collections for merge history hold information on where and how a patient data e
 ``` javascript
 var schema = {
   entry_type: String,
-  patKey: String,
+  pat_key: String,
   entry: {type: ObjectId, ref: allergies},
   record: {type: ObjectId, ref: 'storage.files'},
   merged: Date,
@@ -324,7 +324,7 @@ var schema = {
 };
 ```
 
-'entry_type' is a convenience field and holds the type of the entry.  It can have the values: 'allergy', 'demographic', 'social', 'problem', 'procedure', 'medication', 'vital', 'immunization', or 'encounter'.  'patKey' is the patient key.  'entry' and 'record' respectively link the merge history to patient data and source file.  'merged' is the time that the merge history record is created.  'merge_reason' can currently be 'new', 'update' or 'duplicate'.  'archived=true' identifies all the merge history entries that is linked to patient data collections that has the same flag and is an another convenience field.  
+'entry_type' is a convenience field and holds the type of the entry.  It can have the values: 'allergy', 'demographic', 'social', 'problem', 'procedure', 'medication', 'vital', 'immunization', or 'encounter'.  'pat_key' is the patient key.  'entry' and 'record' respectively link the merge history to patient data and source file.  'merged' is the time that the merge history record is created.  'merge_reason' can currently be 'new', 'update' or 'duplicate'.  'archived=true' identifies all the merge history entries that is linked to patient data collections that has the same flag and is an another convenience field.  
 
 ### Partial Match
 
@@ -333,7 +333,7 @@ Collections for partial match history describe partial matches and the action th
 ``` javascript
 var schema = {
   entry_type: String,
-  patKey: String,
+  pat_key: String,
   entry: {type: ObjectId, ref: allergies},
   record: {type: ObjectId, ref: 'storage.files'},
   determination: String,

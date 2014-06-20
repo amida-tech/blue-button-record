@@ -145,7 +145,7 @@ describe('match.js methods', function() {
         expect(result.entry.name).to.equal('name' + destSuffix);
         expect(result.entry_type).to.equal(refmodel.sectionToType[secName]);
 
-        ['_id', '__v', 'entry_type', 'entry', 'match_entry', 'patKey'].forEach(function(p) {
+        ['_id', '__v', 'entry_type', 'entry', 'match_entry', 'pat_key'].forEach(function(p) {
             delete result[p];
         });
         
@@ -288,7 +288,7 @@ describe('match.js methods', function() {
         delete resultEntry.__v;
         delete resultEntry.reviewed;
         delete resultEntry.archived;
-        delete resultEntry.patKey;
+        delete resultEntry.pat_key;
         expect(resultEntry).to.deep.equal(entry);
 
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
@@ -297,7 +297,7 @@ describe('match.js methods', function() {
         delete destResultEntry.__v;
         delete destResultEntry.reviewed;
         delete destResultEntry.archived;        
-        delete destResultEntry.patKey;        
+        delete destResultEntry.pat_key;        
         expect(destResultEntry).to.deep.equal(destEntry);
 
         if (reason) {
@@ -306,7 +306,7 @@ describe('match.js methods', function() {
             expect(result.determination).to.not.exist;
         }
 
-        ['_id', '__v', 'entry_type', 'entry', 'match_entry', 'patKey', 'determination'].forEach(function(p) {
+        ['_id', '__v', 'entry_type', 'entry', 'match_entry', 'pat_key', 'determination'].forEach(function(p) {
             delete result[p];
         });
         
