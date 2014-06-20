@@ -158,9 +158,9 @@ describe('section.js methods', function() {
 
     it('entry.remove', function(done) {
         var key0 = refmodel.partialEntriesContextKey('testallergies', '2.1');
-        var id0 = context[key0][0].match_entry_id;
+        var id0 = context[key0][0].match_entry;
         var key1 = refmodel.partialEntriesContextKey('testprocedures', '1.2');
-        var id1 = context[key1][1].match_entry_id;
+        var id1 = context[key1][1].match_entry;
         async.parallel([
             function(callback) {entry.remove(context.dbinfo, 'testallergies', id0, callback);},
             function(callback) {entry.remove(context.dbinfo, 'testprocedures', id1, callback);},

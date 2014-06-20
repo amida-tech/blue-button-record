@@ -118,7 +118,7 @@ Metadata property provides the source of the data as the "merge history"
 ``` javascript
 var attribution = allergy.metadata.attribution;
 console.log(attribution[0].merge_reason); // merge history starts with 'new'
-console.log(attribution[0].record_id);    // fileId
+console.log(attribution[0].record);    // fileId
 ```
 Once you persists a new entry (saveSection) merge history will be initiated with merge_reason: 'new'.  Each update (updateEntry) also contributes to merge history
 ``` javascript
@@ -143,10 +143,10 @@ bbr.getMerges('allergies', 'patientKey', 'name severity', 'filename uploadDate',
 where you can specify blue-button health data fields like allergy name or severity and record fields like filename or uploadDate
 ``` javascript
 console.log(explMerge.merge_reason);
-console.log(explMerge.entry_id.name);
-console.log(explMerge.entry_id.severity);
-console.log(explMerge.record_id.filename);
-console.log(explMerge.record_id.uploadDate);
+console.log(explMerge.entry.name);
+console.log(explMerge.entry.severity);
+console.log(explMerge.record.filename);
+console.log(explMerge.record.uploadDate);
 ```
 You can count merge history entries with various conditions
 ``` javascript
@@ -167,7 +167,7 @@ blue-button-record also stores 'partial entries' which cannot immediately become
 ``` javascript
 var partialAllergy = {
   partial_array: allergy,
-  match_record_id: id,
+  match_record: id,
   partial_match: {
     diff: {severity: 'new'},
     percent: 80,
@@ -196,10 +196,10 @@ the same data together with selected fields from the existing matching entry and
 bbr.getMatches('allergies', 'patientKey', 'name severity', function(err, matches) {
   if (err) throw err;
   var match = mathches[0];
-  console.log(match.entry_id.name);           // existing
-  console.log(match.entry_id.severity);
-  console.log(match.match_entry_id.name);     // partial
-  console.log(match.match_entry_id.severity);
+  console.log(match.entry.name);           // existing
+  console.log(match.entry.severity);
+  console.log(match.match_entry.name);     // partial
+  console.log(match.match_entry.severity);
   console.log(match.diff.severity);           // match information  
   console.log(match.percent);
   var matchId = match._id;
@@ -209,10 +209,10 @@ Individual match access is also available and will return the full blue-button d
 ``` javascript
 bbr.getMatch('allergies', matchId, function(err, match) {
   if (err) throw err;
-  console.log(match.entry_id.name);           // existing
-  console.log(match.entry_id.status);
-  console.log(match.match_entry_id.name);     // partial
-  console.log(match.match_entry_id.status);
+  console.log(match.entry.name);           // existing
+  console.log(match.entry.status);
+  console.log(match.match_entry.name);     // partial
+  console.log(match.match_entry.status);
   console.log(match.diff.severity);           // match information  
   console.log(match.percent);
 });
@@ -316,15 +316,15 @@ Collections for merge history hold information on where and how a patient data e
 var schema = {
   entry_type: String,
   patKey: String,
-  entry_id: {type: ObjectId, ref: allergies},
-  record_id: {type: ObjectId, ref: 'storage.files'},
+  entry: {type: ObjectId, ref: allergies},
+  record: {type: ObjectId, ref: 'storage.files'},
   merged: Date,
   merge_reason: String,
   archived: Boolean
 };
 ```
 
-'entry_type' is a convenience field and holds the type of the entry.  It can have the values: 'allergy', 'demographic', 'social', 'problem', 'procedure', 'medication', 'vital', 'immunization', or 'encounter'.  'patKey' is the patient key.  'entry_id' and 'record_id' respectively link the merge history to patient data and source file.  'merged' is the time that the merge history record is created.  'merge_reason' can currently be 'new', 'update' or 'duplicate'.  'archived=true' identifies all the merge history entries that is linked to patient data collections that has the same flag and is an another convenience field.  
+'entry_type' is a convenience field and holds the type of the entry.  It can have the values: 'allergy', 'demographic', 'social', 'problem', 'procedure', 'medication', 'vital', 'immunization', or 'encounter'.  'patKey' is the patient key.  'entry' and 'record' respectively link the merge history to patient data and source file.  'merged' is the time that the merge history record is created.  'merge_reason' can currently be 'new', 'update' or 'duplicate'.  'archived=true' identifies all the merge history entries that is linked to patient data collections that has the same flag and is an another convenience field.  
 
 ### Partial Match
 
@@ -334,8 +334,8 @@ Collections for partial match history describe partial matches and the action th
 var schema = {
   entry_type: String,
   patKey: String,
-  entry_id: {type: ObjectId, ref: allergies},
-  record_id: {type: ObjectId, ref: 'storage.files'},
+  entry: {type: ObjectId, ref: allergies},
+  record: {type: ObjectId, ref: 'storage.files'},
   determination: String,
   percent: Number,
   diff: {},

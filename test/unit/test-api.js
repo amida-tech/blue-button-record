@@ -353,27 +353,27 @@ describe('API', function() {
                 done(err);
             } else {
                 expect(result).to.have.length(2);
-                if (result[0].entry_id.allergen.name !== allergyNames[1]) {
+                if (result[0].entry.allergen.name !== allergyNames[1]) {
                     var temp = result[0];                   
                     result[0] = result[1];
                     result[1] = temp;
                 }
-                expect(result[0].entry_id.allergen.name).to.equal(allergyNames[1]);
-                expect(result[0].entry_id.severity).to.equal(allergySeverities[1]);
-                expect(result[0].entry_id.status).to.equal(allergyStatuses[1]);
-                expect(result[0].match_entry_id.allergen.name).to.equal(allergyNames[1]);
-                expect(result[0].match_entry_id.severity).to.equal('Severe');
-                expect(result[0].match_entry_id.status).to.equal(allergyStatuses[1]);
+                expect(result[0].entry.allergen.name).to.equal(allergyNames[1]);
+                expect(result[0].entry.severity).to.equal(allergySeverities[1]);
+                expect(result[0].entry.status).to.equal(allergyStatuses[1]);
+                expect(result[0].match_entry.allergen.name).to.equal(allergyNames[1]);
+                expect(result[0].match_entry.severity).to.equal('Severe');
+                expect(result[0].match_entry.status).to.equal(allergyStatuses[1]);
 
                 expect(result[0].diff.severity).to.equal('new');
                 expect(result[0].percent).to.equal(80);
 
-                expect(result[1].entry_id.allergen.name).to.equal(allergyNames[2]);
-                expect(result[1].entry_id.severity).to.equal(allergySeverities[2]);
-                expect(result[1].entry_id.status).to.equal(allergyStatuses[2]);
-                expect(result[1].match_entry_id.allergen.name).to.equal(allergyNames[2]);
-                expect(result[1].match_entry_id.severity).to.equal(allergySeverities[2]);
-                expect(result[1].match_entry_id.status).to.equal('Inactive');
+                expect(result[1].entry.allergen.name).to.equal(allergyNames[2]);
+                expect(result[1].entry.severity).to.equal(allergySeverities[2]);
+                expect(result[1].entry.status).to.equal(allergyStatuses[2]);
+                expect(result[1].match_entry.allergen.name).to.equal(allergyNames[2]);
+                expect(result[1].match_entry.severity).to.equal(allergySeverities[2]);
+                expect(result[1].match_entry.status).to.equal('Inactive');
 
                 expect(result[1].diff.status).to.equal('new');
                 expect(result[1].percent).to.equal(90);
@@ -389,14 +389,14 @@ describe('API', function() {
             if (err) {
                 done(err);
             } else {
-                expect(result.entry_id._id.toString()).to.equal(allergyIds[1].toString());
-                expect(result.match_entry_id._id.toString()).to.equal(partialAllergyIds[0].toString());
-                expect(result.entry_id.allergen.name).to.equal(allergyNames[1]);
-                expect(result.entry_id.severity).to.equal(allergySeverities[1]);
-                expect(result.entry_id.status).to.equal(allergyStatuses[1]);
-                expect(result.match_entry_id.allergen.name).to.equal(allergyNames[1]);
-                expect(result.match_entry_id.severity).to.equal('Severe');
-                expect(result.match_entry_id.status).to.equal(allergyStatuses[1]);
+                expect(result.entry._id.toString()).to.equal(allergyIds[1].toString());
+                expect(result.match_entry._id.toString()).to.equal(partialAllergyIds[0].toString());
+                expect(result.entry.allergen.name).to.equal(allergyNames[1]);
+                expect(result.entry.severity).to.equal(allergySeverities[1]);
+                expect(result.entry.status).to.equal(allergyStatuses[1]);
+                expect(result.match_entry.allergen.name).to.equal(allergyNames[1]);
+                expect(result.match_entry.severity).to.equal('Severe');
+                expect(result.match_entry.status).to.equal(allergyStatuses[1]);
                 
                 expect(result.diff.severity).to.equal('new');
                 expect(result.percent).to.equal(80);

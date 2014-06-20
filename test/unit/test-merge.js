@@ -326,7 +326,7 @@ describe('merge.js methods', function() {
 
     var verifyGetAllPartial = function(context, resultsById, secName, recordIndex, index, sourceIndex) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         var result = resultsById[id];
         if (! sourceIndex) {
             sourceIndex = recordIndex;
@@ -337,7 +337,7 @@ describe('merge.js methods', function() {
 
     var verifyGetAllPartialNegative = function(context, resultsById, secName, recordIndex, index) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         var result = resultsById[id];
 
         expect(result).to.not.exist;
@@ -383,7 +383,7 @@ describe('merge.js methods', function() {
 
     var updateEntryPartial = function(context, secName, recordIndex, index, updateObject, sourceIndex, callback) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         var rid = context.storageIds[sourceIndex];
         entry.update(context.dbinfo, secName, id, rid, updateObject, callback);
     };
@@ -453,7 +453,7 @@ describe('merge.js methods', function() {
 
     var getEntryPartial = function(context, secName, recordIndex, index, callback) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         entry.get(context.dbinfo, secName, id, callback);
     };
 
@@ -468,7 +468,7 @@ describe('merge.js methods', function() {
 
     var verifyEntryGetPartial = function(context, result, secName, recordIndex, index, sourceIndex) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         if (! sourceIndex) {
             sourceIndex = recordIndex;
         }
