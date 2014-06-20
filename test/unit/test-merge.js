@@ -463,8 +463,7 @@ describe('merge.js methods', function() {
         if (! sourceIndex) {
             sourceIndex = recordIndex;
         }
-        expect(result.entry_id.toString()).to.equal(id.toString());
-        expect(result.record_id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record_id._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyEntryGetPartial = function(context, result, secName, recordIndex, index, sourceIndex) {
@@ -473,8 +472,7 @@ describe('merge.js methods', function() {
         if (! sourceIndex) {
             sourceIndex = recordIndex;
         }
-        expect(result.entry_id.toString()).to.equal(id.toString());
-        expect(result.record_id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record_id._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyMergeReason = function(attr, expectedReasons) {

@@ -242,7 +242,7 @@ describe('API', function() {
             expect(result.metadata).to.exist;
             expect(result.metadata.attribution).to.exist;
             var reasons = result.metadata.attribution.map(function(a) {return a.merge_reason;});
-            var sources = result.metadata.attribution.map(function(a) {return a.record_id.toString();});
+            var sources = result.metadata.attribution.map(function(a) {return a.record_id._id.toString();});
             expect(reasons).to.deep.equal(['new', 'duplicate', 'update']);
             var expectedSources = sourceIds.slice(3, 6);
             expect(sources).to.deep.equal(expectedSources);
