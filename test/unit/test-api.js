@@ -313,14 +313,14 @@ describe('API', function() {
         allergies2.status = 'Inactive';
         partialInput = [
             {
-                partial_array: allergies1,
+                partial_entry: allergies1,
                 partial_match: match1,
-                match_record_id: allergyIds[1]  
+                match_entry_id: allergyIds[1]  
             },
             {
-                partial_array: allergies2,
+                partial_entry: allergies2,
                 partial_match: match2,
-                match_record_id: allergyIds[2]  
+                match_entry_id: allergyIds[2]  
             }
         ];
         bbr.savePartialSection('allergies', 'pat1', partialInput, sourceIds[6], function(err, result) {
@@ -334,7 +334,7 @@ describe('API', function() {
                 done(err);
             } else {
                 var actual = bbr.cleanSection(result);
-                var expected = [partialInput[0].partial_array, partialInput[1].partial_array];
+                var expected = [partialInput[0].partial_entry, partialInput[1].partial_entry];
                 expect(actual).to.deep.include.members(expected);
                 expect(expected).to.deep.include.members(actual);
                 if (ccd.allergies[1].allergen.name === result[0].allergen.name) {

@@ -166,7 +166,7 @@ bbr.mergeCount('allergies', 'patientKey', {merge_reason: 'duplicate'}, function(
 blue-button-record also stores 'partial entries' which cannot immediately become part of the master health record since they are similar enough to existing entries but not identical to become duplicates.  In addition to blue-button health data, partial records also include a pointer to the existing entry and match information
 ``` javascript
 var partialAllergy = {
-  partial_array: allergy,
+  partial_entry: allergy,
   match_record: id,
   partial_match: {
     diff: {severity: 'new'},

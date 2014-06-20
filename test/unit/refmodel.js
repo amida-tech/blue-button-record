@@ -181,9 +181,9 @@ exports.savePartialSection = function(context, secName, pat_key, recordIndex, de
     var key = newEntriesContextKey(secName, destRecordIndex);
     var extendedData = data.reduce(function(r, e, index) {
         var v = {
-            partial_array: e,
+            partial_entry: e,
             partial_match: extraContent[index].matchObject,
-            match_record_id: context[key][extraContent[index].destIndex]
+            match_entry_id: context[key][extraContent[index].destIndex]
         };
         r.push(v);
         return r;
