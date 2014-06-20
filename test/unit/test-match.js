@@ -143,7 +143,7 @@ describe('match.js methods', function() {
         expect(result.match_entry.name).to.equal('name' + suffix);
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
         expect(result.entry.name).to.equal('name' + destSuffix);
-        expect(result.entry_type).to.equal(refmodel.sectionToType[secName]);
+        expect(result.entry_type).to.equal(secName);
 
         ['_id', '__v', 'entry_type', 'entry', 'match_entry', 'pat_key'].forEach(function(p) {
             delete result[p];

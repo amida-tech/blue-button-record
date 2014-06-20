@@ -100,7 +100,7 @@ describe('merge.js methods', function() {
                     expect([r0[0].entry.severity, r0[1].entry.severity]).to.include.members(['severity_0.0.0', 'severity_0.0.1']);
                     for (i=0; i<2; ++i) {
                         expect(r0[i].record.filename).to.equal('c00.xml');
-                        expect(r0[i].entry_type).to.equal('testallergy');
+                        expect(r0[i].entry_type).to.equal('testallergies');
                         expect(r0[i].merge_reason).to.equal('new');
                     }
             
@@ -113,7 +113,7 @@ describe('merge.js methods', function() {
                     for (i=0; i<3; ++i) {
                         expect(r2[i].record.filename).to.equal('c20.xml');
                         expect(r2[i].record.metadata.fileClass).to.equal('ccda');
-                        expect(r2[i].entry_type).to.equal('testallergy');
+                        expect(r2[i].entry_type).to.equal('testallergies');
                         expect(r2[i].merge_reason).to.equal('new');
                     }
            
@@ -123,7 +123,7 @@ describe('merge.js methods', function() {
                     expect([r3[0].entry.proc_type, r3[1].entry.proc_type]).to.include.members(['proc_type_0.0.0', 'proc_type_0.0.1']);
                     for (i=0; i<2; ++i) {
                         expect(r3[i].record.filename).to.equal('c00.xml');
-                        expect(r3[i].entry_type).to.equal('testprocedure');
+                        expect(r3[i].entry_type).to.equal('testprocedures');
                         expect(r3[i].merge_reason).to.equal('new');
                     }
             
@@ -133,7 +133,7 @@ describe('merge.js methods', function() {
                     expect([r4[0].entry.proc_value.display, r4[1].entry.proc_value.display, r4[2].entry.proc_value.display]).to.include.members(['display_1.0.0', 'display_1.0.1', 'display_1.0.2']);
                     for (i=0; i<3; ++i) {
                         expect(r4[i].record.filename).to.equal('c10.xml');
-                        expect(r4[i].entry_type).to.equal('testprocedure');
+                        expect(r4[i].entry_type).to.equal('testprocedures');
                         expect(r4[i].merge_reason).to.equal('new');
                     }
 

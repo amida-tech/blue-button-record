@@ -50,7 +50,7 @@ describe('storage.js methods', function() {
         }
         var options = {
             dbName: 'storagetest',
-            sectionToType: {},
+            supportedSections: [],
             typeToSchemaDesc: {}
         };
         db.connect('localhost', options, function(err, result) {
