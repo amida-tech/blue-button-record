@@ -246,6 +246,34 @@ bbr.acceptMatch('allergies', matchId, 'added', function(err, count) {
 });
 ```
 
+## API
+### connectDatabase(server, options, callback)
+
+Connects to the database on `server`.
+
+__Arguments__
+
+* `server` - The server that hosts the database.
+* `options` - Configuration options for the database.  The following properties are supported
+  * `selectedSections` - sections 
+* `callback(err, info)` - A callback which is called when connection is established,
+  or an error occurs.
+
+__Examples__
+
+```js
+var bbr = require('blue-button-record');
+
+bbr.connectDatabase('localhost', options, function(err, info) {
+  if (err) {
+    console.log('connection has failed.');
+  } else {
+    console.log('connection established.');
+  }
+});
+```
+---------------------------------------
+
 ## Schemas
 
 Underlying MongoDB collections can be classified into four categories
