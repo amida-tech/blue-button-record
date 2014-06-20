@@ -257,8 +257,8 @@ describe('API', function() {
             } else {
                 expect(results).to.have.length(5);
                 results.forEach(function(result) {
-                    expect(allergyNames).to.include(result.entry_id.allergen.name);
-                    expect(allergySeverities).to.include(result.entry_id.severity);
+                    expect(allergyNames).to.include(result.entry.allergen.name);
+                    expect(allergySeverities).to.include(result.entry.severity);
                     var filename = result.record.filename;
                     if (filename === 'ccd_3.xml') {
                         expect(result.merge_reason).to.equal('new');

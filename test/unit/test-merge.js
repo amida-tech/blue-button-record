@@ -96,8 +96,8 @@ describe('merge.js methods', function() {
                     var i;
                     var r0 = results[0];
                     expect(r0).to.have.length(2);
-                    expect([r0[0].entry_id.name, r0[1].entry_id.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
-                    expect([r0[0].entry_id.severity, r0[1].entry_id.severity]).to.include.members(['severity_0.0.0', 'severity_0.0.1']);
+                    expect([r0[0].entry.name, r0[1].entry.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
+                    expect([r0[0].entry.severity, r0[1].entry.severity]).to.include.members(['severity_0.0.0', 'severity_0.0.1']);
                     for (i=0; i<2; ++i) {
                         expect(r0[i].record.filename).to.equal('c00.xml');
                         expect(r0[i].entry_type).to.equal('testallergy');
@@ -109,8 +109,8 @@ describe('merge.js methods', function() {
 
                     var r2 = results[2];
                     expect(r2).to.have.length(3);
-                    expect([r2[0].entry_id.name, r2[1].entry_id.name, r2[2].entry_id.name]).to.include.members(['name_2.0.0', 'name_2.0.1', 'name_2.0.2']);
-                    expect([r2[0].entry_id.value.code, r2[1].entry_id.value.code, r2[2].entry_id.value.code]).to.include.members(['code_2.0.0', 'code_2.0.1', 'code_2.0.2']);
+                    expect([r2[0].entry.name, r2[1].entry.name, r2[2].entry.name]).to.include.members(['name_2.0.0', 'name_2.0.1', 'name_2.0.2']);
+                    expect([r2[0].entry.value.code, r2[1].entry.value.code, r2[2].entry.value.code]).to.include.members(['code_2.0.0', 'code_2.0.1', 'code_2.0.2']);
                     for (i=0; i<3; ++i) {
                         expect(r2[i].record.filename).to.equal('c20.xml');
                         expect(r2[i].record.metadata.fileClass).to.equal('ccda');
@@ -121,8 +121,8 @@ describe('merge.js methods', function() {
            
                     var r3 = results[3];
                     expect(r3).to.have.length(2);
-                    expect([r3[0].entry_id.name, r3[1].entry_id.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
-                    expect([r3[0].entry_id.proc_type, r3[1].entry_id.proc_type]).to.include.members(['proc_type_0.0.0', 'proc_type_0.0.1']);
+                    expect([r3[0].entry.name, r3[1].entry.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
+                    expect([r3[0].entry.proc_type, r3[1].entry.proc_type]).to.include.members(['proc_type_0.0.0', 'proc_type_0.0.1']);
                     for (i=0; i<2; ++i) {
                         expect(r3[i].record.filename).to.equal('c00.xml');
                         expect(r3[i].entry_type).to.equal('testprocedure');
@@ -132,8 +132,8 @@ describe('merge.js methods', function() {
             
                     var r4 = results[4];
                     expect(r4).to.have.length(3);
-                    expect([r4[0].entry_id.name, r4[1].entry_id.name, r4[2].entry_id.name]).to.include.members(['name_1.0.0', 'name_1.0.1', 'name_1.0.2']);
-                    expect([r4[0].entry_id.proc_value.display, r4[1].entry_id.proc_value.display, r4[2].entry_id.proc_value.display]).to.include.members(['display_1.0.0', 'display_1.0.1', 'display_1.0.2']);
+                    expect([r4[0].entry.name, r4[1].entry.name, r4[2].entry.name]).to.include.members(['name_1.0.0', 'name_1.0.1', 'name_1.0.2']);
+                    expect([r4[0].entry.proc_value.display, r4[1].entry.proc_value.display, r4[2].entry.proc_value.display]).to.include.members(['display_1.0.0', 'display_1.0.1', 'display_1.0.2']);
                     for (i=0; i<3; ++i) {
                         expect(r4[i].record.filename).to.equal('c10.xml');
                         expect(r4[i].entry_type).to.equal('testprocedure');
@@ -184,7 +184,7 @@ describe('merge.js methods', function() {
                     var allResults = results[0].concat(results[1]).concat(results[2]).concat(results[3]).concat(results[4]).concat(results[5]);
                     var resultsById = allResults.reduce(function(r, result) {
                         var mr = result.merge_reason;
-                        r[mr][result.entry_id._id] = result;
+                        r[mr][result.entry._id] = result;
                         return r;
                     }, {new: {}, duplicate:{}, update:{}});
                     callback(null, resultsById);
