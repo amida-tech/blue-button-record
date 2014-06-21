@@ -13,12 +13,6 @@ var storage = require('../../lib/storage');
 var expect = chai.expect;
 chai.config.includeStack = true;
 
-var supportedSections = exports.supportedSections = [
-    'testallergies',
-    'testprocedures',    
-    'testdemographics'    
-];
-
 var schemas = {
     testallergies: {
         name: 'string',
@@ -45,7 +39,6 @@ var schemas = {
 var getConnectionOptions = function(dbName) {
     return {
         dbName: dbName,
-        supportedSections: supportedSections,
         schemas: schemas,
         matchFields: {
             match: "string",

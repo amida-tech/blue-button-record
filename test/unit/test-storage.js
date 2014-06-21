@@ -1,6 +1,4 @@
 "use strict";
-/*jshint -W117 */
-
 
 var chai = require('chai');
 var util = require('util');
