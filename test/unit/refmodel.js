@@ -51,7 +51,7 @@ var getConnectionOptions = function(dbName) {
             match: "string",
             percent: "number",
             diff: "string",
-            subelements: null
+            subelements: 'any'
         }
     };
 };
