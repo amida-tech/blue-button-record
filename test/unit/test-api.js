@@ -16,7 +16,6 @@ chai.config.includeStack = true;
 
 describe('API', function() {
     var ccd = null;
-    var dbinfo = null;
 
     var sourceIds = null;
     var allergyIds = null;
@@ -35,28 +34,12 @@ describe('API', function() {
         done();
     });
 
-    var dropCollections = function(done) {
-        var collections = Object.keys(dbinfo.connection.collections);
-        async.forEach(collections, function(collectionName, cb) {
-            var collection = dbinfo.connection.collections[collectionName];
-            collection.drop(function(err) {
-                if (err && err.message !== 'ns not found') {
-                    cb(err);
-                } else {
-                    cb(null);
-                }
-            });
-        }, done);
-    };
-
     it('connectDatabase', function(done) {
-        bbr.connectDatabase('localhost', function(err, result) {
+        bbr.connectDatabase('localhost', function(err) {
             if (err) {
                 done(err);
             } else {
-                dbinfo = result;
-                expect(dbinfo).to.exist;
-                dropCollections(done);
+                bbr.clearDatabase(done);
             }
         });
     });
