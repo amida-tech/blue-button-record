@@ -21,24 +21,24 @@ var supportedSections = exports.supportedSections = [
 
 var schemas = {
     testallergies: {
-        name: String,
-        severity: String,
+        name: 'string',
+        severity: 'string',
         value: {
-            code: String, 
-            display: String
+            code: 'string', 
+            display: 'string'
         }
     },
     testprocedures : {
-        name: String,
-        proc_type: String,
+        name: 'string',
+        proc_type: 'string',
         proc_value: {
-            code: String,
-            display: String
+            code: 'string',
+            display: 'string'
         }
     },
     testdemographics : {
-        name: String,
-        lastname: String,
+        name: 'string',
+        lastname: 'string',
     }
 };
 
