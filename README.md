@@ -247,24 +247,95 @@ bbr.acceptMatch('allergies', matchId, 'added', function(err, count) {
 ```
 
 ## API
+<a name="connectDatabase" />
 ### connectDatabase(server, options, callback)
 
-Connects to the database on `server`.
+Connects to the database on `server`.  If called multiple times before [`disconnect`](#disconnect) is called, the subsequent calls are silently ignored.
 
 __Arguments__
 
-* `server` - The server that hosts the database.
-* `options` - Configuration options for the database.  The following properties are supported
-  * `selectedSections` - sections 
-* `callback(err, info)` - A callback which is called when connection is established,
-  or an error occurs.
+* `server` - The server that hosts the database.  Port number can also be included.
+* `options` - Optional configuration options for the database.  The following properties are supported.  All of them are optional.
+  * `dbName` - Name for the database.  Defaults to `dre`.
+  * `schemas` - Schemas to use for patient data.  This is a JSON object with leaf values describe the type of the data to be stored.  It describes patient data in sections and the top properties are used as the section names throughout the other API methods.  Hierarchy of the JSON object describes the hierarchy of the patient data and one element arrays are used to describe array of patient data.  Defaults to `ccd` schema available from [blue-button](https://github.com/amida-tech/blue-button).  Arrays are not supported for top values and silently converted to their first elements.  Leaf node types can be `"string"`, `"datetime"`, `"number"`, `"boolean"`, and `"any"`.  All but `"any"` corresponds to Javascript types.  `"any"` can be used to accept any data.
+  * `matchFields` - Schema to describe matching information between two versions of patient section data.  It is a JSON object similar to `schemas` in structure.  Defaults to `{percent: 'number', diff: 'any', subelements: 'any'}` to support [blue-button-match](https://github.com/amida-tech/blue-button-match).   
+* `callback(err)` - A callback which is called when connection is established, or an error occurs.
 
 __Examples__
 
 ```js
-var bbr = require('blue-button-record');
+var options = {
+  dbName: 'test',
+  schemas = {
+    testallergies: {
+      name: 'string',
+      severity: 'string',
+      value: {
+        code: 'string', 
+        display: 'string'
+      }
+    },
+    testprocedures : {
+      name: 'string',
+      proc_type: 'string',
+      proc_value: {
+        code: 'string',
+        display: 'string'
+      }
+  },
+  matchFields: {
+    match: 'string',
+    percent: 'number',
+    diff: 'string',
+    subelements: 'any'
+  }
+};
+```
 
-bbr.connectDatabase('localhost', options, function(err, info) {
+```js
+var bbr = require('blue-button-record');
+bbr.connectDatabase('localhost', options, function(err) {
+  if (err) {
+    console.log('connection has failed.');
+  } else {
+    console.log('connection established.');
+  }
+});
+```
+---------------------------------------
+
+<a name="disconnect" />
+### disconnect(callback)
+
+Disconnects from the previously connected database using [`connectDatabase`](#connectDatabase).  If there is no existing connection the call is silently ignored.
+
+__Arguments__
+* `callback(err)` - A callback which is called when disconnection is succesfull, or an error occurs.
+
+__Examples__
+
+```js
+bbr.disconnect(function(err) {
+  if (err) {
+    console.log('connection has failed.');
+  } else {
+    console.log('connection established.');
+  }
+});
+```
+---------------------------------------
+
+### clearDatabase(callback)
+
+Clears all data in the database.  Included to assist testing infrastructures.  If there is no existing connection the call is silently ignored.
+
+__Arguments__
+* `callback(err)` - A callback which is called when all data is removed, or an error occurs.
+
+__Examples__
+
+```js
+bbr.clearDatabase(function(err) {
   if (err) {
     console.log('connection has failed.');
   } else {
