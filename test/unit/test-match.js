@@ -285,19 +285,11 @@ describe('match.js methods', function() {
         var suffix = '_' + recordIndex + '.' + index;
         var entry = refmodel.testObjectInstance[secName](suffix);
         var resultEntry = modelutil.mongooseToBBModelDocument(result.match_entry);
-        delete resultEntry.__v;
-        delete resultEntry.reviewed;
-        delete resultEntry.archived;
-        delete resultEntry.pat_key;
         expect(resultEntry).to.deep.equal(entry);
 
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
         var destEntry = refmodel.testObjectInstance[secName](destSuffix);
         var destResultEntry = modelutil.mongooseToBBModelDocument(result.entry);
-        delete destResultEntry.__v;
-        delete destResultEntry.reviewed;
-        delete destResultEntry.archived;        
-        delete destResultEntry.pat_key;        
         expect(destResultEntry).to.deep.equal(destEntry);
 
         if (reason) {
@@ -306,7 +298,7 @@ describe('match.js methods', function() {
             expect(result.determination).to.not.exist;
         }
 
-        ['_id', '__v', 'entry_type', 'entry', 'match_entry', 'pat_key', 'determination'].forEach(function(p) {
+        ['_id', 'entry_type', 'entry', 'match_entry', 'determination'].forEach(function(p) {
             delete result[p];
         });
         

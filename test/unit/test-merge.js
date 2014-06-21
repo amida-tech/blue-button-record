@@ -484,9 +484,6 @@ describe('merge.js methods', function() {
     var verifyEntryGetContent = function(context, result, secName, recordIndex, index, updRecordIndex, updIndex) {
         expect(result).to.exist;
         var r = modelutil.mongooseToBBModelDocument(result);
-        delete r.reviewed;
-        delete r.__v;
-        delete r.pat_key;
 
         var suffix = '_' + recordIndex + '.' + index;
         var expected = refmodel.testObjectInstance[secName](suffix);
