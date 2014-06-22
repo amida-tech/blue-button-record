@@ -267,7 +267,7 @@ __Examples__
 var options = {
   dbName: 'test',
   schemas = {
-    testallergies: {
+    allergies: {
       name: 'string',
       severity: 'string',
       value: {
@@ -275,7 +275,7 @@ var options = {
         display: 'string'
       }
     },
-    testprocedures : {
+    procedures : {
       name: 'string',
       proc_type: 'string',
       proc_value: {
@@ -284,9 +284,7 @@ var options = {
       }
   },
   matchFields: {
-    match: 'string',
     percent: 'number',
-    diff: 'string',
     subelements: 'any'
   }
 };
@@ -317,7 +315,7 @@ __Examples__
 ```js
 bbr.disconnect(function(err) {
   if (err) {
-    console.log('connection has failed.');
+    console.log('disconnection has failed.');
   } else {
     console.log('connection established.');
   }
@@ -337,9 +335,612 @@ __Examples__
 ```js
 bbr.clearDatabase(function(err) {
   if (err) {
-    console.log('connection has failed.');
+    console.log('unable to clear the database.');
   } else {
-    console.log('connection established.');
+    console.log('database has been cleared.');
+  }
+});
+```
+---------------------------------------
+
+### saveRecord(ptKey, content, sourceInfo, contentType, callback)
+
+Saves a source of patient data in the database.  Currently only text files are supported.
+
+__Arguments__
+* `ptKey` - Identification string for the patient.
+* `content` - Content of the source.  `content` is a javascript string that is 'utf8' encoded before being saved to the database.
+* `sourceInfo`- Additional information about the source.  Following properties are supported
+  * `name`- Name of the source.
+  * `type`- MIME type of the source.
+* `contentType` - Content type of the source.   
+* `callback(err, id)` - A callback which is called when all data is removed, or an error occurs.  `id` is the database assigned identifier for the saved record. 
+
+__Examples__
+
+```js
+bbr.saveRecord('testPatient', 'example content', {type: 'text/xml', name: 'expl.xml'}, 'ccda', function(err, id) {
+  var fileId = null;
+  if (err) {
+    console.log('cannot save.');
+  } else {
+    fileId = id;
+  }
+});
+```
+---------------------------------------
+
+### getRecordList(ptKey, callback)
+
+Gets all the sources of patient data in the database.
+
+__Arguments__
+* `ptKey` - Identification string for the patient.
+* `callback(err, infos)` - A callback which is called `info` is returned, or an error occurs.  `infos` is an array with each element containing the following information:
+  * file_id - Database assigned identifier for the file.
+  * file_name - Name of the file.
+  * file_size - Size of the file.
+  * file_mime_type - MIME type of the file. 
+  * file_upload_date - Upload instance of the file.
+  * file_class - Content type of the file.
+
+__Examples__
+
+```js
+bbr.getRecordList('testPatient', function(err, infos) {
+  if (err) {
+    console.log('error getting the list.');
+  } else {
+    var info = infos[0];
+    console.log(info.file_name);       // 'expl.xml'
+    console.log(info.file_mime_type);  // 'text/xml'
+    console.log(info.file_class);      // 'ccda'
+  }
+});
+```
+---------------------------------------
+
+### getRecord(sourceId, callback)
+
+Gets name and content of the patient data source.
+
+__Arguments__
+* `sourceId - Database identification string of the source.
+* `callback(err, filename, content)` - A callback which is called when source information is retrieved, or an error occurs. 
+
+__Examples__
+
+```js
+bbr.getRecord(fileId, function(err, filename, content) {
+  if (err) {
+    console.log('error getting the file informations.');
+  } else {
+    var info = infos[0];
+    console.log(filename);  // 'expl.xml'
+    console.log(content);   // 'example content'
+  }
+});
+```
+---------------------------------------
+
+### recordCount(ptKey, callback)
+
+Gets the number of sources in the database for the patient.
+
+__Arguments__
+* `ptKey` - Identification string for the patient.
+* `callback(err, count)` - A callback which is called when source `count` is retrieved, or an error occurs. 
+
+__Examples__
+
+```js
+bbr.getCount('testPatient', function(err, count) {
+  if (err) {
+    console.log('error getting the count.');
+  } else {
+    console.log(count);  // 1
+  }
+});
+```
+---------------------------------------
+
+### saveSection(secName, ptKey, inputSection, sourceId, callback)
+
+Save section entries for the patient.
+
+__Arguments__
+* `secName` - Section name.
+* `ptKey` - Identification string for the patient.
+* `inputSection` - An array of entries with schema as specified in [`connectDatabase`](#connectDatabase).
+* `sourceId` - Id for the source where the `inputSection` is located. 
+* `callback(err, ids)` - A callback which is called when saving entries is succesfull, or an error occurs.  `ids` are database assigned identifier for each entry in the order in `inputSection`.
+
+__Examples__
+
+```js
+var inputSection = [{
+    name: 'allergy1',
+    severity: 'severity1',
+    value: {
+      code: 'code1', 
+      display: 'display1'
+    } 
+  }, {
+    name: 'allergy2',
+    severity: 'severity2',
+    value: {
+      code: 'code2', 
+      display: 'display2'
+  }
+];
+var aid1 = null;
+var aid2 = null;
+bbr.saveSection('allergies', testPatient', inputSection, fileId, function(err, ids) {
+  if (err) {
+    console.log('error saving the section.');
+  } else {
+    aid1 = ids[0];
+    aid2 = ids[1];
+  }
+});
+```
+---------------------------------------
+
+<a name="getSection" />
+### getSection(secName, ptKey, callback)
+
+Gets section entries for the patient.
+
+__Arguments__
+* `secName` - Section name.
+* `ptKey` - Identification string for the patient.
+* `callback(err, entries)` - A callback which is called when entries are retrieved, or an error occurs.  Each entry in `entries` array contains the data specified in section schema.  In addition the following properties exists:
+  * `_id` - Database assigned identifier for the entry.
+  * `metadata.attribution` - This is an array that keeps track of changes for the entry with the following properties
+    * `merged` - The instant the change to the entry.
+    * `merge_reason` - This is the reason of the change.  Can be 'new', 'duplicate', or 'update'.
+    * `record._id` - Source identifier.
+    * `record.filename` - Name of the source file.
+
+__Examples__
+
+```js
+bbr.getSection('allergies', 'testPatient', function(err, entries) {
+  if (err) {
+    console.log('error retrieving the section.');
+  } else {
+    console.log(entries[0].name);                                 // 'allergy1'
+    console.log(entries[0].metadata.attribution[0].merge_reason); // 'new'
+    console.log(entries[0].metadata.attribution[0].record._id);   // fileId
+  }
+});
+```
+---------------------------------------
+
+### saveAllSections(ptKey, ptRecord, sourceId, callback)
+
+Save section entries for the patient.
+
+__Arguments__
+* `ptKey` - Identification string for the patient.
+* `ptRecord` - Multiple sections keyed with section names and an array of entries with schema as specified in [`connectDatabase`](#connectDatabase).
+* `sourceId` - Id for the source where the `ptRecord` is located. 
+* `callback(err, ids)` - A callback which is called when saving sections is succesfull, or an error occurs.  `ids` are array of arrays of database assigned identifier for each section and entries in the section.  Section order is in section name alphabetical.
+
+__Examples__
+
+```js
+var ptRecord = {
+  allergies = [
+    {
+      name: 'allergy1',
+      severity: 'severity1',
+    }, {
+      name: 'allergy2',
+      severity: 'severity2',
+    }
+  ],
+  procedures = [
+    {
+      name: 'procedure1',
+      proc_type: 'proc_type1',
+    }
+  ]
+};
+bbr.saveAllSections('allergies', testPatient2', ptRecord, fileId, function(err, ids) {
+  if (err) {
+    console.log('error saving the patient data.');
+  } else {
+    console.log(ids[0][0]);  // Id for allergy named 'allergy1'.
+    console.log(ids[0][1]);  // Id for allergy named 'allergy2'.
+    console.log(ids[1][0]);  // Id for procedure named 'procedure1'.
+  }
+});
+```
+---------------------------------------
+
+### getAllSections(ptKey, callback)
+
+Save section entries for the patient.
+
+__Arguments__
+* `ptKey` - Identification string for the patient.
+* `callback(err, ptRecord)` - A callback which is called when sections are retrieved, or an error occurs.  `ptRecord` contains all the sections and entries of the patient data with top properties are the section names.  For each section entries are identical to `getSection`](#getSection) in content.
+
+__Examples__
+
+```js
+bbr.getAllSections('testPatient2', function(err, ptRecord) {
+  if (err) {
+    console.log('error retreiving patient data.');
+  } else {
+    console.log(ptRecord.allergies[0].name);  // 'allergy1'.
+    console.log(ptRecord.allergies[1].name);  // 'allergy2'.
+    console.log(ptRecord.procedures[0].name); // 'procedure1'
+  }
+});
+```
+---------------------------------------
+
+### getEntry(secName, id, callback)
+
+Gets an entry of from section `secName`.
+
+__Arguments__
+* `secName` - Section name.
+* `id` - Database identifier for the entry.
+* `callback(err, entry)` - A callback which is called when entry is retrieved, or an error occurs.  `entry` fields are identical to `getSection`](#getSection) in content.
+
+__Examples__
+
+```js
+bbr.getEntry('allergies', aid1, function(err, entry) {
+  if (err) {
+    console.log('error retrieving entry.');
+  } else {
+    console.log(entry.name);    // 'allergy1'
+    console.log(entry.severity; // 'severity1'
+  }
+});
+```
+---------------------------------------
+
+### duplicateEntry(secName, id, sourceId, callback)
+
+Registers `sourceId` to include the duplicate of the entry with `id`..
+
+__Arguments__
+* `secName` - Section name.
+* `id` - Database identifier for the entry.
+* `sourceId` - Id for the source where the `ptRecord` is located. 
+* `callback(err)` - A callback which is called when duplication information is saved, or an error occurs.
+
+__Examples__
+
+```js
+bbr.duplicateEntry('allergies', aid1, fileId, function(err) {
+  if (err) {
+    console.log('cannot register sourceId.');
+  } else {
+    console.log('registered source to include duplicate.');
+  }
+});
+```
+---------------------------------------
+
+### updateEntry(secName, id, sourceId, updateObject, callback)
+
+Updates entry with the fields in `updateObject`.
+
+__Arguments__
+* `secName` - Section name.
+* `id` - Database identifier for the entry.
+* `sourceId` - Id for the source where the `ptRecord` is located.
+* `updateObject` - JSON object with keys and values to update.
+* `callback(err)` - A callback which is called when duplication information is saved, or an error occurs.
+
+__Examples__
+
+```js
+bbr.updateEntry('allergies', aid1, fileId, {severity: 'severityUpdate'}, function(err) {
+  if (err) {
+    console.log('error updating the entry.');
+  } else {
+    console.log('severity is updated.');
+  }
+});
+```
+---------------------------------------
+
+### getMerges(secName, ptKey, entryFields, recordFields, callback)
+
+Retrieves all the changes to patient's health data for a particular section.
+
+__Arguments__
+* `secName` - Section name.
+* `ptKey` - Identification string for the patient.
+* `entryFields` - Fields for the changed entry to be returned.
+* `recordFields` - Fields for the source r=to be returned.
+* `callback(err, result)` - A callback which is called when all merges are retrieved, or an error occurs.  `result` is an array with the following properties:
+  * `merged` - Instance when the change information is merged.
+  * `merge_reason` - Reason how the entry changed. 'new' for when the entry is first created, 'duplicate' for when a source is registered to include a duplicate, and 'update' when entry is updated through `updateEntry`.
+  * `entry` - Contains all the fields specified by `entryFields`.
+  * `record` - Contains all the fields specified by `recordFiels`.
+
+__Examples__
+
+```js
+bbr.getMerges('allergies', 'testPatient', 'severity', 'filename', function(err, result) {
+  if (err) {
+    console.log('error retreiving merge history.');
+  } else { // order might differ
+    console.log(result[0].entry.severity);  // 'severity1'
+    console.log(result[0].record.filename); // 'expl.xml'
+    console.log(result[0].merge_reason);    // 'new'
+    console.log(result[1].entry.severity);  // 'severity1'
+    console.log(result[1].record.filename); // 'expl.xml'
+    console.log(result[1].merge_reason);    // 'duplicate'
+    console.log(result[2].entry.severity);  // 'severityUpdate'
+    console.log(result[2].record.filename); // 'expl.xml'
+    console.log(result[2].merge_reason);    // 'update'
+    console.log(result[3].entry.severity);  // 'severity2'
+    console.log(result[3].record.filename); // 'expl.xml'
+    console.log(result[3].merge_reason);    // 'new'
+  }
+});
+```
+---------------------------------------
+
+### mergeCount(secName, ptKey, conditions, callback)
+
+Number of records in merge entry.
+
+__Arguments__
+* `secName` - Section name.
+* `ptKey` - Identification string for the patient.
+* `conditions` - Condition specification.
+* `callback(err, count)` - A callback when `count` is retrieved, or an error occurs.  `
+
+__Examples__
+
+```js
+bbr.mergeCount('allergies', 'testPatient', {}, function(err, count) {
+  if (err) {
+    console.log('error retreiving count.');
+  } else { // order might differ
+    console.log(count);  // 4
+  }
+
+bbr.mergeCount('allergies', 'testPatient', {merge_reason: 'new'}, function(err, count) {
+  if (err) {
+    console.log('error retreiving count.');
+  } else { // order might differ
+    console.log(count);  // 2
+  }  
+});
+```
+---------------------------------------
+
+### savePartialSection(secName, ptKey, inputSection, sourceId, callback)
+
+Saves partial entries for the patient.
+
+__Arguments__
+* `secName` - Section name.
+* `ptKey` - Identification string for the patient.
+* `inputSection` - An array of partial entries and match information.  Each element in the array has three top level properties:
+  ** partial_entry - Section entry with the schema as specified in [`connectDatabase`](#connectDatabase).
+  ** partial_match - Match information with the schema as specified in [`connectDatabase`](#connectDatabase).
+  ** match_entry_id - Id of the existing section entry which partial_entry matches.
+* `sourceId` - Id for the source where the `inputSection` is located. 
+* `callback(err, ids)` - A callback which is called when saving partial entries is succesfull, or an error occurs.  `ids` are database assigned identifier for each entry portion in the order in `inputSection`.
+
+__Examples__
+
+```js
+var inputSection = [
+  {
+    partial_entry : {
+      name: 'allergy1',
+      severity: 'severity3',
+      value: {
+        code: 'code1', 
+        display: 'display1'
+      }
+    },
+    partial_match: {
+      percent: 80,
+      subelements = ['severity']
+    },
+    match_entry_id: aid1
+  },
+  {
+    partial_entry : {
+      name: 'allergy2',
+      severity: 'severity2',
+      value: {
+        code: 'code5', 
+        display: 'display2'
+      }
+    },
+    partial_match: {
+      percent: 90,
+      subelements = ['value.code']
+    },
+    match_entry_id: aid2
+  }
+];
+var paid1 = null;
+var paid2 = null;
+bbr.saveSection('allergies', testPatient', inputSection, fileId, function(err, ids) {
+  if (err) {
+    console.log('error saving the section.');
+  } else {
+    paid1 = ids[0];
+    paid2 = ids[1];
+  }
+});
+```
+---------------------------------------
+
+### getPartialSection(secName, ptKey, callback)
+
+Gets entry portion of section partial entries.
+
+__Arguments__
+* `secName` - Section name.
+* `ptKey` - Identification string for the patient.
+* `callback(err, entries)` - A callback which is called when entries are retrieved, or an error occurs.  Each entry in `entries` array contains the data as specified in [`getSection`](#getSection).
+
+__Examples__
+
+```js
+bbr.getSection('allergies', testPatient', function(err, entries) {
+  if (err) {
+    console.log('error saving the section.');
+  } else { // order of entries might be different
+    console.log(entries[0].name);       // allergy1
+    console.log(entries[0].severity);   //severity3
+    console.log(entries[1].name);       // allergy2
+    console.log(entries[1].value.code); // code5
+  }
+});
+```
+---------------------------------------
+
+### getMatches(secName, ptKey, fields, callback)
+
+Gets a list of all section partial entries..
+
+__Arguments__
+* `secName` - Section name.
+* `ptKey` - Identification string for the patient.
+* `fields1 - Fields of entries to be retrieved.
+* `callback(err, partialeEntries)` - A callback which is called when entries are match information is retrieved, or an error occurs.  Each element in `partialeEntries` array contains `fields` for `partial_entry` and `match_entry' and match information.
+
+__Examples__
+
+```js
+bbr.getMatches('allergies', testPatient', 'severity', function(err, partialEntries) {
+  var matchId1 = null;
+  var matchId2 = null;
+  if (err) {
+    console.log('error retreiving partial entries.');
+  } else { // order of entries might be different
+    console.log(partialEntries[0].partial_entry.severity); // severity3
+    console.log(partialEntries[0].match_entry.severity);   // severity1
+    console.log(partialEntries[0].percent);                // 80
+    console.log(partialEntries[0].subelements);            // ['severity']
+    matchId1 = partialEntries[0]._id;
+    console.log(partialEntries[1].partial_entry.severity); // severity2
+    console.log(partialEntries[1].match_entry.severity);   // severity2
+    console.log(partialEntries[1].percent);                // 90
+    console.log(partialEntries[1].subelements);            // ['value.code']
+    matchId2 = partialEntries[2]._id;
+  }
+});
+```
+---------------------------------------
+
+### getMatch(secName, id, callback)
+
+Gets all the details of a partial entry.
+
+__Arguments__
+* `secName` - Section name.
+* `id` - Id of the match.
+* `callback(err, matchInfo)` - A callback which is called when entries are match information is retrieved, or an error occurs.  `entry` and `match_entry` contain patient health data for partial and matching existing data. 
+
+__Examples__
+
+```js
+bbr.getMatch('allergies', matchId1, function(err, matchInfo) {
+  if (err) {
+    console.log('error retreiving matchInfo.');
+  } else { // order of entries might be different
+    console.log(matchInfo.entry.name);           // 'allergy1'
+    console.log(matchInfo.entry.severity);       // 'severity3'
+    console.log(matchInfo.match_entry.name);     // 'allergy1'
+    console.log(matchInfo.match_entry.severity); // 'severity1'
+    console.log(matchInfo.percent);              // 80
+    console.log(matchInfo.subelements);          // ['severity']
+  }
+});
+```
+---------------------------------------
+
+### matchCount(secName, ptKey, conditions, callback)
+
+Gets all the details of a partial entry.
+
+__Arguments__
+* `secName` - Section name.
+* `ptKey` - Identification string for the patient.
+* `conditions` - Conditions for the count.
+* `callback(err, count)` - A callback which is called when count is retrieved, or an error occurs.
+
+__Examples__
+
+```js
+bbr.matchCount('allergies', 'testPatient', {}, function(err, count) {
+  if (err) {
+    console.log('error retreiving matchInfo.');
+  } else {
+    console.log(count); // 2
+  }
+});
+
+bbr.matchCount('allergies', 'testPatient', {percent: 80}, function(err, count) {
+  if (err) {
+    console.log('error retreiving matchInfo.');
+  } else {
+    console.log(count); // 1
+  }
+});
+```
+---------------------------------------
+
+### cancelMatch(secName, id, reason, callback)
+
+Removes the partial entry from the list.
+
+__Arguments__
+* `secName` - Section name.
+* `id` - Id of the match.
+* `reason` - Reason for cancellation.
+* `callback(err)` - A callback which is called when canceling is achieved, or an error occurs.
+
+__Examples__
+
+```js
+bbr.cancelMatch('allergies', matchId1, 'ignore', function(err) {
+  if (err) {
+    console.log('error retreiving matchInfo.');
+  } else {
+    console.log('cancel is succeeded');
+  }
+});
+```
+---------------------------------------
+
+### acceptMatch(secName, id, reason, callback)
+
+Adds the partial entries to the patient record.
+
+__Arguments__
+* `secName` - Section name.
+* `id` - Id of the match.
+* `reason` - Reason for acceptance.
+* `callback(err)` - A callback which is called when acceptance is achieved, or an error occurs.
+
+__Examples__
+
+```js
+bbr.acceptedMatch('allergies', matchId1, 'added', function(err) {
+  if (err) {
+    console.log('error accepting.');
+  } else {
+    console.log('accept is succeeded');
   }
 });
 ```
