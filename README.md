@@ -11,9 +11,9 @@ Master Health Record and Data Reconciliation Engine Persistance Layer (MongoDB)
 blue-button-record is a module to persist patient health data.  It is primarily designed to support [blue-button](https://github.com/amida-tech/blue-button) data model however other models can also be [specified](#connectDatabase).  This module provides the following functionality:
 
 - Persist Master Health Record (blue-button data) per patient:  Master Health Record contains all historical data about patients' health.  Master Health Record is organized in sections such as allergies and medications and blue-button-record API is built based on this sectional organization.  Each section is further organized as a set of entries even when there is only one entry as in demographics.
-- Persist all sources to Master Health Record:  Currently only text files are supported.  Source content as well as various metadata such as name and upload time are also stored.  Each entry in Master Health Record is linked to a source.    
+- Persist all sources of Master Health Record:  Currently only text files are supported.  Source content as well as various metadata such as name and upload time are stored.  Each entry in Master Health Record is linked to a source.    
 - Persist Merge History:  Since blue-button data is historical, entries in Master Health Record is expected to appear in multiple sources and can also be updated.  Merge History keeps track of all the sources from which entries are created or updated.  Merge History also keeps track of all the sources where the entries appear as it is in the Master Health Record (duplicates). 
-- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate.  Both the partial entries, existing Master Health Record entries that the partial entries match, and match details are stored.  
+- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate and thus require further patient review.  Both the partial entries, existing Master Health Record entries that the partial entries match, and match details are stored.  Partial Record entries are either added to Master Record or removed.
 
 This implementation of blue-button-record uses MongoDB.
 
@@ -211,7 +211,7 @@ bbr.getMatch('allergies', matchId, function(err, match) {
   console.log(match.entry.status);
   console.log(match.match_entry.name);     // partial
   console.log(match.match_entry.status);
-  console.log(match.diff.severity);           // match information  
+  console.log(match.diff.severity);        // match information  
   console.log(match.percent);
 });
 ```
@@ -255,8 +255,8 @@ __Arguments__
 * `server` - The server that hosts the database.  Port number can also be included.
 * `options` - Optional configuration options for the database.  The following properties are supported.  All of them are optional.
   * `dbName` - Name for the database.  Defaults to `dre`.
-  * `schemas` - Schemas to use for patient data.  This is a JSON object with leaf values describe the type of the data to be stored.  It describes patient data in sections and the top properties are used as the section names throughout the other API methods.  Hierarchy of the JSON object describes the hierarchy of the patient data and one element arrays are used to describe array of patient data.  Defaults to `ccd` schema available from [blue-button](https://github.com/amida-tech/blue-button).  Arrays are not supported for top values and silently converted to their first elements.  Leaf node types can be `"string"`, `"datetime"`, `"number"`, `"boolean"`, and `"any"`.  All but `"any"` corresponds to Javascript types.  `"any"` can be used to accept any data.
-  * `matchFields` - Schema to describe matching information between two versions of patient section data.  It is a JSON object similar to `schemas` in structure.  Defaults to `{percent: 'number', diff: 'any', subelements: 'any'}` to support [blue-button-match](https://github.com/amida-tech/blue-button-match).   
+  * `schemas` - Schemas to use for Master Health Record entries.  This is a JSON object with leaf values describe the type of the data to be stored.  It describes patient data in sections and the root properties are used as the section names of Master Health Record throughout the other API methods.  Hierarchy of the JSON object describes the hierarchy of the patient data and one element arrays are used to describe array of patient data.  Defaults to `ccd` schema available from [blue-button](https://github.com/amida-tech/blue-button).  Arrays are not supported for top values (entry schema descriptions) and silently converted to their first elements.  Leaf node types can be `"string"`, `"datetime"`, `"number"`, `"boolean"`, and `"any"`.  All but `"any"` corresponds to Javascript types.  `"any"` can be used to accept any data.
+  * `matchFields` - Schema to describe match information between Partial and Master Health Record entries.  It is a JSON object similar to `schemas` in structure.  Defaults to `{percent: 'number', diff: 'any', subelements: 'any'}` to support [blue-button-match](https://github.com/amida-tech/blue-button-match).   
 * `callback(err)` - A callback which is called when connection is established, or an error occurs.
 
 __Examples__
@@ -352,7 +352,7 @@ __Arguments__
   * `name`- Name of the source.
   * `type`- MIME type of the source.
 * `contentType` - Content type of the source.   
-* `callback(err, id)` - A callback which is called when all data is removed, or an error occurs.  `id` is the database assigned identifier for the saved record. 
+* `callback(err, id)` - A callback which is called when source is saved, or an error occurs.  `id` is the database assigned identifier for the saved source. 
 
 __Examples__
 
@@ -368,19 +368,19 @@ bbr.saveRecord('testPatient', 'example content', {type: 'text/xml', name: 'expl.
 ```
 ---------------------------------------
 
-### getSourceList(ptKey, callback)
+### getRecordList(ptKey, callback)
 
-Gets all the sources of patient data in the database.
+Gets all the sources of Master Health Record in the database.
 
 __Arguments__
 * `ptKey` - Identification string for the patient.
 * `callback(err, sources)` - A callback which is called when `sources` is retrieved, or an error occurs.  `sources` is an array with each element containing the following information:
-  * file_id - Database assigned identifier for the file.
-  * file_name - Name of the file.
-  * file_size - Size of the file.
-  * file_mime_type - MIME type of the file. 
-  * file_upload_date - Upload instance of the file.
-  * file_class - Content type of the file.
+  * file_id - Database assigned identifier for the source.
+  * file_name - Name of the source.
+  * file_size - Size of the source.
+  * file_mime_type - MIME type of the source. 
+  * file_upload_date - Upload instance of the source.
+  * file_class - Content type of the source.
 
 __Examples__
 
@@ -389,10 +389,10 @@ bbr.getRecordList('testPatient', function(err, sources) {
   if (err) {
     console.log('sources cannot be retrieved.');
   } else {
-    var info = infos[0];
-    console.log(info.file_name);       // 'expl.xml'
-    console.log(info.file_mime_type);  // 'text/xml'
-    console.log(info.file_class);      // 'ccda'
+    var source = sources[0];
+    console.log(source.file_name);       // 'expl.xml'
+    console.log(source.file_mime_type);  // 'text/xml'
+    console.log(source.file_class);      // 'ccda'
   }
 });
 ```
@@ -400,22 +400,21 @@ bbr.getRecordList('testPatient', function(err, sources) {
 
 ### getRecord(sourceId, callback)
 
-Gets name and content of the patient data source.
+Gets name and content of the Master Health Record source.
 
 __Arguments__
 * `sourceId - Database identification string of the source.
-* `callback(err, filename, content)` - A callback which is called when source information is retrieved, or an error occurs. 
+* `callback(err, name, content)` - A callback which is called when name and content are retrieved, or an error occurs. 
 
 __Examples__
 
 ```js
-bbr.getRecord(fileId, function(err, filename, content) {
+bbr.getRecord(fileId, function(err, name, content) {
   if (err) {
-    console.log('error getting the file informations.');
+    console.log('error getting the source information.');
   } else {
-    var info = infos[0];
-    console.log(filename);  // 'expl.xml'
-    console.log(content);   // 'example content'
+    console.log(name);    // 'expl.xml'
+    console.log(content); // 'example content'
   }
 });
 ```
@@ -444,7 +443,7 @@ bbr.getCount('testPatient', function(err, count) {
 
 ### saveSection(secName, ptKey, inputSection, sourceId, callback)
 
-Save section entries for the patient.
+Saves section entries in Master Health Record.
 
 __Arguments__
 * `secName` - Section name.
@@ -487,15 +486,15 @@ bbr.saveSection('allergies', testPatient', inputSection, fileId, function(err, i
 <a name="getSection" />
 ### getSection(secName, ptKey, callback)
 
-Gets section entries for the patient.
+Gets all the section entries in Master Health Record
 
 __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
 * `callback(err, entries)` - A callback which is called when entries are retrieved, or an error occurs.  Each entry in `entries` array contains the data specified in section schema.  In addition the following properties exists:
   * `_id` - Database assigned identifier for the entry.
-  * `metadata.attribution` - This is an array that keeps track of changes for the entry with the following properties
-    * `merged` - The instant the change to the entry.
+  * `metadata.attribution` - This is an array that keeps track of Merge History.
+    * `merged` - The instant of the change to the entry.
     * `merge_reason` - This is the reason of the change.  Can be 'new', 'duplicate', or 'update'.
     * `record._id` - Source identifier.
     * `record.filename` - Name of the source file.
@@ -517,13 +516,13 @@ bbr.getSection('allergies', 'testPatient', function(err, entries) {
 
 ### saveAllSections(ptKey, ptRecord, sourceId, callback)
 
-Save section entries for the patient.
+Saves multiple sections in Master Health Record.
 
 __Arguments__
 * `ptKey` - Identification string for the patient.
 * `ptRecord` - Multiple sections keyed with section names and an array of entries with schema as specified in [`connectDatabase`](#connectDatabase).
 * `sourceId` - Id for the source where the `ptRecord` is located. 
-* `callback(err, ids)` - A callback which is called when saving sections is succesfull, or an error occurs.  `ids` are array of arrays of database assigned identifier for each section and entries in the section.  Section order is in section name alphabetical.
+* `callback(err, ids)` - A callback which is called when saving sections is succesfull, or an error occurs.  `ids` are array of arrays of database assigned identifier for each section and entries in the section.  Section order is section name alphabetical.
 
 __Examples__
 
@@ -559,18 +558,18 @@ bbr.saveAllSections('allergies', testPatient2', ptRecord, fileId, function(err, 
 
 ### getAllSections(ptKey, callback)
 
-Save section entries for the patient.
+Gets the whole Master Patient Record.
 
 __Arguments__
 * `ptKey` - Identification string for the patient.
-* `callback(err, ptRecord)` - A callback which is called when sections are retrieved, or an error occurs.  `ptRecord` contains all the sections and entries of the patient data with top properties are the section names.  For each section entries are identical to `getSection`](#getSection) in content.
+* `callback(err, ptRecord)` - A callback which is called when Master Health Record is retrieved, or an error occurs.  For each section entries are identical to `getSection`](#getSection) in content.
 
 __Examples__
 
 ```js
 bbr.getAllSections('testPatient2', function(err, ptRecord) {
   if (err) {
-    console.log('error retreiving patient data.');
+    console.log('error retreiving.');
   } else {
     console.log(ptRecord.allergies[0].name);  // 'allergy1'.
     console.log(ptRecord.allergies[1].name);  // 'allergy2'.
@@ -582,7 +581,7 @@ bbr.getAllSections('testPatient2', function(err, ptRecord) {
 
 ### getEntry(secName, id, callback)
 
-Gets an entry of from section `secName`.
+Gets an entry of a section `secName` from Master Health Record.
 
 __Arguments__
 * `secName` - Section name.
@@ -605,12 +604,12 @@ bbr.getEntry('allergies', aid1, function(err, entry) {
 
 ### duplicateEntry(secName, id, sourceId, callback)
 
-Registers `sourceId` to include the duplicate of the entry with `id`..
+Registers source `sourceId` to include the duplicate of an existing entry `id`.
 
 __Arguments__
 * `secName` - Section name.
 * `id` - Database identifier for the entry.
-* `sourceId` - Id for the source where the `ptRecord` is located. 
+* `sourceId` - Id for the source. 
 * `callback(err)` - A callback which is called when duplication information is saved, or an error occurs.
 
 __Examples__
@@ -633,9 +632,9 @@ Updates entry with the fields in `updateObject`.
 __Arguments__
 * `secName` - Section name.
 * `id` - Database identifier for the entry.
-* `sourceId` - Id for the source where the `ptRecord` is located.
+* `sourceId` - Id for the source.
 * `updateObject` - JSON object with keys and values to update.
-* `callback(err)` - A callback which is called when duplication information is saved, or an error occurs.
+* `callback(err)` - A callback which is called when update is successful, or an error occurs.
 
 __Examples__
 
@@ -652,18 +651,18 @@ bbr.updateEntry('allergies', aid1, fileId, {severity: 'severityUpdate'}, functio
 
 ### getMerges(secName, ptKey, entryFields, recordFields, callback)
 
-Retrieves all the changes to patient's health data for a particular section.
+Retrieves Merge History for a particular patient and section.
 
 __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
-* `entryFields` - Fields for the changed entry to be returned.
-* `recordFields` - Fields for the source r=to be returned.
-* `callback(err, result)` - A callback which is called when all merges are retrieved, or an error occurs.  `result` is an array with the following properties:
+* `entryFields` - Fields for entries to be returned.
+* `recordFields` - Fields for sources to be returned.
+* `callback(err, result)` - A callback which is called when Merge History is retrieved, or an error occurs.  `result` is an array with the following properties:
   * `merged` - Instance when the change information is merged.
   * `merge_reason` - Reason how the entry changed. 'new' for when the entry is first created, 'duplicate' for when a source is registered to include a duplicate, and 'update' when entry is updated through `updateEntry`.
   * `entry` - Contains all the fields specified by `entryFields`.
-  * `record` - Contains all the fields specified by `recordFiels`.
+  * `record` - Contains all the fields specified by `recordFields`.
 
 __Examples__
 
@@ -691,7 +690,7 @@ bbr.getMerges('allergies', 'testPatient', 'severity', 'filename', function(err, 
 
 ### mergeCount(secName, ptKey, conditions, callback)
 
-Number of records in merge entry.
+Number of records in Merge History.
 
 __Arguments__
 * `secName` - Section name.
@@ -721,7 +720,7 @@ bbr.mergeCount('allergies', 'testPatient', {merge_reason: 'new'}, function(err, 
 
 ### savePartialSection(secName, ptKey, inputSection, sourceId, callback)
 
-Saves partial entries for the patient.
+Saves section entries in Partial Health Record together with the id of the matching existing entry in Master Health Record and match details.
 
 __Arguments__
 * `secName` - Section name.
@@ -731,7 +730,7 @@ __Arguments__
   ** partial_match - Match information with the schema as specified in [`connectDatabase`](#connectDatabase).
   ** match_entry_id - Id of the existing section entry which partial_entry matches.
 * `sourceId` - Id for the source where the `inputSection` is located. 
-* `callback(err, ids)` - A callback which is called when saving partial entries is succesfull, or an error occurs.  `ids` are database assigned identifier for each entry portion in the order in `inputSection`.
+* `callback(err, ids)` - A callback which is called when saving partial entries is succesfull, or an error occurs.  `ids` are database assigned identifiers for entries specified in `partial_entry` in the same order as in `inputSection`.
 
 __Examples__
 
@@ -783,7 +782,7 @@ bbr.saveSection('allergies', testPatient', inputSection, fileId, function(err, i
 
 ### getPartialSection(secName, ptKey, callback)
 
-Gets entry portion of section partial entries.
+Gets all entries in a section of Partial Health Record without any match information,
 
 __Arguments__
 * `secName` - Section name.
@@ -808,13 +807,13 @@ bbr.getSection('allergies', testPatient', function(err, entries) {
 
 ### getMatches(secName, ptKey, fields, callback)
 
-Gets a list of all section partial entries..
+Gets a list of all section entries in Partial Health Record.
 
 __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
 * `fields1 - Fields of entries to be retrieved.
-* `callback(err, partialeEntries)` - A callback which is called when entries are match information is retrieved, or an error occurs.  Each element in `partialeEntries` array contains `fields` for `partial_entry` and `match_entry' and match information.
+* `callback(err, partialEntries)` - A callback which is called when entries and match information areretrieved, or an error occurs.  Each element in `partialEntries` array contains `fields` for `partial_entry` and `match_entry' and match information.
 
 __Examples__
 
@@ -842,7 +841,7 @@ bbr.getMatches('allergies', testPatient', 'severity', function(err, partialEntri
 
 ### getMatch(secName, id, callback)
 
-Gets all the details of a partial entry.
+Gets all the details of a partial entry, the matching entry in Master Health Record, and match information.
 
 __Arguments__
 * `secName` - Section name.
@@ -869,7 +868,7 @@ bbr.getMatch('allergies', matchId1, function(err, matchInfo) {
 
 ### matchCount(secName, ptKey, conditions, callback)
 
-Gets all the details of a partial entry.
+Gets number of section entries in Partial Health Record.
 
 __Arguments__
 * `secName` - Section name.
@@ -900,7 +899,7 @@ bbr.matchCount('allergies', 'testPatient', {percent: 80}, function(err, count) {
 
 ### cancelMatch(secName, id, reason, callback)
 
-Removes the partial entry from the list.
+Removes the partial entry from Partial Health Record.
 
 __Arguments__
 * `secName` - Section name.
@@ -923,7 +922,7 @@ bbr.cancelMatch('allergies', matchId1, 'ignore', function(err) {
 
 ### acceptMatch(secName, id, reason, callback)
 
-Adds the partial entries to the patient record.
+Moves the partial entry to Master Health Record.
 
 __Arguments__
 * `secName` - Section name.
