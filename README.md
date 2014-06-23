@@ -1,5 +1,5 @@
 blue-button-record.js
-==================
+======================
 
 Master Health Record and Data Reconciliation Engine Persistance Layer (MongoDB)
 
@@ -8,18 +8,16 @@ Master Health Record and Data Reconciliation Engine Persistance Layer (MongoDB)
 [![Build Status](https://travis-ci.org/amida-tech/blue-button-record.svg)](https://travis-ci.org/amida-tech/blue-button-record)
 [![Coverage Status](https://coveralls.io/repos/amida-tech/blue-button-record/badge.png)](https://coveralls.io/r/amida-tech/blue-button-record)
 
-## Library interfaces/APIs
+blue-button-record is a module to persist patient health data.  It is primarily designed to support [blue-button](https://github.com/amida-tech/blue-button) data model however other models can also be [specified](#connectDatabase).  This module provides the following functionality:
 
-This library provides following functionality
-
-- Persist blue-button data with additional metadata
-- Persist merge histories
-- Persist merge candidates with match information
-- Persist blue-button data source content and type
+- Persist Master Health Record (blue-button data) per patient:  Master Health Record contains all historical data about patients' health.  Master Health Record is organized in sections such as allergies and medications and blue-button-record API is built based on this sectional organization.  Each section is further organized as a set of entries even when there is only one entry as in demographics.
+- Persist all sources to Master Health Record:  Currently only text files are supported.  Source content as well as various metadata such as name and upload time are also stored.  Each entry in Master Health Record is linked to a source.    
+- Persist Merge History:  Since blue-button data is historical, entries in Master Health Record is expected to appear in multiple sources and can also be updated.  Merge History keeps track of all the sources from which entries are created or updated.  Merge History also keeps track of all the sources where the entries appear as it is in the Master Health Record (duplicates). 
+- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate.  Both the partial entries, existing Master Health Record entries that the partial entries match, and match details are stored.  
 
 This implementation of blue-button-record uses MongoDB.
 
-### Usage example
+## Usage
 
 Require [blue-button](https://github.com/amida-tech/blue-button) and blue-button-record 
 ``` javascript
@@ -200,7 +198,7 @@ bbr.getMatches('allergies', 'patientKey', 'name severity', function(err, matches
   console.log(match.entry.severity);
   console.log(match.match_entry.name);     // partial
   console.log(match.match_entry.severity);
-  console.log(match.diff.severity);           // match information  
+  console.log(match.diff.severity);        // match information  
   console.log(match.percent);
   var matchId = match._id;
 });
@@ -370,13 +368,13 @@ bbr.saveRecord('testPatient', 'example content', {type: 'text/xml', name: 'expl.
 ```
 ---------------------------------------
 
-### getRecordList(ptKey, callback)
+### getSourceList(ptKey, callback)
 
 Gets all the sources of patient data in the database.
 
 __Arguments__
 * `ptKey` - Identification string for the patient.
-* `callback(err, infos)` - A callback which is called `info` is returned, or an error occurs.  `infos` is an array with each element containing the following information:
+* `callback(err, sources)` - A callback which is called when `sources` is retrieved, or an error occurs.  `sources` is an array with each element containing the following information:
   * file_id - Database assigned identifier for the file.
   * file_name - Name of the file.
   * file_size - Size of the file.
@@ -387,9 +385,9 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getRecordList('testPatient', function(err, infos) {
+bbr.getRecordList('testPatient', function(err, sources) {
   if (err) {
-    console.log('error getting the list.');
+    console.log('sources cannot be retrieved.');
   } else {
     var info = infos[0];
     console.log(info.file_name);       // 'expl.xml'

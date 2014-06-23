@@ -68,7 +68,7 @@ describe('API', function() {
                     done(err);
                 } else {
                     sourceIds = results.reduce(function(r, result) {
-                        var v = result._id.toString();
+                        var v = result.toString();
                         r.push(v);
                         return r;
                     }, []);

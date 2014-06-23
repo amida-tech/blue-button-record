@@ -110,16 +110,15 @@ var matchObjectInstance = exports.matchObjectInstance = {
 };
 
 var createStorage = function(context, pat, filename, index, callback) {
-    storage.saveRecord(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, result) {
+    storage.saveRecord(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, id) {
         if (err) {
             callback(err);
         } else {
-            expect(result).to.exist;
-            expect(result._id).to.exist;
+            expect(id).to.exist;
             if (! context.storageIds) {
                 context.storageIds = {};
             }
-            context.storageIds[index] = result._id;
+            context.storageIds[index] = id;
             callback();
         }
     });
