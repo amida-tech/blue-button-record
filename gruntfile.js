@@ -13,7 +13,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         jshint: {
-            files: ['./lib/*.js', './test/unit/*.js', 'gruntfile.js', 'package.json', 'index.js'],
+            files: ['./lib/*.js', './test/unit/*.js', './test/docscripts/*.js', 'gruntfile.js', 'package.json', 'index.js'],
             options: {
                 browser: true,
                 curly: true,
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
         },
         watch: {
             all: {
-                files: ['./lib/*.js', 'index.js', 'gruntfile.js'],
+                files: ['./lib/*.js', './test/*/*.js', 'index.js', 'gruntfile.js'],
                 tasks: ['default']
             }
         },
@@ -51,7 +51,7 @@ module.exports = function(grunt) {
                     reporter: 'spec',
                     timeout: '10000'
                 },
-                src: ['test/unit/*.js']
+                src: ['test/unit/*.js', 'test/docscripts/*.js']
             }
         }
     });
