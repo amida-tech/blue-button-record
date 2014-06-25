@@ -18,21 +18,31 @@ exports.connectDatabase = function connectDatabase(server, options, callback) {
         callback = options;
         options = {};
     }
-    db.connect(server, options, function(err, result) {
-        if (err) {
-            callback(err);
-        } else {
-            dbinfo = result;
-            callback(null, dbinfo);
-        }    
-    });
+    if (! dbinfo) {
+        db.connect(server, options, function(err, result) {
+            if (err) {
+                callback(err);
+            } else {
+                dbinfo = result;
+                callback(null, dbinfo);
+            }    
+        });
+    }
 };
 
 exports.disconnect = function(callback) {
-    dbinfo.connection.close(function(err) {
-        dbinfo = null;
-        callback(err);
-    });
+    if (dbinfo) {
+        dbinfo.connection.close(function(err) {
+            dbinfo = null;
+            callback(err);
+        });
+    }
+};
+
+exports.clearDatabase = function(callback) {
+    if (dbinfo) {
+        dbinfo.dropCollections(callback);        
+    }    
 };
 
 // records

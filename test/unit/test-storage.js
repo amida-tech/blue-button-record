@@ -1,10 +1,9 @@
 "use strict";
-/*jshint -W117 */
-
 
 var chai = require('chai');
 var util = require('util');
 var path = require('path');
+var async = require('async');
 
 var db = require('../../lib/db');
 var storage = require('../../lib/storage');
@@ -50,7 +49,7 @@ describe('storage.js methods', function() {
         }
         var options = {
             dbName: 'storagetest',
-            sectionToType: {},
+            supportedSections: [],
             typeToSchemaDesc: {}
         };
         db.connect('localhost', options, function(err, result) {
@@ -72,6 +71,7 @@ describe('storage.js methods', function() {
     });
 
     it('saveRecord', function(done) {
+
         var f = function(fullCount, index, callback) {
             var fileinfo = {
                 name: getFileName(index),
@@ -81,7 +81,7 @@ describe('storage.js methods', function() {
                 if (err) {
                     callback(err);
                 } else {
-                    ids[index] = result._id;
+                    ids[index] = result;
                     var count = 0;
                     for (var j = 0; j < fullCount; ++j) {
                         if (ids[j]) {

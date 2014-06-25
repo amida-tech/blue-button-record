@@ -140,12 +140,12 @@ describe('match.js methods', function() {
         expect(result).to.exist;
     
         var suffix = '_' + recordIndex + '.' + index;
-        expect(result.match_entry_id.name).to.equal('name' + suffix);
+        expect(result.match_entry.name).to.equal('name' + suffix);
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
-        expect(result.entry_id.name).to.equal('name' + destSuffix);
-        expect(result.entry_type).to.equal(refmodel.sectionToType[secName]);
+        expect(result.entry.name).to.equal('name' + destSuffix);
+        expect(result.entry_type).to.equal(secName);
 
-        ['_id', '__v', 'entry_type', 'entry_id', 'match_entry_id', 'patKey'].forEach(function(p) {
+        ['_id', '__v', 'entry_type', 'entry', 'match_entry', 'pat_key'].forEach(function(p) {
             delete result[p];
         });
         
@@ -284,18 +284,12 @@ describe('match.js methods', function() {
     
         var suffix = '_' + recordIndex + '.' + index;
         var entry = refmodel.testObjectInstance[secName](suffix);
-        var resultEntry = modelutil.mongooseToBBModelDocument(result.match_entry_id);
-        delete resultEntry.__v;
-        delete resultEntry.reviewed;
-        delete resultEntry.archived;
+        var resultEntry = modelutil.mongooseToBBModelDocument(result.match_entry);
         expect(resultEntry).to.deep.equal(entry);
 
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
         var destEntry = refmodel.testObjectInstance[secName](destSuffix);
-        var destResultEntry = modelutil.mongooseToBBModelDocument(result.entry_id);
-        delete destResultEntry.__v;
-        delete destResultEntry.reviewed;
-        delete resultEntry.archived;        
+        var destResultEntry = modelutil.mongooseToBBModelDocument(result.entry);
         expect(destResultEntry).to.deep.equal(destEntry);
 
         if (reason) {
@@ -304,7 +298,7 @@ describe('match.js methods', function() {
             expect(result.determination).to.not.exist;
         }
 
-        ['_id', '__v', 'entry_type', 'entry_id', 'match_entry_id', 'patKey', 'determination'].forEach(function(p) {
+        ['_id', 'entry_type', 'entry', 'match_entry', 'determination'].forEach(function(p) {
             delete result[p];
         });
         

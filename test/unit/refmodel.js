@@ -13,45 +13,38 @@ var storage = require('../../lib/storage');
 var expect = chai.expect;
 chai.config.includeStack = true;
 
-var sectionToType = exports.sectionToType = {
-    testallergies: 'testallergy',
-    testprocedures: 'testprocedure',    
-    testdemographics: 'testdemographic'    
-};
-
 var schemas = {
     testallergies: {
-        name: String,
-        severity: String,
+        name: 'string',
+        severity: 'string',
         value: {
-            code: String, 
-            display: String
+            code: 'string', 
+            display: 'string'
         }
     },
     testprocedures : {
-        name: String,
-        proc_type: String,
+        name: 'string',
+        proc_type: 'string',
         proc_value: {
-            code: String,
-            display: String
+            code: 'string',
+            display: 'string'
         }
     },
     testdemographics : {
-        name: String,
-        lastname: String,
+        name: 'string',
+        lastname: 'string',
     }
 };
 
 var getConnectionOptions = function(dbName) {
     return {
         dbName: dbName,
-        sectionToType: sectionToType,
         schemas: schemas,
         matchFields: {
             match: "string",
             percent: "number",
             diff: "string",
-            subelements: null
+            subelements: 'any'
         }
     };
 };
@@ -117,16 +110,15 @@ var matchObjectInstance = exports.matchObjectInstance = {
 };
 
 var createStorage = function(context, pat, filename, index, callback) {
-    storage.saveRecord(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, result) {
+    storage.saveRecord(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, id) {
         if (err) {
             callback(err);
         } else {
-            expect(result).to.exist;
-            expect(result._id).to.exist;
+            expect(id).to.exist;
             if (! context.storageIds) {
                 context.storageIds = {};
             }
-            context.storageIds[index] = result._id;
+            context.storageIds[index] = id;
             callback();
         }
     });
@@ -164,10 +156,10 @@ var pushToContext = exports.pushToContext = function(context, keyGen, secName, r
     }
 };
 
-var saveSection = exports.saveSection = function(context, secName, patKey, recordIndex, count, callback) {
+var saveSection = exports.saveSection = function(context, secName, pat_key, recordIndex, count, callback) {
     var data = createTestSection(secName, recordIndex, count);
     var sourceId = context.storageIds[recordIndex];
-    section.save(context.dbinfo, secName, patKey, data, sourceId, function(err, ids) {
+    section.save(context.dbinfo, secName, pat_key, data, sourceId, function(err, ids) {
         if (! err) {
             pushToContext(context, newEntriesContextKey, secName, recordIndex, ids);
         }
@@ -175,20 +167,20 @@ var saveSection = exports.saveSection = function(context, secName, patKey, recor
     });
 };
 
-exports.savePartialSection = function(context, secName, patKey, recordIndex, destRecordIndex, extraContent, callback) {
+exports.savePartialSection = function(context, secName, pat_key, recordIndex, destRecordIndex, extraContent, callback) {
     var data = createTestSection(secName, recordIndex, extraContent.length);
     var sourceId = context.storageIds[recordIndex];
     var key = newEntriesContextKey(secName, destRecordIndex);
     var extendedData = data.reduce(function(r, e, index) {
         var v = {
-            partial_array: e,
+            partial_entry: e,
             partial_match: extraContent[index].matchObject,
-            match_record_id: context[key][extraContent[index].destIndex]
+            match_entry_id: context[key][extraContent[index].destIndex]
         };
         r.push(v);
         return r;
     }, []);
-    section.savePartial(context.dbinfo, secName, patKey, extendedData, sourceId, function(err, result) {
+    section.savePartial(context.dbinfo, secName, pat_key, extendedData, sourceId, function(err, result) {
         if (! err) {
             pushToContext(context, partialEntriesContextKey, secName, recordIndex, result);
         }
@@ -228,11 +220,11 @@ exports.prepareConnection = function(dbname, context) {
 
 var addRecordsPerPatient = exports.addRecordsPerPatient = function(context, countPerPatient, callback) {
     var fs = countPerPatient.reduce(function(r, fileCount, i) {
-        var patKey = util.format('pat%d', i);
+        var pat_key = util.format('pat%d', i);
         return _.range(fileCount).reduce(function(q, j) {
             var filename = util.format('c%d%d.xml', i, j);
             var recordIndex = util.format('%d.%d', i, j);
-            var f = function(cb) {createStorage(context, patKey, filename, recordIndex, cb);};
+            var f = function(cb) {createStorage(context, pat_key, filename, recordIndex, cb);};
             q.push(f);
             return q;
         }, r);

@@ -96,49 +96,45 @@ describe('merge.js methods', function() {
                     var i;
                     var r0 = results[0];
                     expect(r0).to.have.length(2);
-                    expect([r0[0].entry_id.name, r0[1].entry_id.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
-                    expect([r0[0].entry_id.severity, r0[1].entry_id.severity]).to.include.members(['severity_0.0.0', 'severity_0.0.1']);
+                    expect([r0[0].entry.name, r0[1].entry.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
+                    expect([r0[0].entry.severity, r0[1].entry.severity]).to.include.members(['severity_0.0.0', 'severity_0.0.1']);
                     for (i=0; i<2; ++i) {
-                        expect(r0[i].record_id.filename).to.equal('c00.xml');
-                        expect(r0[i].entry_type).to.equal('testallergy');
+                        expect(r0[i].record.filename).to.equal('c00.xml');
+                        expect(r0[i].entry_type).to.equal('testallergies');
                         expect(r0[i].merge_reason).to.equal('new');
-                        expect(r0[i].patKey).to.equal('pat0');
                     }
             
                     expect(results[1]).to.have.length(0);
 
                     var r2 = results[2];
                     expect(r2).to.have.length(3);
-                    expect([r2[0].entry_id.name, r2[1].entry_id.name, r2[2].entry_id.name]).to.include.members(['name_2.0.0', 'name_2.0.1', 'name_2.0.2']);
-                    expect([r2[0].entry_id.value.code, r2[1].entry_id.value.code, r2[2].entry_id.value.code]).to.include.members(['code_2.0.0', 'code_2.0.1', 'code_2.0.2']);
+                    expect([r2[0].entry.name, r2[1].entry.name, r2[2].entry.name]).to.include.members(['name_2.0.0', 'name_2.0.1', 'name_2.0.2']);
+                    expect([r2[0].entry.value.code, r2[1].entry.value.code, r2[2].entry.value.code]).to.include.members(['code_2.0.0', 'code_2.0.1', 'code_2.0.2']);
                     for (i=0; i<3; ++i) {
-                        expect(r2[i].record_id.filename).to.equal('c20.xml');
-                        expect(r2[i].record_id.metadata.fileClass).to.equal('ccda');
-                        expect(r2[i].entry_type).to.equal('testallergy');
+                        expect(r2[i].record.filename).to.equal('c20.xml');
+                        expect(r2[i].record.metadata.fileClass).to.equal('ccda');
+                        expect(r2[i].entry_type).to.equal('testallergies');
                         expect(r2[i].merge_reason).to.equal('new');
-                        expect(r2[i].patKey).to.equal('pat2');
                     }
            
                     var r3 = results[3];
                     expect(r3).to.have.length(2);
-                    expect([r3[0].entry_id.name, r3[1].entry_id.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
-                    expect([r3[0].entry_id.proc_type, r3[1].entry_id.proc_type]).to.include.members(['proc_type_0.0.0', 'proc_type_0.0.1']);
+                    expect([r3[0].entry.name, r3[1].entry.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
+                    expect([r3[0].entry.proc_type, r3[1].entry.proc_type]).to.include.members(['proc_type_0.0.0', 'proc_type_0.0.1']);
                     for (i=0; i<2; ++i) {
-                        expect(r3[i].record_id.filename).to.equal('c00.xml');
-                        expect(r3[i].entry_type).to.equal('testprocedure');
+                        expect(r3[i].record.filename).to.equal('c00.xml');
+                        expect(r3[i].entry_type).to.equal('testprocedures');
                         expect(r3[i].merge_reason).to.equal('new');
-                        expect(r3[i].patKey).to.equal('pat0');
                     }
             
                     var r4 = results[4];
                     expect(r4).to.have.length(3);
-                    expect([r4[0].entry_id.name, r4[1].entry_id.name, r4[2].entry_id.name]).to.include.members(['name_1.0.0', 'name_1.0.1', 'name_1.0.2']);
-                    expect([r4[0].entry_id.proc_value.display, r4[1].entry_id.proc_value.display, r4[2].entry_id.proc_value.display]).to.include.members(['display_1.0.0', 'display_1.0.1', 'display_1.0.2']);
+                    expect([r4[0].entry.name, r4[1].entry.name, r4[2].entry.name]).to.include.members(['name_1.0.0', 'name_1.0.1', 'name_1.0.2']);
+                    expect([r4[0].entry.proc_value.display, r4[1].entry.proc_value.display, r4[2].entry.proc_value.display]).to.include.members(['display_1.0.0', 'display_1.0.1', 'display_1.0.2']);
                     for (i=0; i<3; ++i) {
-                        expect(r4[i].record_id.filename).to.equal('c10.xml');
-                        expect(r4[i].entry_type).to.equal('testprocedure');
+                        expect(r4[i].record.filename).to.equal('c10.xml');
+                        expect(r4[i].entry_type).to.equal('testprocedures');
                         expect(r4[i].merge_reason).to.equal('new');
-                        expect(r4[i].patKey).to.equal('pat1');
                     }
 
                     expect(results[5]).to.have.length(0);
@@ -157,7 +153,7 @@ describe('merge.js methods', function() {
             sourceIndex = recordIndex;
         }
         expect(result).to.exist;
-        expect(result.record_id._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyGetAllNegative = function(context, resultsById, secName, recordIndex, index) {
@@ -184,7 +180,7 @@ describe('merge.js methods', function() {
                     var allResults = results[0].concat(results[1]).concat(results[2]).concat(results[3]).concat(results[4]).concat(results[5]);
                     var resultsById = allResults.reduce(function(r, result) {
                         var mr = result.merge_reason;
-                        r[mr][result.entry_id._id] = result;
+                        r[mr][result.entry._id] = result;
                         return r;
                     }, {new: {}, duplicate:{}, update:{}});
                     callback(null, resultsById);
@@ -326,18 +322,18 @@ describe('merge.js methods', function() {
 
     var verifyGetAllPartial = function(context, resultsById, secName, recordIndex, index, sourceIndex) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         var result = resultsById[id];
         if (! sourceIndex) {
             sourceIndex = recordIndex;
         }
         expect(result).to.exist;
-        expect(result.record_id._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyGetAllPartialNegative = function(context, resultsById, secName, recordIndex, index) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         var result = resultsById[id];
 
         expect(result).to.not.exist;
@@ -383,7 +379,7 @@ describe('merge.js methods', function() {
 
     var updateEntryPartial = function(context, secName, recordIndex, index, updateObject, sourceIndex, callback) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         var rid = context.storageIds[sourceIndex];
         entry.update(context.dbinfo, secName, id, rid, updateObject, callback);
     };
@@ -453,7 +449,7 @@ describe('merge.js methods', function() {
 
     var getEntryPartial = function(context, secName, recordIndex, index, callback) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         entry.get(context.dbinfo, secName, id, callback);
     };
 
@@ -463,18 +459,16 @@ describe('merge.js methods', function() {
         if (! sourceIndex) {
             sourceIndex = recordIndex;
         }
-        expect(result.entry_id.toString()).to.equal(id.toString());
-        expect(result.record_id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyEntryGetPartial = function(context, result, secName, recordIndex, index, sourceIndex) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
-        var id = context[key][index].match_entry_id;
+        var id = context[key][index].match_entry;
         if (! sourceIndex) {
             sourceIndex = recordIndex;
         }
-        expect(result.entry_id.toString()).to.equal(id.toString());
-        expect(result.record_id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
     };
 
     var verifyMergeReason = function(attr, expectedReasons) {
@@ -490,8 +484,6 @@ describe('merge.js methods', function() {
     var verifyEntryGetContent = function(context, result, secName, recordIndex, index, updRecordIndex, updIndex) {
         expect(result).to.exist;
         var r = modelutil.mongooseToBBModelDocument(result);
-        delete r.reviewed;
-        delete r.__v;
 
         var suffix = '_' + recordIndex + '.' + index;
         var expected = refmodel.testObjectInstance[secName](suffix);
