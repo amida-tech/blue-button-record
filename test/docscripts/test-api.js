@@ -1,13 +1,12 @@
 "use strict";
 
-var assert = require('assert');
-
-var bbr = require('../../index');
-
 describe('API Documentation Examples', function() {
+    var bbr;
+    var assert;
+
     it('connectDatabase', function(done) {
-        var bbr = require('../../index');
-        var assert = require('assert');
+        bbr = require('../../index');
+        assert = require('assert');
         var options = {
             dbName: 'test',
             schemas: {
@@ -179,6 +178,7 @@ describe('API Documentation Examples', function() {
 
     it('getAllSections', function(done) {
         bbr.getAllSections('testPatient2', function(err, ptRecord) {
+            assert.ifError(err);
             var names = ptRecord.allergies.map(function(a) {return a.name;});
             var i = names.indexOf('allergy1');
             assert.equal(ptRecord.allergies[i].severity, 'severity1');
@@ -191,8 +191,20 @@ describe('API Documentation Examples', function() {
         });
     });
 
+    it('cleanSection', function(done) {
+        bbr.getSection('procedures', 'testPatient2', function(err, entries) {
+            assert.ifError(err);
+            var expectedCleanEntries = [{name: 'procedure1', proc_type: 'proc_type1',}];
+            assert.notDeepEqual(entries, expectedCleanEntries);
+            var cleanEntries = bbr.cleanSection(entries);
+            assert.deepEqual(cleanEntries, expectedCleanEntries);
+            done();
+        });
+    });
+
     it('getEntry', function(done) {
         bbr.getEntry('allergies', aid2, function(err, entry) {
+            assert.ifError(err);
             assert.equal(entry.name, 'allergy2');
             assert.equal(entry.value.display, 'display2');
             var attr = entry.metadata.attribution[0];
@@ -233,6 +245,177 @@ describe('API Documentation Examples', function() {
                 assert.equal(attr[2].merge_reason, 'update');
                 assert.equal(attr[2].record.filename, 'expl3.xml');
                 done();
+            });
+        });
+    });
+
+    it('getMerges', function(done) {
+        bbr.getMerges('allergies', 'testPatient1', 'name severity', 'filename', function(err, result) {
+            assert.ifError(err);
+            assert.equal(result.length, 4);
+            result.sort(function(a, b) {
+                var r = a.entry.name.localeCompare(b.entry.name);
+                if (r === 0) {
+                    var c = {'new': -1, 'duplicate': 0, 'update': 1};
+                    return c[a.merge_reason] - c[b.merge_reason];
+                }
+                return r;
+            });
+            assert.equal(result[0].entry.severity, 'updatedSev');
+            assert.equal(result[0].record.filename, 'expl1.xml');
+            assert.equal(result[0].merge_reason, 'new');
+            assert.equal(result[1].entry.severity, 'updatedSev');
+            assert.equal(result[1].record.filename, 'expl2.xml');
+            assert.equal(result[1].merge_reason, 'duplicate');
+            assert.equal(result[2].entry.severity, 'updatedSev');
+            assert.equal(result[2].record.filename, 'expl3.xml');
+            assert.equal(result[2].merge_reason, 'update');
+            assert.equal(result[3].entry.severity, 'severity2');
+            assert.equal(result[3].record.filename, 'expl1.xml');
+            assert.equal(result[3].merge_reason, 'new');
+            done();
+        });
+    });
+
+    it('mergeCount (1)', function(done) {
+        bbr.mergeCount('allergies', 'testPatient1', {}, function(err, count) {
+            assert.ifError(err);
+            assert.equal(count, 4);
+            done();
+        });
+    });
+
+    it('mergeCount (2)', function(done) {
+        bbr.mergeCount('allergies', 'testPatient1', {merge_reason: 'duplicate'}, function(err, count) {
+            assert.ifError(err);
+            assert.equal(count, 1);
+            done();
+        });
+    });
+
+    var paid1;
+    var paid2;
+
+    it('savePartialSection', function(done) {
+        var inputSection = [{
+            partial_entry : {
+                name: 'allergy1',
+                severity: 'severity3',
+                value: {
+                    code: 'code1', 
+                    display: 'display1'
+                }
+            },
+            partial_match: {
+                percent: 80,
+                subelements: ['severity']
+            },
+            match_entry_id: aid1
+        },
+        {
+            partial_entry: {
+                name: 'allergy2',
+                severity: 'severity2',
+                value: {
+                    code: 'code5', 
+                    display: 'display2'
+                }
+            },
+            partial_match: {
+                percent: 90,
+                subelements: ['value.code']
+            },
+            match_entry_id: aid2
+        }];
+        bbr.savePartialSection('allergies', 'testPatient1', inputSection, fileId4, function(err, ids) {
+            assert.ifError(err);
+            paid1 = ids[0];
+            paid2 = ids[1];
+            done();
+        });
+    });
+
+    it('getPartialSection', function(done) {
+        bbr.getPartialSection('allergies', 'testPatient1', function(err, entries) {
+            assert.ifError(err);
+            var i = [entries[0].name, entries[1].name].indexOf('allergy1');
+            assert.equal(entries[i].name, 'allergy1');
+            assert.equal(entries[i].severity, 'severity3');
+            assert.equal(entries[i+1 % 2].name, 'allergy2');
+            assert.equal(entries[i+1 % 2].value.code, 'code5');
+            done();
+        });
+    });
+
+    it('getMatches', function(done) {
+        bbr.getMatches('allergies', 'testPatient1', 'name severity value.code', function(err, entries) {
+            assert.ifError(err);
+            var i = [entries[0].entry.name, entries[1].entry.name].indexOf('allergy1');
+            assert.equal(entries[i].entry.severity, 'updatedSev');
+            assert.equal(entries[i].match_entry.severity, 'severity3');
+            assert.equal(entries[i].percent, 80);
+            assert.deepEqual(entries[i].subelements, ['severity']);
+            assert.equal(entries[i+1 % 2].entry.value.code, 'code2');
+            assert.equal(entries[i+1 % 2].match_entry.value.code, 'code5');
+            assert.equal(entries[i+1 % 2].percent, 90);
+            assert.deepEqual(entries[i+1 % 2].subelements, ['value.code']);            
+            done();
+        });
+    });
+
+    it('getMatch', function(done) {
+        bbr.getMatch('allergies', paid1, function(err, matchInfo) {
+            assert.ifError(err);
+            assert.equal(matchInfo.entry.severity, 'updatedSev');
+            assert.equal(matchInfo.match_entry.severity, 'severity3');
+            assert.equal(matchInfo.percent, 80);
+            assert.deepEqual(matchInfo.subelements, ['severity']);
+            done();
+        });
+    });
+
+    it('matchCount (1)', function(done) {
+        bbr.matchCount('allergies', 'testPatient1', {}, function(err, count) {
+            assert.ifError(err);
+            assert.equal(count, 2);
+            done();
+        });
+    });
+
+    it('matchCount (2)', function(done) {
+        bbr.matchCount('allergies', 'testPatient1', {percent: 80}, function(err, count) {
+            assert.ifError(err);
+            assert.equal(count, 1);
+            done();
+        });
+    });
+
+    it('acceptMatch', function(done) {
+        bbr.acceptMatch('allergies', paid1, 'added', function(err) {
+            assert.ifError(err);
+            bbr.getSection('allergies', 'testPatient1', function(err, entries) {
+                assert.ifError(err);
+                assert.equal(entries.length, 3); // added to Master Health Record
+                bbr.matchCount('allergies', 'testPatient1', {}, function(err, count) {
+                    assert.ifError(err);
+                    assert.equal(count, 1);     // removed from Partial Health Record 
+                    done();
+                });
+            });
+        });
+    });
+
+    it('cancelMatch', function(done) {
+        bbr.cancelMatch('allergies', paid2, 'ignored', function(err) {
+            assert.ifError(err);
+            bbr.getSection('allergies', 'testPatient1', function(err, entries) {
+                assert.ifError(err);
+                assert.equal(entries.length, 3); // not added to Master Health Record
+                bbr.matchCount('allergies', 'testPatient1', {}, function(err, count) {
+                    assert.ifError(err);
+                    assert.equal(count, 0);      // removed from Partial Health Record 
+                    done();
+                });
             });
         });
     });

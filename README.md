@@ -12,8 +12,8 @@ blue-button-record is a module to persist patient health data.  It is primarily 
 
 - Persist Master Health Record (blue-button data) per patient:  Master Health Record contains all historical data about patients' health.  Master Health Record is organized in sections such as allergies and medications and blue-button-record API is built based on this sectional organization.  Each section is further organized as a set of entries even when there is only one entry as in demographics.
 - Persist all sources of Master Health Record:  Currently only text files are supported.  Source content as well as various metadata such as name and upload time are stored.  Each entry in Master Health Record is linked to a source.    
-- Persist Merge History:  Since blue-button data is historical, entries in Master Health Record is expected to appear in multiple sources and can also be updated.  Merge History keeps track of all the sources from which entries are created or updated.  Merge History also keeps track of all the sources where the entries appear as it is in the Master Health Record (duplicates). 
-- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate and thus require further patient review.  Both the partial entries, existing Master Health Record entries that the partial entries match, and match details are stored.  Partial Record entries are either added to Master Record or removed.
+- Persist Merge History:  Since blue-button data is historical, entries in Master Health Record is expected to appear in multiple sources.  Merge History keeps track of all the sources from which entries are created or updated, or where the entries appear as it is in the Master Health Record (duplicates). 
+- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate and thus require further review.  Both the partial entries, Master Health Record entries that the partial entries match, and match details are stored.  Partial Health Record entries are either added to Master Health Record or removed.
 
 This implementation of blue-button-record uses MongoDB.
 
@@ -30,7 +30,7 @@ bbr.connectDatabase('localhost', function(err)) {
   if (err) throw err;
 }
 ```
-Read a ccd file and convert it to JSON
+Read a ccd file and convert it to JSON.  An example file exists in this repository
 ``` javascript
 var fs = require('fs');
 var filepath  = '/tmp/demo.xml';
@@ -65,7 +65,7 @@ bbr.recordCount('patientKey', function(err, count) {
 
 ```
 
-You can persist all the [blue-button](https://github.com/amida-tech/blue-button) sections as a whole
+You can persist all the [blue-button](https://github.com/amida-tech/blue-button) sections as a whole with a link to its source
 ``` javascript
 bbr.saveAllSections('patientKey', ccdJSON, fileId, function(err) {
   if (err) throw err;
@@ -112,7 +112,14 @@ var allergiesBBOnly = bbr.cleanSectionEntries(allergies);
 ```
 which makes allergiesBBOnly comparable to ccdJSON.allergies.
 
-Metadata property provides the source of the data as the "merge history"
+If you find an existing entry of Master Health Record in a new source, you can register the source as such
+``` javascript
+bbr.duplicateEntry('allergies', id, fileId, function(err) {
+  if (err) throw err;
+});
+```
+
+Metadata property for each entry provides both the source of the data and the Merge History
 ``` javascript
 var attribution = allergy.metadata.attribution;
 console.log(attribution[0].merge_reason); // merge history starts with 'new'
@@ -122,14 +129,7 @@ Once you persists a new entry (saveSection) merge history will be initiated with
 ``` javascript
 console.log(attribution[1].merge_reason); // 'update'
 ```
-In addition to 'new' and 'update', another source can be persisted in merge history to have the duplicate of an existing entry
-``` javascript
-bbr.duplicateEntry('allergies', id, fileId, function(err) {
-  if (err) throw err;
-});
 
-console.log(attribution[2].merge_reason); // 'duplicate'
-```
 
 Whole merge history for a patient is available
 ``` javascript
@@ -670,7 +670,10 @@ __Examples__
 bbr.getMerges('allergies', 'testPatient', 'severity', 'filename', function(err, result) {
   if (err) {
     console.log('error retreiving merge history.');
-  } else { // order might differ
+  } else {
+    result.sort(function(a, b) {
+      if
+    });
     console.log(result[0].entry.severity);  // 'severity1'
     console.log(result[0].record.filename); // 'expl.xml'
     console.log(result[0].merge_reason);    // 'new'
@@ -782,7 +785,7 @@ bbr.saveSection('allergies', testPatient', inputSection, fileId, function(err, i
 
 ### getPartialSection(secName, ptKey, callback)
 
-Gets all entries in a section of Partial Health Record without any match information,
+Gets all entries in a section of Partial Health Record without any match information.  The entries are identical to `getSection`](#getSection) in content.
 
 __Arguments__
 * `secName` - Section name.
