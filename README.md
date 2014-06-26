@@ -12,8 +12,8 @@ blue-button-record is a module to persist patient health data.  It is primarily 
 
 - Persist Master Health Record (blue-button data) per patient:  Master Health Record contains all historical data about patients' health.  Master Health Record is organized in sections such as allergies and medications and blue-button-record API is built based on this sectional organization.  Each section is further organized as a set of entries even when there is only one entry as in demographics.
 - Persist all sources of Master Health Record:  Currently only text files are supported.  Source content as well as various metadata such as name and upload time are stored.  Each entry in Master Health Record is linked to a source.    
-- Persist Merge History:  Since blue-button data is historical, entries in Master Health Record is expected to appear in multiple sources and can also be updated.  Merge History keeps track of all the sources from which entries are created or updated.  Merge History also keeps track of all the sources where the entries appear as it is in the Master Health Record (duplicates). 
-- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate and thus require further patient review.  Both the partial entries, existing Master Health Record entries that the partial entries match, and match details are stored.  Partial Record entries are either added to Master Record or removed.
+- Persist Merge History:  Since blue-button data is historical, entries in Master Health Record is expected to appear in multiple sources.  Merge History keeps track of all the sources from which entries are created or updated. In addition it is also possible to register sources where the entries appear as it is in the Master Health Record (duplicates). 
+- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate and thus require further review.  Both the partial entries, Master Health Record entries that the partial entries match, and match details are stored.  Partial Health Record entries are eventually either added to Master Health Record or removed; blue-button-record API provides methods for both.
 
 This implementation of blue-button-record uses MongoDB.
 
@@ -26,207 +26,206 @@ var bbr = require("blue-button-record");
 ```
 blue-button-record assumes MongoDB is already running.  Connect to the database
 ``` javascript
-bbr.connectDatabase('localhost', function(err)) {
+bbr.connectDatabase('localhost', function(err) {
   if (err) throw err;
 }
 ```
-Read a ccd file and convert it to JSON
+Read a ccd file and convert it to JSON.  An example file exists in this repository
 ``` javascript
 var fs = require('fs');
-var filepath  = '/tmp/demo.xml';
+var path = require('path');
+var filepath  = 'test/artifacts/standard/CCD_demo1.xml';
 var xmlString = fs.readFileSync(filepath, 'utf-8');
 var result = bb.parseString(xmlString);
 var ccdJSON = result.data;
 ```
-Persist the file in the database as a source of patient data, various properties is the responsibility the caller
+Persist the file as a source of patient data. Various properties is the responsibility the caller
 ``` javascript
 var fileInfo = {
-  filename: 'demo.xml',
-  type: 'text/xml'
+    name: 'CCD_demo1.xml',
+    type: 'text/xml'
 };
-var fileId = null;
-bbr.saveRecord('patientKey', xmlString, fileInfo, 'ccda', function(err, result) {
-  fileId = result._id;
+var fileId;
+bbr.saveRecord('patientKey', xmlString, fileInfo, 'ccda', function(err, id) {
+    fileId = id;
 });
 ```
-Methods are provided to access patient data source records as a list or individually
+For simplicity we will only use this `fileId` in usage documentation as if it has several types of data.  Methods are provided to access patient data source records as a list or individually
 ``` javascript
 bbr.getRecordList('patientKey', function(err, results) {
-  console.log(results.length);
+    console.log(results.length);
 });
 
 bbr.getRecord(fileId, function(err, filename, content) {
-  console.log(filename);  
+    console.log(filename);
 });
 
 bbr.recordCount('patientKey', function(err, count) {
-  console.log(count);
+    console.log(count);
 });
-
 ```
 
-You can persist all the [blue-button](https://github.com/amida-tech/blue-button) sections as a whole
+You can persist all the [blue-button](https://github.com/amida-tech/blue-button) sections together
 ``` javascript
 bbr.saveAllSections('patientKey', ccdJSON, fileId, function(err) {
-  if (err) throw err;
+    if (err) {throw err;}
 });
 ```
 or individually
 ``` javascript
 bbr.saveSection('allergies', 'patientKey', ccdJSON.allergies, fileId, function(err) {
-  if (err) throw err;
+    if (err) {throw err;}
 });
 ```
-By default all sections supported by [blue-button](https://github.com/amida-tech/blue-button) are also supported by blue-button-record.  Currently these are demographics (ccda header), allergies, procedures, vitals, medications, results, encounters, immunizations and socialHistory. 
+Note that persisting blue-button-data always requires a source (`fileId` above).  By default all sections supported by [blue-button](https://github.com/amida-tech/blue-button) are also supported by blue-button-record.
 
-You can get the whole patient record back
-
+You can get all sections of the Master Health Record
 ``` javascript
-bbr.getAllSections('patientKey',function(err) {
-  if (err) throw err;
+bbr.getAllSections('patientKey',function(err, result) {
+    console.log(result.allergies[0].allergen.name);
+    console.log(result.procedures[0].procedure.name);
 });
 ```
 or get any section individually
 ``` javascript
-var id = null;
-bbr.getSection('allergies', 'patientKey', function(err, allergies) {
-  if (err) throw err;
-  id = allergies[0]._id;
+var id;
+var allergies;
+bbr.getSection('allergies', 'patientKey', function(err, result) {
+    console.log(result[0].allergen.name);
+    id = result[0]._id;
+    allergies = result;
 });
 
 ```
-In addition to [blue-button](https://github.com/amida-tech/blue-button) data, each entry also includes metadata and property '_id" which you can later use to access and update
+In addition to [blue-button](https://github.com/amida-tech/blue-button) data, each entry also includes metadata and property `_id` which you can later use to update or access
 ``` javascript
-var allergy = null;
-bbr.getEntry('allergies', id, function(err, result) {
-  allergy = result;
+bbr.updateEntry('allergies', id, fileId, {severity: 'Severe'}, function(err) {
+    if (err) {throw err;}
 });
 
-bbr.updateEntry('allergies', id, {severity: 'Severe'}, fileId, function(err) {
-  if (err) throw(err);
-};
+var allergy;
+bbr.getEntry('allergies', id, function(err, result) {
+    console.log(result.severity);
+    allergy = result;
+});
 ```
 You can clean up metadata and other non blue-button data 
 ``` javascript
-var allergiesBBOnly = bbr.cleanSectionEntries(allergies);
+var allergiesBBOnly = bbr.cleanSection(allergies);
+console.log(allergiesBBOnly[0]._id);
+console.log(allergiesBBOnly[0].allergen.name);
 ```
 which makes allergiesBBOnly comparable to ccdJSON.allergies.
 
-Metadata property provides the source of the data as the "merge history"
-``` javascript
-var attribution = allergy.metadata.attribution;
-console.log(attribution[0].merge_reason); // merge history starts with 'new'
-console.log(attribution[0].record);    // fileId
-```
-Once you persists a new entry (saveSection) merge history will be initiated with merge_reason: 'new'.  Each update (updateEntry) also contributes to merge history
-``` javascript
-console.log(attribution[1].merge_reason); // 'update'
-```
-In addition to 'new' and 'update', another source can be persisted in merge history to have the duplicate of an existing entry
+If you find an existing entry of Master Health Record in a new source, you can register the source as such
 ``` javascript
 bbr.duplicateEntry('allergies', id, fileId, function(err) {
   if (err) throw err;
 });
-
-console.log(attribution[2].merge_reason); // 'duplicate'
 ```
 
-Whole merge history for a patient is available
+Metadata property for each entry provides both the source of the data and the Merge History
 ``` javascript
-bbr.getMerges('allergies', 'patientKey', 'name severity', 'filename uploadDate', function(err, mergeList) {
-  console.log(mergeList.length);
-  var explMerge = mergeList[0];
-});
+  bbr.getEntry('allergies', id, function(err, entry) {
+      var attribution = entry.metadata.attribution;
+      console.log(attribution[0].merge_reason);     // 'new'
+      console.log(attribution[0].record.filename);
+      console.log(attribution[1].merge_reason);     // 'update'
+      console.log(attribution[1].record.filename);
+      console.log(attribution[2].merge_reason);     // 'duplicate'
+      console.log(attribution[2].record.filename);
+  });        
 ```
-where you can specify blue-button health data fields like allergy name or severity and record fields like filename or uploadDate
+Whole Merge History for a section is available
 ``` javascript
-console.log(explMerge.merge_reason);
-console.log(explMerge.entry.name);
-console.log(explMerge.entry.severity);
-console.log(explMerge.record.filename);
-console.log(explMerge.record.uploadDate);
+bbr.getMerges('allergies', 'patientKey', 'allergen severity', 'filename uploadDate', function(err, mergeList) {
+    var explMerge = mergeList[0];
+    console.log(explMerge.merge_reason);
+    console.log(explMerge.entry.allergen.name);
+    console.log(explMerge.entry.severity);
+    console.log(explMerge.record.filename);
+    console.log(explMerge.record.uploadDate);
+});        
 ```
-You can count merge history entries with various conditions
+You can count Merge History entries with various conditions
 ``` javascript
-bbr.mergeCount('allergies', 'patientKey', {}, function(err, count) {
-  console.log(count);
-});
-
+ bbr.mergeCount('allergies', 'patientKey', {}, function(err, count) {
+    console.log(count);
+ });   
+ 
 bbr.mergeCount('allergies', 'patientKey', {merge_reason: 'new'}, function(err, count) {
-  console.log(count);
-});
+    console.log(count);
+});    
 
 bbr.mergeCount('allergies', 'patientKey', {merge_reason: 'duplicate'}, function(err, count) {
-  console.log(count);
-});
+    console.log(count);
+});        
 ```
 
-blue-button-record also stores 'partial entries' which cannot immediately become part of the master health record since they are similar enough to existing entries but not identical to become duplicates.  In addition to blue-button health data, partial records also include a pointer to the existing entry and match information
+blue-button-record also stores Partial Health Record; entries which cannot immediately become part of the Master Health Record since they are similar enough to existing entries but not identical to become duplicates.  In addition to blue-button health data, blue-button-record requires a pointer to an existing Master Health Record entry and match information to persist partial entries
 ``` javascript
 var partialAllergy = {
-  partial_entry: allergy,
-  match_record: id,
-  partial_match: {
-    diff: {severity: 'new'},
-    percent: 80,
-    subelements: []
-  }
+    partial_entry: ccdJSON.allergies[0],
+    partial_match: {
+        diff: {severity: 'new'},
+        percent: 80,
+        subelements: []
+    },
+    match_entry_id: id
 };
 ```
 By default match information is assumed to have three fields: diff, subelements, and percent.  diff and sublements can be of any object and percent must be a number.  This default is to accomodate match information available from [blue-button-match](https://github.com/amida-tech/blue-button-match).  
 
 Partial entries are persisted as sections
 ``` javascript
+// for simplicity use the same here, these would be different in reality
+var partialAllergies = [partialAllergy, partialAllergy];
 bbr.savePartialSection('allergies', 'patientKey', partialAllergies, fileId, function(err) {
-  if (err) throw err;
+    if (err) {throw err;}       
 });
 ```
-blue-button health data piece of partial entries are available similarly to master health record sections
+blue-button health data piece of partial entries are available similar to `getSection`.
 ``` javascript
-var partialId = null;
-bbr.getPartialSection('allergies', 'patientKey', function(err, partialAllergies) {
-  if (err) throw err;
-  partialId = partialAllergies[0]._id;
+bbr.getPartialSection('allergies', 'patientKey', function(err, result) {
+  console.log(result[0].allergen.name);
 });
 ```
-the same data together with selected fields from the existing matching entry and the match information is available as a list
+the same data together with selected fields from the Master Health Record entry and the match information is available as a list
 ``` javascript
-bbr.getMatches('allergies', 'patientKey', 'name severity', function(err, matches) {
-  if (err) throw err;
-  var match = mathches[0];
-  console.log(match.entry.name);           // existing
-  console.log(match.entry.severity);
-  console.log(match.match_entry.name);     // partial
-  console.log(match.match_entry.severity);
-  console.log(match.diff.severity);        // match information  
-  console.log(match.percent);
-  var matchId = match._id;
+bbr.getMatches('allergies', 'patientKey', 'allergen severity', function(err, result) {
+    console.log(result[0].entry.allergen.name);
+    console.log(result[0].entry.severity);
+    console.log(result[0].match_entry.allergen.name);   
+    console.log(result[0].match_entry.severity);
+    console.log(result[0].diff.severity);        
+    console.log(result[0].percent);
+    var matchId0 = result[0]._id;
+    var matchId1 = result[1]._id;
 });
 ```
-Individual match access is also available and will return the full blue-button data both for the existing entries and the partial entries
+Individual match access is also available and will return the full blue-button data both for the Master Health Record enty and the Partial Health Record entry
 ``` javascript
-bbr.getMatch('allergies', matchId, function(err, match) {
-  if (err) throw err;
-  console.log(match.entry.name);           // existing
-  console.log(match.entry.status);
-  console.log(match.match_entry.name);     // partial
-  console.log(match.match_entry.status);
-  console.log(match.diff.severity);        // match information  
-  console.log(match.percent);
-});
+bbr.getMatch('allergies', matchId0, function(err, result) {
+    console.log(result.entry.allergen.name);
+    console.log(result.entry.status);
+    console.log(result.match_entry.allergen.name);   
+    console.log(result.match_entry.status);
+    console.log(result.diff.severity);        
+    console.log(result.percent);
+});   
 ```
 Only count of matches can be accessed instead of full list
 ``` javascript
 bbr.matchCount('allergies', 'patientKey', {}, function(err, count) {
-  console.log(count);
-});
+    console.log(count);
+});   
 
 bbr.matchCount('allergies', 'patientKey', {percent: 90}, function(err, count) {
-  console.log(count);
-});
+    console.log(count);
+});   
 ```
 
-Matches can be canceled either outright or after contributing some fields to the existing entry
+Matches can be canceled with application specific reasons such as 'ignored' or 'merged'
 ``` javascript
 bbr.cancelMatch('allergies', matchId, 'ignored', function(err, count) {
   console.log(count);
@@ -237,11 +236,18 @@ bbr.cancelMatch('allergies', matchId, 'merged', function(err, count) {
 });
 
 ```
-or they can be accepted and become part of the master health record.
+or they can be accepted and become part of the Master Health Record.
 ``` javascript
-bbr.acceptMatch('allergies', matchId, 'added', function(err, count) {
-  console.log(count);
-});
+bbr.acceptMatch('allergies', matchId1, 'added', function(err) {
+    if (err) {throw err;}
+});   
+```
+
+When the session ends, you disconnect from the database
+``` javascript
+bbr.disconnect(function(err) {
+    if (err) {throw err;}
+});   
 ```
 
 ## API
@@ -262,40 +268,36 @@ __Arguments__
 __Examples__
 
 ```js
-var options = {
-  dbName: 'test',
-  schemas = {
-    allergies: {
-      name: 'string',
-      severity: 'string',
-      value: {
-        code: 'string', 
-        display: 'string'
-      }
-    },
-    procedures : {
-      name: 'string',
-      proc_type: 'string',
-      proc_value: {
-        code: 'string',
-        display: 'string'
-      }
-  },
-  matchFields: {
-    percent: 'number',
-    subelements: 'any'
-  }
-};
-```
-
-```js
 var bbr = require('blue-button-record');
+var assert = require('assert');
+var options = {
+    dbName: 'test',
+    schemas: {
+        allergies: {
+            name: 'string',
+            severity: 'string',
+            value: {
+                code: 'string', 
+                display: 'string'
+            }
+        },
+        procedures : {
+            name: 'string',
+            proc_type: 'string',
+            proc_value: {
+                code: 'string',
+                display: 'string'
+            }
+        }
+    },
+    matchFields: {
+        percent: 'number',
+        subelements: 'any'
+    }
+};
+
 bbr.connectDatabase('localhost', options, function(err) {
-  if (err) {
-    console.log('connection has failed.');
-  } else {
-    console.log('connection established.');
-  }
+    assert.ifError(err);
 });
 ```
 ---------------------------------------
@@ -312,11 +314,7 @@ __Examples__
 
 ```js
 bbr.disconnect(function(err) {
-  if (err) {
-    console.log('disconnection has failed.');
-  } else {
-    console.log('connection established.');
-  }
+  assert.ifError(err);
 });
 ```
 ---------------------------------------
@@ -332,18 +330,14 @@ __Examples__
 
 ```js
 bbr.clearDatabase(function(err) {
-  if (err) {
-    console.log('unable to clear the database.');
-  } else {
-    console.log('database has been cleared.');
-  }
+    assert.ifError(err);
 });
 ```
 ---------------------------------------
 
 ### saveRecord(ptKey, content, sourceInfo, contentType, callback)
 
-Saves a source of patient data in the database.  Currently only text files are supported.
+Saves a source of patient data.  Currently only text files are supported.
 
 __Arguments__
 * `ptKey` - Identification string for the patient.
@@ -357,15 +351,37 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.saveRecord('testPatient', 'example content', {type: 'text/xml', name: 'expl.xml'}, 'ccda', function(err, id) {
-  var fileId = null;
-  if (err) {
-    console.log('cannot save.');
-  } else {
-    fileId = id;
-  }
+var fileId1;
+bbr.saveRecord('testPatient1', '<content value=1 />', {type: 'text/xml', name: 'expl1.xml'}, 'ccda', function(err, id) {
+    assert.ifError(err);
+    fileId1 = id;
 });
 ```
+
+```js
+var fileId2;
+bbr.saveRecord('testPatient1', '<content value=2 />', {type: 'application/xml', name: 'expl2.xml'}, 'c32', function(err, id) {
+    assert.ifError(err);
+    fileId2 = id;
+});
+```
+
+```js
+var fileId3;
+bbr.saveRecord('testPatient1', 'content 3', {type: 'text/plain', name: 'expl3.xml'}, 'ccda', function(err, id) {
+    assert.ifError(err);
+    fileId3 = id;
+});
+```
+
+```js
+var fileId4;
+bbr.saveRecord('testPatient2', '<content value=4 />', {type: 'text/xml', name: 'expl4.xml'}, 'ccda', function(err, id) {
+    assert.ifError(err);
+    fileId4 = id;
+});
+```
+
 ---------------------------------------
 
 ### getRecordList(ptKey, callback)
@@ -385,15 +401,13 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getRecordList('testPatient', function(err, sources) {
-  if (err) {
-    console.log('sources cannot be retrieved.');
-  } else {
-    var source = sources[0];
-    console.log(source.file_name);       // 'expl.xml'
-    console.log(source.file_mime_type);  // 'text/xml'
-    console.log(source.file_class);      // 'ccda'
-  }
+bbr.getRecordList('testPatient1', function(err, sources) {
+    assert.ifError(err);
+    assert.equal(sources.length, 3);
+    var names = sources.map(function(source) {return source.file_name;});
+    var index = names.indexOf('expl1.xml');
+    assert.equal(sources[index].file_mime_type, 'text/xml');
+    assert.equal(sources[index].file_class, 'ccda');
 });
 ```
 ---------------------------------------
@@ -403,19 +417,16 @@ bbr.getRecordList('testPatient', function(err, sources) {
 Gets name and content of the Master Health Record source.
 
 __Arguments__
-* `sourceId - Database identification string of the source.
+* `sourceId` - Database identification string of the source.
 * `callback(err, name, content)` - A callback which is called when name and content are retrieved, or an error occurs. 
 
 __Examples__
 
 ```js
-bbr.getRecord(fileId, function(err, name, content) {
-  if (err) {
-    console.log('error getting the source information.');
-  } else {
-    console.log(name);    // 'expl.xml'
-    console.log(content); // 'example content'
-  }
+bbr.getRecord(fileId1, function(err, name, content) {
+    assert.ifError(err);
+    assert.equal(name, 'expl1.xml');
+    assert.equal(content, '<content value=1 />');
 });
 ```
 ---------------------------------------
@@ -431,12 +442,9 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getCount('testPatient', function(err, count) {
-  if (err) {
-    console.log('error getting the count.');
-  } else {
-    console.log(count);  // 1
-  }
+bbr.recordCount('testPatient1', function(err, count) {
+    assert.ifError(err);
+    assert.equal(count, 3);
 });
 ```
 ---------------------------------------
@@ -450,7 +458,7 @@ __Arguments__
 * `ptKey` - Identification string for the patient.
 * `inputSection` - An array of entries with schema as specified in [`connectDatabase`](#connectDatabase).
 * `sourceId` - Id for the source where the `inputSection` is located. 
-* `callback(err, ids)` - A callback which is called when saving entries is succesfull, or an error occurs.  `ids` are database assigned identifier for each entry in the order in `inputSection`.
+* `callback(err, ids)` - A callback which is called when saving entries is succesfull, or an error occurs.  `ids` are database assigned identifier for each entry in `inputSection` order.
 
 __Examples__
 
@@ -459,26 +467,24 @@ var inputSection = [{
     name: 'allergy1',
     severity: 'severity1',
     value: {
-      code: 'code1', 
-      display: 'display1'
+        code: 'code1', 
+        display: 'display1'
     } 
-  }, {
+}, {
     name: 'allergy2',
     severity: 'severity2',
     value: {
-      code: 'code2', 
-      display: 'display2'
-  }
-];
-var aid1 = null;
-var aid2 = null;
-bbr.saveSection('allergies', testPatient', inputSection, fileId, function(err, ids) {
-  if (err) {
-    console.log('error saving the section.');
-  } else {
+        code: 'code2', 
+        display: 'display2'
+    }
+}];
+
+var aid1;
+var aid2;
+bbr.saveSection('allergies', 'testPatient1', inputSection, fileId1, function(err, ids) {
+    assert.ifError(err);        
     aid1 = ids[0];
     aid2 = ids[1];
-  }
 });
 ```
 ---------------------------------------
@@ -486,7 +492,7 @@ bbr.saveSection('allergies', testPatient', inputSection, fileId, function(err, i
 <a name="getSection" />
 ### getSection(secName, ptKey, callback)
 
-Gets all the section entries in Master Health Record
+Gets section entries in Master Health Record
 
 __Arguments__
 * `secName` - Section name.
@@ -502,14 +508,13 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getSection('allergies', 'testPatient', function(err, entries) {
-  if (err) {
-    console.log('error retrieving the section.');
-  } else {
-    console.log(entries[0].name);                                 // 'allergy1'
-    console.log(entries[0].metadata.attribution[0].merge_reason); // 'new'
-    console.log(entries[0].metadata.attribution[0].record._id);   // fileId
-  }
+bbr.getSection('allergies', 'testPatient1', function(err, entries) {
+    assert.ifError(err);  
+    var i = [entries[0].name, entries[1].name].indexOf('allergy1');            
+    assert.equal(entries[i].value.code, 'code1');
+    var attr = entries[i].metadata.attribution[0];
+    assert.equal(attr.merge_reason, 'new');
+    assert.equal(attr.record.filename, 'expl1.xml');
 });
 ```
 ---------------------------------------
@@ -522,7 +527,7 @@ __Arguments__
 * `ptKey` - Identification string for the patient.
 * `ptRecord` - Multiple sections keyed with section names and an array of entries with schema as specified in [`connectDatabase`](#connectDatabase).
 * `sourceId` - Id for the source where the `ptRecord` is located. 
-* `callback(err, ids)` - A callback which is called when saving sections is succesfull, or an error occurs.  `ids` are array of arrays of database assigned identifier for each section and entries in the section.  Section order is section name alphabetical.
+* `callback(err, ids)` - A callback which is called when saving sections is succesfull, or an error occurs.  `ids` are array of arrays of database assigned identifier for each section and entries in the section.  Section order is in section name alphabetical.
 
 __Examples__
 
@@ -544,7 +549,7 @@ var ptRecord = {
     }
   ]
 };
-bbr.saveAllSections('allergies', testPatient2', ptRecord, fileId, function(err, ids) {
+bbr.saveAllSections('allergies', 'testPatient2', ptRecord, fileId, function(err, ids) {
   if (err) {
     console.log('error saving the patient data.');
   } else {
@@ -562,19 +567,41 @@ Gets the whole Master Patient Record.
 
 __Arguments__
 * `ptKey` - Identification string for the patient.
-* `callback(err, ptRecord)` - A callback which is called when Master Health Record is retrieved, or an error occurs.  For each section entries are identical to `getSection`](#getSection) in content.
+* `callback(err, ptRecord)` - A callback which is called when Master Health Record is retrieved, or an error occurs.  For each section entries are identical to [`getSection`](#getSection) in content.
 
 __Examples__
 
 ```js
 bbr.getAllSections('testPatient2', function(err, ptRecord) {
-  if (err) {
-    console.log('error retreiving.');
-  } else {
-    console.log(ptRecord.allergies[0].name);  // 'allergy1'.
-    console.log(ptRecord.allergies[1].name);  // 'allergy2'.
-    console.log(ptRecord.procedures[0].name); // 'procedure1'
-  }
+    assert.ifError(err);
+    var names = ptRecord.allergies.map(function(a) {return a.name;});
+    var i = names.indexOf('allergy1');
+    assert.equal(ptRecord.allergies[i].severity, 'severity1');
+    assert.equal(ptRecord.procedures[0].name, 'procedure1');
+    assert.equal(ptRecord.procedures[0].proc_type, 'proc_type1');
+    var attr = ptRecord.procedures[0].metadata.attribution[0];
+    assert.equal(attr.merge_reason, 'new');
+    assert.equal(attr.record.filename, 'expl4.xml');
+});
+```
+---------------------------------------
+
+### cleanSection(input)
+
+Removes all non blue-button data (currently _id and metadata) from each entry.
+
+__Arguments__
+* `input` - Section entries.
+
+__Examples__
+
+```js
+bbr.getSection('procedures', 'testPatient2', function(err, entries) {
+    assert.ifError(err);
+    var expectedCleanEntries = [{name: 'procedure1', proc_type: 'proc_type1',}];
+    assert.notDeepEqual(entries, expectedCleanEntries);
+    var cleanEntries = bbr.cleanSection(entries);
+    assert.deepEqual(cleanEntries, expectedCleanEntries);
 });
 ```
 ---------------------------------------
@@ -586,18 +613,18 @@ Gets an entry of a section `secName` from Master Health Record.
 __Arguments__
 * `secName` - Section name.
 * `id` - Database identifier for the entry.
-* `callback(err, entry)` - A callback which is called when entry is retrieved, or an error occurs.  `entry` fields are identical to `getSection`](#getSection) in content.
+* `callback(err, entry)` - A callback which is called when entry is retrieved, or an error occurs.  `entry` fields are identical to [`getSection`](#getSection) in content.
 
 __Examples__
 
 ```js
-bbr.getEntry('allergies', aid1, function(err, entry) {
-  if (err) {
-    console.log('error retrieving entry.');
-  } else {
-    console.log(entry.name);    // 'allergy1'
-    console.log(entry.severity; // 'severity1'
-  }
+bbr.getEntry('allergies', aid2, function(err, entry) {
+    assert.ifError(err);
+    assert.equal(entry.name, 'allergy2');
+    assert.equal(entry.value.display, 'display2');
+    var attr = entry.metadata.attribution[0];
+    assert.equal(attr.merge_reason, 'new');
+    assert.equal(attr.record.filename, 'expl1.xml');
 });
 ```
 ---------------------------------------
@@ -615,12 +642,17 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.duplicateEntry('allergies', aid1, fileId, function(err) {
-  if (err) {
-    console.log('cannot register sourceId.');
-  } else {
-    console.log('registered source to include duplicate.');
-  }
+bbr.duplicateEntry('allergies', aid1, fileId2, function(err) {
+    assert.ifError(err);
+    bbr.getEntry('allergies', aid1, function(err, entry) {
+        assert.ifError(err);
+        var attr = entry.metadata.attribution;
+        assert.equal(attr.length, 2);
+        assert.equal(attr[0].merge_reason, 'new');
+        assert.equal(attr[0].record.filename, 'expl1.xml');
+        assert.equal(attr[1].merge_reason, 'duplicate');
+        assert.equal(attr[1].record.filename, 'expl2.xml');
+    });
 });
 ```
 ---------------------------------------
@@ -639,12 +671,20 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.updateEntry('allergies', aid1, fileId, {severity: 'severityUpdate'}, function(err) {
-  if (err) {
-    console.log('error updating the entry.');
-  } else {
-    console.log('severity is updated.');
-  }
+bbr.updateEntry('allergies', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
+    assert.ifError(err);
+    bbr.getEntry('allergies', aid1, function(err, entry) {
+        assert.ifError(err);
+        assert.equal(entry.severity, 'updatedSev');
+        var attr = entry.metadata.attribution;
+        assert.equal(attr.length, 3);
+        assert.equal(attr[0].merge_reason, 'new');
+        assert.equal(attr[0].record.filename, 'expl1.xml');
+        assert.equal(attr[1].merge_reason, 'duplicate');
+        assert.equal(attr[1].record.filename, 'expl2.xml');
+        assert.equal(attr[2].merge_reason, 'update');
+        assert.equal(attr[2].record.filename, 'expl3.xml');
+    });
 });
 ```
 ---------------------------------------
@@ -654,7 +694,6 @@ bbr.updateEntry('allergies', aid1, fileId, {severity: 'severityUpdate'}, functio
 Retrieves Merge History for a particular patient and section.
 
 __Arguments__
-* `secName` - Section name.
 * `ptKey` - Identification string for the patient.
 * `entryFields` - Fields for entries to be returned.
 * `recordFields` - Fields for sources to be returned.
@@ -667,23 +706,29 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getMerges('allergies', 'testPatient', 'severity', 'filename', function(err, result) {
-  if (err) {
-    console.log('error retreiving merge history.');
-  } else { // order might differ
-    console.log(result[0].entry.severity);  // 'severity1'
-    console.log(result[0].record.filename); // 'expl.xml'
-    console.log(result[0].merge_reason);    // 'new'
-    console.log(result[1].entry.severity);  // 'severity1'
-    console.log(result[1].record.filename); // 'expl.xml'
-    console.log(result[1].merge_reason);    // 'duplicate'
-    console.log(result[2].entry.severity);  // 'severityUpdate'
-    console.log(result[2].record.filename); // 'expl.xml'
-    console.log(result[2].merge_reason);    // 'update'
-    console.log(result[3].entry.severity);  // 'severity2'
-    console.log(result[3].record.filename); // 'expl.xml'
-    console.log(result[3].merge_reason);    // 'new'
-  }
+bbr.getMerges('allergies', 'testPatient1', 'name severity', 'filename', function(err, result) {
+    assert.ifError(err);
+    assert.equal(result.length, 4);
+    result.sort(function(a, b) {
+        var r = a.entry.name.localeCompare(b.entry.name);
+        if (r === 0) {
+            var c = {'new': -1, 'duplicate': 0, 'update': 1};
+            return c[a.merge_reason] - c[b.merge_reason];
+        }
+        return r;
+    });
+    assert.equal(result[0].entry.severity, 'updatedSev');
+    assert.equal(result[0].record.filename, 'expl1.xml');
+    assert.equal(result[0].merge_reason, 'new');
+    assert.equal(result[1].entry.severity, 'updatedSev');
+    assert.equal(result[1].record.filename, 'expl2.xml');
+    assert.equal(result[1].merge_reason, 'duplicate');
+    assert.equal(result[2].entry.severity, 'updatedSev');
+    assert.equal(result[2].record.filename, 'expl3.xml');
+    assert.equal(result[2].merge_reason, 'update');
+    assert.equal(result[3].entry.severity, 'severity2');
+    assert.equal(result[3].record.filename, 'expl1.xml');
+    assert.equal(result[3].merge_reason, 'new');
 });
 ```
 ---------------------------------------
@@ -696,26 +741,21 @@ __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
 * `conditions` - Condition specification.
-* `callback(err, count)` - A callback when `count` is retrieved, or an error occurs.  `
+* `callback(err, count)` - A callback when `count` is retrieved, or an error occurs.
 
 __Examples__
 
 ```js
-bbr.mergeCount('allergies', 'testPatient', {}, function(err, count) {
-  if (err) {
-    console.log('error retreiving count.');
-  } else { // order might differ
-    console.log(count);  // 4
-  }
-
-bbr.mergeCount('allergies', 'testPatient', {merge_reason: 'new'}, function(err, count) {
-  if (err) {
-    console.log('error retreiving count.');
-  } else { // order might differ
-    console.log(count);  // 2
-  }  
+bbr.mergeCount('allergies', 'testPatient1', {}, function(err, count) {
+    assert.ifError(err);
+    assert.equal(count, 4);
 });
-```
+
+bbr.mergeCount('allergies', 'testPatient1', {merge_reason: 'duplicate'}, function(err, count) {
+    assert.ifError(err);
+    assert.equal(count, 1);
+});
+ ```
 ---------------------------------------
 
 ### savePartialSection(secName, ptKey, inputSection, sourceId, callback)
@@ -726,63 +766,58 @@ __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
 * `inputSection` - An array of partial entries and match information.  Each element in the array has three top level properties:
-  ** partial_entry - Section entry with the schema as specified in [`connectDatabase`](#connectDatabase).
-  ** partial_match - Match information with the schema as specified in [`connectDatabase`](#connectDatabase).
-  ** match_entry_id - Id of the existing section entry which partial_entry matches.
+  * partial_entry - Section entry with the schema as specified in [`connectDatabase`](#connectDatabase).
+  * partial_match - Match information with the schema as specified in [`connectDatabase`](#connectDatabase).
+  * match_entry_id - Id of the existing section entry which partial_entry matches.
 * `sourceId` - Id for the source where the `inputSection` is located. 
 * `callback(err, ids)` - A callback which is called when saving partial entries is succesfull, or an error occurs.  `ids` are database assigned identifiers for entries specified in `partial_entry` in the same order as in `inputSection`.
 
 __Examples__
 
 ```js
-var inputSection = [
-  {
+var inputSection = [{
     partial_entry : {
-      name: 'allergy1',
-      severity: 'severity3',
-      value: {
-        code: 'code1', 
-        display: 'display1'
-      }
+        name: 'allergy1',
+        severity: 'severity3',
+        value: {
+            code: 'code1', 
+            display: 'display1'
+        }
     },
     partial_match: {
-      percent: 80,
-      subelements = ['severity']
+        percent: 80,
+        subelements: ['severity']
     },
     match_entry_id: aid1
-  },
-  {
-    partial_entry : {
-      name: 'allergy2',
-      severity: 'severity2',
-      value: {
-        code: 'code5', 
-        display: 'display2'
-      }
+},
+{
+    partial_entry: {
+        name: 'allergy2',
+        severity: 'severity2',
+        value: {
+            code: 'code5', 
+            display: 'display2'
+        }
     },
     partial_match: {
-      percent: 90,
-      subelements = ['value.code']
+        percent: 90,
+        subelements: ['value.code']
     },
     match_entry_id: aid2
-  }
-];
-var paid1 = null;
-var paid2 = null;
-bbr.saveSection('allergies', testPatient', inputSection, fileId, function(err, ids) {
-  if (err) {
-    console.log('error saving the section.');
-  } else {
+}];
+var paid1;
+var paid2;
+bbr.savePartialSection('allergies', 'testPatient1', inputSection, fileId4, function(err, ids) {
+    assert.ifError(err);
     paid1 = ids[0];
     paid2 = ids[1];
-  }
 });
 ```
 ---------------------------------------
 
 ### getPartialSection(secName, ptKey, callback)
 
-Gets all entries in a section of Partial Health Record without any match information,
+Gets all entries in a section of Partial Health Record without any match information.  The entries are identical to [`getSection`](#getSection) in content.
 
 __Arguments__
 * `secName` - Section name.
@@ -792,15 +827,13 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getSection('allergies', testPatient', function(err, entries) {
-  if (err) {
-    console.log('error saving the section.');
-  } else { // order of entries might be different
-    console.log(entries[0].name);       // allergy1
-    console.log(entries[0].severity);   //severity3
-    console.log(entries[1].name);       // allergy2
-    console.log(entries[1].value.code); // code5
-  }
+bbr.getPartialSection('allergies', 'testPatient1', function(err, entries) {
+    assert.ifError(err);
+    var i = [entries[0].name, entries[1].name].indexOf('allergy1');
+    assert.equal(entries[i].name, 'allergy1');
+    assert.equal(entries[i].severity, 'severity3');
+    assert.equal(entries[i+1 % 2].name, 'allergy2');
+    assert.equal(entries[i+1 % 2].value.code, 'code5');
 });
 ```
 ---------------------------------------
@@ -812,29 +845,23 @@ Gets a list of all section entries in Partial Health Record.
 __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
-* `fields1 - Fields of entries to be retrieved.
-* `callback(err, partialEntries)` - A callback which is called when entries and match information areretrieved, or an error occurs.  Each element in `partialEntries` array contains `fields` for `partial_entry` and `match_entry' and match information.
+* `fields` - Fields of entries to be retrieved.
+* `callback(err, partialEntries)` - A callback which is called when entries and match information areretrieved, or an error occurs.  Each element in `partialEntries` array contains `fields` for `match_entry` and `entry` and match information.
 
 __Examples__
 
 ```js
-bbr.getMatches('allergies', testPatient', 'severity', function(err, partialEntries) {
-  var matchId1 = null;
-  var matchId2 = null;
-  if (err) {
-    console.log('error retreiving partial entries.');
-  } else { // order of entries might be different
-    console.log(partialEntries[0].partial_entry.severity); // severity3
-    console.log(partialEntries[0].match_entry.severity);   // severity1
-    console.log(partialEntries[0].percent);                // 80
-    console.log(partialEntries[0].subelements);            // ['severity']
-    matchId1 = partialEntries[0]._id;
-    console.log(partialEntries[1].partial_entry.severity); // severity2
-    console.log(partialEntries[1].match_entry.severity);   // severity2
-    console.log(partialEntries[1].percent);                // 90
-    console.log(partialEntries[1].subelements);            // ['value.code']
-    matchId2 = partialEntries[2]._id;
-  }
+bbr.getMatches('allergies', 'testPatient1', 'name severity value.code', function(err, entries) {
+    assert.ifError(err);
+    var i = [entries[0].entry.name, entries[1].entry.name].indexOf('allergy1');
+    assert.equal(entries[i].entry.severity, 'updatedSev');
+    assert.equal(entries[i].match_entry.severity, 'severity3');
+    assert.equal(entries[i].percent, 80);
+    assert.deepEqual(entries[i].subelements, ['severity']);
+    assert.equal(entries[i+1 % 2].entry.value.code, 'code2');
+    assert.equal(entries[i+1 % 2].match_entry.value.code, 'code5');
+    assert.equal(entries[i+1 % 2].percent, 90);
+    assert.deepEqual(entries[i+1 % 2].subelements, ['value.code']);            
 });
 ```
 ---------------------------------------
@@ -846,22 +873,17 @@ Gets all the details of a partial entry, the matching entry in Master Health Rec
 __Arguments__
 * `secName` - Section name.
 * `id` - Id of the match.
-* `callback(err, matchInfo)` - A callback which is called when entries are match information is retrieved, or an error occurs.  `entry` and `match_entry` contain patient health data for partial and matching existing data. 
+* `callback(err, matchInfo)` - A callback which is called when match information is retrieved, or an error occurs.  `match_entry` and `entry` contain patient health data for partial and matching existing data. 
 
 __Examples__
 
 ```js
-bbr.getMatch('allergies', matchId1, function(err, matchInfo) {
-  if (err) {
-    console.log('error retreiving matchInfo.');
-  } else { // order of entries might be different
-    console.log(matchInfo.entry.name);           // 'allergy1'
-    console.log(matchInfo.entry.severity);       // 'severity3'
-    console.log(matchInfo.match_entry.name);     // 'allergy1'
-    console.log(matchInfo.match_entry.severity); // 'severity1'
-    console.log(matchInfo.percent);              // 80
-    console.log(matchInfo.subelements);          // ['severity']
-  }
+bbr.getMatch('allergies', paid1, function(err, matchInfo) {
+    assert.ifError(err);
+    assert.equal(matchInfo.entry.severity, 'updatedSev');
+    assert.equal(matchInfo.match_entry.severity, 'severity3');
+    assert.equal(matchInfo.percent, 80);
+    assert.deepEqual(matchInfo.subelements, ['severity']);
 });
 ```
 ---------------------------------------
@@ -879,43 +901,14 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.matchCount('allergies', 'testPatient', {}, function(err, count) {
-  if (err) {
-    console.log('error retreiving matchInfo.');
-  } else {
-    console.log(count); // 2
-  }
+bbr.matchCount('allergies', 'testPatient1', {}, function(err, count) {
+    assert.ifError(err);
+    assert.equal(count, 2);
 });
 
-bbr.matchCount('allergies', 'testPatient', {percent: 80}, function(err, count) {
-  if (err) {
-    console.log('error retreiving matchInfo.');
-  } else {
-    console.log(count); // 1
-  }
-});
-```
----------------------------------------
-
-### cancelMatch(secName, id, reason, callback)
-
-Removes the partial entry from Partial Health Record.
-
-__Arguments__
-* `secName` - Section name.
-* `id` - Id of the match.
-* `reason` - Reason for cancellation.
-* `callback(err)` - A callback which is called when canceling is achieved, or an error occurs.
-
-__Examples__
-
-```js
-bbr.cancelMatch('allergies', matchId1, 'ignore', function(err) {
-  if (err) {
-    console.log('error retreiving matchInfo.');
-  } else {
-    console.log('cancel is succeeded');
-  }
+bbr.matchCount('allergies', 'testPatient1', {percent: 80}, function(err, count) {
+    assert.ifError(err);
+    assert.equal(count, 1);
 });
 ```
 ---------------------------------------
@@ -933,12 +926,43 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.acceptedMatch('allergies', matchId1, 'added', function(err) {
-  if (err) {
-    console.log('error accepting.');
-  } else {
-    console.log('accept is succeeded');
-  }
+bbr.acceptMatch('allergies', paid1, 'added', function(err) {
+    assert.ifError(err);
+    bbr.getSection('allergies', 'testPatient1', function(err, entries) {
+        assert.ifError(err);
+        assert.equal(entries.length, 3); // added to Master Health Record
+        bbr.matchCount('allergies', 'testPatient1', {}, function(err, count) {
+            assert.ifError(err);
+            assert.equal(count, 1);     // removed from Partial Health Record 
+        });
+    });
+});
+```
+---------------------------------------
+
+### cancelMatch(secName, id, reason, callback)
+
+Removes the partial entry from Partial Health Record.
+
+__Arguments__
+* `secName` - Section name.
+* `id` - Id of the match.
+* `reason` - Reason for cancellation.
+* `callback(err)` - A callback which is called when canceling is achieved, or an error occurs.
+
+__Examples__
+
+```js
+bbr.cancelMatch('allergies', paid2, 'ignored', function(err) {
+    assert.ifError(err);
+    bbr.getSection('allergies', 'testPatient1', function(err, entries) {
+        assert.ifError(err);
+        assert.equal(entries.length, 3); // not added to Master Health Record
+        bbr.matchCount('allergies', 'testPatient1', {}, function(err, count) {
+            assert.ifError(err);
+            assert.equal(count, 0);      // removed from Partial Health Record 
+        });
+    });
 });
 ```
 ---------------------------------------
@@ -968,33 +992,52 @@ var schema = {
 };
 ```
 
-'contentType' is the file MIME type such as 'application/xml'.  'pat_key' is used to identify the patient file belongs to.  If it exists 'fileClass' can only have the value of 'ccda' and indicates that file was read as a ccda document succesfully.  
+'contentType' is the file MIME type such as 'application/xml'.  'pat_key' is used to identify the patient file belongs to.  If it exists 'fileClass' indicates the content type (ex: 'ccda').
 
 ### Patient data and metadata
 
-Patient data collections closely follows [blue-button](https://github.com/amida-tech/blue-button) models that implement CCDA header or sections.  Collection 'demographics' store CCDA header data.  Currently there are eight collections for supported CCDA sections: 'medications', 'procedures', 'socialHistories', 'problems', 'allergies', 'results', 'vitals', and 'encounters'.  Each element in the collections is a single entry in a CCDA section.  Allergy schema is
+Default patient data collections closely follows [blue-button](https://github.com/amida-tech/blue-button) models that implement CCDA header or sections.  Allergy schema is
 
 ``` javascript
 var schema = {
-  name: String,
-  code: String,
-  code_system_name: String,
+  allergen: {
+    name: String,
+    code: String,
+    code_system_name: String,
+    nullFlavor: String
+    translations: [{
+      name: String,
+      code: String,
+      code_system_name: String,
+      nullFlavor: String
+    }]
+  },
   date: [{date: Date, precision: String}],
   identifiers: [{
      identifier:String,
      identifier_type: String
   }],
   severity: String,
+  status: String,
   reaction: [{
-     code: String, 
-     name: String, 
-     code_system_name: String, 
+    reaction: {  
+      code: String, 
+      name: String, 
+      code_system_name: String,
+      nullFlavor: String
+      translations: [{
+        name: String,
+        code: String,
+        code_system_name: String
+        nullFlavor: String
+      }],
      severity: String
+    }
   }],
   
   pat_key: String,
   metadata: {
-    attribution: [{type: ObjectId, ref: 'allergymerges'}]
+    attribution: [{type: ObjectId, ref: 'allergiesmerges'}]
   },
   reviewed: Boolean,
   archived: Boolean
@@ -1003,11 +1046,13 @@ var schema = {
 
 All the fields before 'pat_key' directly comes from [blue-button](https://github.com/amida-tech/blue-button) models and is documented there.  Remaining fields are identical for all collections.  'pat_key' is the key for the patient whom this entry belongs.  'metadata.attribution' links patient data collections to merge history collections.  'reviewed=false' identifies all partial entries.  'archieved=true' identifies all partial entries that are ignored or merged and is not part of the health record.
 
+If an alternative patient data schema is given during [`connectDatabase`](#connectDatabase) then they simply replace all the fields before 'pat_key'.
+
 Since schema for all other collections follows the same pattern they will not be explicitly shown here.
 
 ### Merge History
 
-Collections for merge history hold information on where and how a patient data entry is added to the health record.  There is one merge history collection for each patient data collection: 'allergymerges', 'demographicmerges', 'encountermerges', 'socialmerges', 'vitalmerges', 'immunizationmerges', 'medicationmerges', 'proceduremerges', and 'resultmerges'.  The schema for each follows a general pattern and shown for 'allergymerges' below
+Collections for merge history hold information on where and how a patient data entry is added to the health record.  There is one merge history collection for each patient data collection.  The schema for each follows a general pattern and shown for 'allergiesmerges' below
 
 ``` javascript
 var schema = {
@@ -1021,11 +1066,11 @@ var schema = {
 };
 ```
 
-'entry_type' is a convenience field and holds the type of the entry.  It can have the values: 'allergy', 'demographic', 'social', 'problem', 'procedure', 'medication', 'vital', 'immunization', or 'encounter'.  'pat_key' is the patient key.  'entry' and 'record' respectively link the merge history to patient data and source file.  'merged' is the time that the merge history record is created.  'merge_reason' can currently be 'new', 'update' or 'duplicate'.  'archived=true' identifies all the merge history entries that is linked to patient data collections that has the same flag and is an another convenience field.  
+'entry_type' is a convenience field and holds the section name like allergies.  'pat_key' is the patient key.  'entry' and 'record' respectively link the merge history to patient data and source file.  'merged' is the time that the merge history record is created.  'merge_reason' can currently be 'new', 'update' or 'duplicate'.  'archived=true' identifies all the merge history entries that is linked to patient data collections that has the same flag and is an another convenience field.  
 
 ### Partial Match
 
-Collections for partial match history describe partial matches and the action that the patient took.  There is one partial match history collection for each patient data collection: 'allergymatches', 'demographicmatches', 'encountermatches', 'socialmatches', 'vitalmatches', 'immunizationmatches', 'medicationmatches', 'procedurematches', and 'resultmatches'.  The schema for each follows a general pattern and shown for 'allergymatches' below
+Collections for partial match history describe partial matches and the action that the patient took.  There is one partial match history collection for each patient data collection.  The schema for each follows a general pattern and shown for 'allergiesmatches' below
 
 ``` javascript
 var schema = {
@@ -1034,10 +1079,13 @@ var schema = {
   entry: {type: ObjectId, ref: allergies},
   record: {type: ObjectId, ref: 'storage.files'},
   determination: String,
+
   percent: Number,
   diff: {},
   subelements: {}
 };
 ```
 
-All the fields until the percent has identical descriptions to corresponding merge history collection ('allergymerges' for 'allergymatches'). 'percent', 'diff' and 'subelements' describe the details of the partial match for which detailed information can be found in [blue-button-match](https://github.com/amida-tech/blue-button-match).  'determination' describes the action that user took such as 'merged', 'added' or 'ignored'.
+All the fields until the percent has identical descriptions to corresponding merge history collection. 'percent', 'diff' and 'subelements' describe the details of the partial match for which detailed information can be found in [blue-button-match](https://github.com/amida-tech/blue-button-match).  'determination' describes the action that user took such as 'merged', 'added' or 'ignored'.
+
+If alternative match fields are given during [`connectDatabase`](#connectDatabase) they simply replace 'percent', 'diff' and 'subelements' above.
