@@ -26,7 +26,7 @@ var bbr = require("blue-button-record");
 ```
 blue-button-record assumes MongoDB is already running.  Connect to the database
 ``` javascript
-bbr.connectDatabase('localhost', function(err)) {
+bbr.connectDatabase('localhost', function(err) {
   if (err) throw err;
 }
 ```
@@ -162,7 +162,7 @@ bbr.mergeCount('allergies', 'patientKey', {merge_reason: 'duplicate'}, function(
 });        
 ```
 
-blue-button-record also stores Partial Health Record; entries which cannot immediately become part of the Master Health Record since they are similar enough to existing entries but not identical to become duplicates.  In addition to blue-button health data, blue-button-record requires a pointer to the existing entry and match information to persist partial entries
+blue-button-record also stores Partial Health Record; entries which cannot immediately become part of the Master Health Record since they are similar enough to existing entries but not identical to become duplicates.  In addition to blue-button health data, blue-button-record requires a pointer to an existing Master Health Record entry and match information to persist partial entries
 ``` javascript
 var partialAllergy = {
     partial_entry: ccdJSON.allergies[0],
@@ -203,7 +203,7 @@ bbr.getMatches('allergies', 'patientKey', 'allergen severity', function(err, res
     var matchId1 = result[1]._id;
 });
 ```
-Individual match access is also available and will return the full blue-button data both for the existing entries and the partial entries
+Individual match access is also available and will return the full blue-button data both for the Master Health Record enty and the Partial Health Record entry
 ``` javascript
 bbr.getMatch('allergies', matchId0, function(err, result) {
     console.log(result.entry.allergen.name);
@@ -243,7 +243,7 @@ bbr.acceptMatch('allergies', matchId1, 'added', function(err) {
 });   
 ```
 
-When the session ends, you disconnect fron the database
+When the session ends, you disconnect from the database
 ``` javascript
 bbr.disconnect(function(err) {
     if (err) {throw err;}
@@ -294,6 +294,7 @@ var options = {
         percent: 'number',
         subelements: 'any'
     }
+};
 
 bbr.connectDatabase('localhost', options, function(err) {
     assert.ifError(err);
@@ -476,6 +477,7 @@ var inputSection = [{
         code: 'code2', 
         display: 'display2'
     }
+}];
 
 var aid1;
 var aid2;
@@ -764,9 +766,9 @@ __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
 * `inputSection` - An array of partial entries and match information.  Each element in the array has three top level properties:
-  ** partial_entry - Section entry with the schema as specified in [`connectDatabase`](#connectDatabase).
-  ** partial_match - Match information with the schema as specified in [`connectDatabase`](#connectDatabase).
-  ** match_entry_id - Id of the existing section entry which partial_entry matches.
+  * partial_entry - Section entry with the schema as specified in [`connectDatabase`](#connectDatabase).
+  * partial_match - Match information with the schema as specified in [`connectDatabase`](#connectDatabase).
+  * match_entry_id - Id of the existing section entry which partial_entry matches.
 * `sourceId` - Id for the source where the `inputSection` is located. 
 * `callback(err, ids)` - A callback which is called when saving partial entries is succesfull, or an error occurs.  `ids` are database assigned identifiers for entries specified in `partial_entry` in the same order as in `inputSection`.
 
@@ -815,7 +817,7 @@ bbr.savePartialSection('allergies', 'testPatient1', inputSection, fileId4, funct
 
 ### getPartialSection(secName, ptKey, callback)
 
-Gets all entries in a section of Partial Health Record without any match information.  The entries are identical to `getSection`](#getSection) in content.
+Gets all entries in a section of Partial Health Record without any match information.  The entries are identical to [`getSection`](#getSection) in content.
 
 __Arguments__
 * `secName` - Section name.
