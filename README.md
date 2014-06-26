@@ -13,7 +13,7 @@ blue-button-record is a module to persist patient health data.  It is primarily 
 - Persist Master Health Record (blue-button data) per patient:  Master Health Record contains all historical data about patients' health.  Master Health Record is organized in sections such as allergies and medications and blue-button-record API is built based on this sectional organization.  Each section is further organized as a set of entries even when there is only one entry as in demographics.
 - Persist all sources of Master Health Record:  Currently only text files are supported.  Source content as well as various metadata such as name and upload time are stored.  Each entry in Master Health Record is linked to a source.    
 - Persist Merge History:  Since blue-button data is historical, entries in Master Health Record is expected to appear in multiple sources.  Merge History keeps track of all the sources from which entries are created or updated. In addition it is also possible to register sources where the entries appear as it is in the Master Health Record (duplicates). 
-- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate and thus require further review.  Both the partial entries, Master Health Record entries that the partial entries match, and match details are stored.  Partial Health Record entries are eventually either added to Master Health Record or removed; blue-button-record API provide methods for both.
+- Persist Partial Health Record:  This module also stores a second health record seperate from Master Health Record called Partial Health Record.  Partial Health Record is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate and thus require further review.  Both the partial entries, Master Health Record entries that the partial entries match, and match details are stored.  Partial Health Record entries are eventually either added to Master Health Record or removed; blue-button-record API provides methods for both.
 
 This implementation of blue-button-record uses MongoDB.
 
@@ -54,9 +54,11 @@ For simplicity we will only use this fileId in usage documentation as if it has 
 ``` javascript
 bbr.getRecordList('patientKey', function(err, results) {
     console.log(results.length);
+});
 
 bbr.getRecord(fileId, function(err, filename, content) {
     console.log(filename);
+});
 
 bbr.recordCount('patientKey', function(err, count) {
     console.log(count);
@@ -95,7 +97,7 @@ bbr.getSection('allergies', 'patientKey', function(err, result) {
 });
 
 ```
-In addition to [blue-button](https://github.com/amida-tech/blue-button) data, each entry also includes metadata and property '_id" which you can later use to update or access
+In addition to [blue-button](https://github.com/amida-tech/blue-button) data, each entry also includes metadata and property `_id` which you can later use to update or access
 ``` javascript
 bbr.updateEntry('allergies', id, fileId, {severity: 'Severe'}, function(err) {
     if (err) {throw err;}
@@ -182,7 +184,7 @@ bbr.savePartialSection('allergies', 'patientKey', partialAllergies, fileId, func
     if (err) {throw err;}       
 });
 ```
-blue-button health data piece of partial entries are available similar `getSection`
+blue-button health data piece of partial entries are available similar to `getSection`.
 ``` javascript
 bbr.getPartialSection('allergies', 'patientKey', function(err, result) {
   console.log(result[0].allergen.name);
@@ -211,7 +213,6 @@ bbr.getMatch('allergies', matchId0, function(err, result) {
     console.log(result.diff.severity);        
     console.log(result.percent);
 });   
-});
 ```
 Only count of matches can be accessed instead of full list
 ``` javascript
@@ -222,7 +223,6 @@ bbr.matchCount('allergies', 'patientKey', {}, function(err, count) {
 bbr.matchCount('allergies', 'patientKey', {percent: 90}, function(err, count) {
     console.log(count);
 });   
-});
 ```
 
 Matches can be canceled with application specific reasons such as 'ignored' or 'merged'
@@ -247,7 +247,6 @@ When the session ends, you disconnect fron the database
 ``` javascript
 bbr.disconnect(function(err) {
     if (err) {throw err;}
-    done();
 });   
 ```
 
@@ -581,7 +580,6 @@ bbr.getAllSections('testPatient2', function(err, ptRecord) {
     var attr = ptRecord.procedures[0].metadata.attribution[0];
     assert.equal(attr.merge_reason, 'new');
     assert.equal(attr.record.filename, 'expl4.xml');
-    done();
 });
 ```
 ---------------------------------------
@@ -694,7 +692,6 @@ bbr.updateEntry('allergies', aid1, fileId3, {severity: 'updatedSev'}, function(e
 Retrieves Merge History for a particular patient and section.
 
 __Arguments__
-* `secName` - Section name.
 * `ptKey` - Identification string for the patient.
 * `entryFields` - Fields for entries to be returned.
 * `recordFields` - Fields for sources to be returned.
@@ -750,13 +747,11 @@ __Examples__
 bbr.mergeCount('allergies', 'testPatient1', {}, function(err, count) {
     assert.ifError(err);
     assert.equal(count, 4);
-    done();
 });
 
 bbr.mergeCount('allergies', 'testPatient1', {merge_reason: 'duplicate'}, function(err, count) {
     assert.ifError(err);
     assert.equal(count, 1);
-    done();
 });
  ```
 ---------------------------------------
@@ -848,8 +843,8 @@ Gets a list of all section entries in Partial Health Record.
 __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
-* `fields1 - Fields of entries to be retrieved.
-* `callback(err, partialEntries)` - A callback which is called when entries and match information areretrieved, or an error occurs.  Each element in `partialEntries` array contains `fields` for `partial_entry` and `match_entry' and match information.
+* `fields - Fields of entries to be retrieved.
+* `callback(err, partialEntries)` - A callback which is called when entries and match information areretrieved, or an error occurs.  Each element in `partialEntries` array contains `fields` for `match_entry` and `entry' and match information.
 
 __Examples__
 
@@ -876,7 +871,7 @@ Gets all the details of a partial entry, the matching entry in Master Health Rec
 __Arguments__
 * `secName` - Section name.
 * `id` - Id of the match.
-* `callback(err, matchInfo)` - A callback which is called when entries are match information is retrieved, or an error occurs.  `entry` and `match_entry` contain patient health data for partial and matching existing data. 
+* `callback(err, matchInfo)` - A callback which is called when match information is retrieved, or an error occurs.  `match_entry` and `entry` contain patient health data for partial and matching existing data. 
 
 __Examples__
 
@@ -907,13 +902,11 @@ __Examples__
 bbr.matchCount('allergies', 'testPatient1', {}, function(err, count) {
     assert.ifError(err);
     assert.equal(count, 2);
-    done();
 });
 
 bbr.matchCount('allergies', 'testPatient1', {percent: 80}, function(err, count) {
     assert.ifError(err);
     assert.equal(count, 1);
-    done();
 });
 ```
 ---------------------------------------
@@ -1042,7 +1035,7 @@ var schema = {
   
   pat_key: String,
   metadata: {
-    attribution: [{type: ObjectId, ref: 'allergymerges'}]
+    attribution: [{type: ObjectId, ref: 'allergiesmerges'}]
   },
   reviewed: Boolean,
   archived: Boolean
