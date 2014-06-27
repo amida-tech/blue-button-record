@@ -420,6 +420,13 @@ describe('API Documentation Examples', function() {
         });
     });
 
+    it('clearDatabase', function(done) {
+        bbr.clearDatabase(function(err) {
+            assert.ifError(err);
+            done();
+        });
+    });
+
     it('disconnect', function(done) {
         bbr.disconnect(function(err) {
             assert.ifError(err);

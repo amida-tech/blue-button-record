@@ -491,6 +491,12 @@ describe('API', function() {
         );
     });
 
+    it('clearDatabase', function(done) {
+        bbr.clearDatabase(function(err) {
+            done(err);
+        });
+    });
+
     after(function(done) {
         bbr.disconnect(function(err) {
             done(err);
