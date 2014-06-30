@@ -47,20 +47,20 @@ exports.clearDatabase = function(callback) {
 
 // records
 
-exports.saveRecord = function(ptKey, content, sourceInfo, contentType, callback) {
-    storage.saveRecord(dbinfo, ptKey, content, sourceInfo, contentType, callback);
+exports.saveSource = function(ptKey, content, sourceInfo, contentType, callback) {
+    storage.saveSource(dbinfo, ptKey, content, sourceInfo, contentType, callback);
 };
 
-exports.getRecordList = function(ptKey, callback) {
-    storage.getRecordList(dbinfo, ptKey, callback);
+exports.getSourceList = function(ptKey, callback) {
+    storage.getSourceList(dbinfo, ptKey, callback);
 };
 
-exports.getRecord = function(ptKey, sourceId, callback) {
-    storage.getRecord(dbinfo, ptKey, sourceId, callback);
+exports.getSource = function(ptKey, sourceId, callback) {
+    storage.getSource(dbinfo, ptKey, sourceId, callback);
 };
 
-exports.recordCount = function(ptKey, callback) {
-    storage.recordCount(dbinfo, ptKey, callback);
+exports.sourceCount = function(ptKey, callback) {
+    storage.sourceCount(dbinfo, ptKey, callback);
 };
 
 // merges

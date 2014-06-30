@@ -110,7 +110,7 @@ var matchObjectInstance = exports.matchObjectInstance = {
 };
 
 var createStorage = function(context, pat, filename, index, callback) {
-    storage.saveRecord(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, id) {
+    storage.saveSource(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, id) {
         if (err) {
             callback(err);
         } else {
