@@ -99,12 +99,12 @@ bbr.getSection('allergies', 'patientKey', function(err, result) {
 ```
 In addition to [blue-button](https://github.com/amida-tech/blue-button) data, each entry also includes metadata and property `_id` which you can later use to update or access
 ``` javascript
-bbr.updateEntry('allergies', id, fileId, {severity: 'Severe'}, function(err) {
+bbr.updateEntry('allergies', 'patientKey', id, fileId, {severity: 'Severe'}, function(err) {
     if (err) {throw err;}
 });
 
 var allergy;
-bbr.getEntry('allergies', id, function(err, result) {
+bbr.getEntry('allergies', 'patientKey', id, function(err, result) {
     console.log(result.severity);
     allergy = result;
 });
@@ -119,14 +119,14 @@ which makes allergiesBBOnly comparable to ccdJSON.allergies.
 
 If you find an existing entry of Master Health Record in a new source, you can register the source as such
 ``` javascript
-bbr.duplicateEntry('allergies', id, fileId, function(err) {
+bbr.duplicateEntry('allergies', 'patientKey', id, fileId, function(err) {
   if (err) throw err;
 });
 ```
 
 Metadata property for each entry provides both the source of the data and the Merge History
 ``` javascript
-  bbr.getEntry('allergies', id, function(err, entry) {
+  bbr.getEntry('allergies', 'patientKey', id, function(err, entry) {
       var attribution = entry.metadata.attribution;
       console.log(attribution[0].merge_reason);     // 'new'
       console.log(attribution[0].record.filename);
@@ -607,19 +607,20 @@ bbr.getSection('procedures', 'testPatient2', function(err, entries) {
 ```
 ---------------------------------------
 
-### getEntry(secName, id, callback)
+### getEntry(secName, ptKey, id, callback)
 
 Gets an entry of a section `secName` from Master Health Record.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Database identifier for the entry.
 * `callback(err, entry)` - A callback which is called when entry is retrieved, or an error occurs.  `entry` fields are identical to [`getSection`](#getSection) in content.
 
 __Examples__
 
 ```js
-bbr.getEntry('allergies', aid2, function(err, entry) {
+bbr.getEntry('allergies', 'testPatient1', aid2, function(err, entry) {
     assert.ifError(err);
     assert.equal(entry.name, 'allergy2');
     assert.equal(entry.value.display, 'display2');
@@ -630,12 +631,13 @@ bbr.getEntry('allergies', aid2, function(err, entry) {
 ```
 ---------------------------------------
 
-### duplicateEntry(secName, id, sourceId, callback)
+### duplicateEntry(secName, ptKey, id, sourceId, callback)
 
 Registers source `sourceId` to include the duplicate of an existing entry `id`.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Database identifier for the entry.
 * `sourceId` - Id for the source. 
 * `callback(err)` - A callback which is called when duplication information is saved, or an error occurs.
@@ -643,9 +645,9 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.duplicateEntry('allergies', aid1, fileId2, function(err) {
+bbr.duplicateEntry('allergies', 'testPatient1', aid1, fileId2, function(err) {
     assert.ifError(err);
-    bbr.getEntry('allergies', aid1, function(err, entry) {
+    bbr.getEntry('allergies', 'testPatient1', aid1, function(err, entry) {
         assert.ifError(err);
         var attr = entry.metadata.attribution;
         assert.equal(attr.length, 2);
@@ -658,12 +660,13 @@ bbr.duplicateEntry('allergies', aid1, fileId2, function(err) {
 ```
 ---------------------------------------
 
-### updateEntry(secName, id, sourceId, updateObject, callback)
+### updateEntry(secName, ptKey, id, sourceId, updateObject, callback)
 
 Updates entry with the fields in `updateObject`.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Database identifier for the entry.
 * `sourceId` - Id for the source.
 * `updateObject` - JSON object with keys and values to update.
@@ -672,9 +675,9 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.updateEntry('allergies', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
+bbr.updateEntry('allergies', 'testPatient1', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
     assert.ifError(err);
-    bbr.getEntry('allergies', aid1, function(err, entry) {
+    bbr.getEntry('allergies', 'testPatient1', aid1, function(err, entry) {
         assert.ifError(err);
         assert.equal(entry.severity, 'updatedSev');
         var attr = entry.metadata.attribution;

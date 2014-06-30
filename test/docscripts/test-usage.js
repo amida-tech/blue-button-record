@@ -99,7 +99,7 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 10 (a)', function(done) {
-        bbr.updateEntry('allergies', id, fileId, {severity: 'Severe'}, function(err) {
+        bbr.updateEntry('allergies', 'patientKey', id, fileId, {severity: 'Severe'}, function(err) {
             if (err) {throw err;}
             done();
         });
@@ -108,7 +108,7 @@ describe('Usage Documentation Examples' , function() {
     var allergy;
 
     it('script 10 (b)', function(done) {
-        bbr.getEntry('allergies', id, function(err, result) {
+        bbr.getEntry('allergies', 'patientKey', id, function(err, result) {
             console.log(result.severity);
             allergy = result;
             done();
@@ -123,14 +123,14 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 12', function(done) {
-        bbr.duplicateEntry('allergies', id, fileId, function(err) {
+        bbr.duplicateEntry('allergies', 'patientKey', id, fileId, function(err) {
             if (err) {throw err;}
             done();
         });        
     });
 
     it('script 13', function(done) {
-        bbr.getEntry('allergies', id, function(err, entry) {
+        bbr.getEntry('allergies', 'patientKey', id, function(err, entry) {
             var attribution = entry.metadata.attribution;
             console.log(attribution[0].merge_reason);     // 'new'
             console.log(attribution[0].record.filename);

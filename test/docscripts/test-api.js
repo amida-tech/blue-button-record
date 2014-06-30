@@ -203,7 +203,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('getEntry', function(done) {
-        bbr.getEntry('allergies', aid2, function(err, entry) {
+        bbr.getEntry('allergies', 'testPatient1', aid2, function(err, entry) {
             assert.ifError(err);
             assert.equal(entry.name, 'allergy2');
             assert.equal(entry.value.display, 'display2');
@@ -215,9 +215,9 @@ describe('API Documentation Examples', function() {
     });
 
     it('duplicateEntry', function(done) {
-        bbr.duplicateEntry('allergies', aid1, fileId2, function(err) {
+        bbr.duplicateEntry('allergies', 'testPatient1', aid1, fileId2, function(err) {
             assert.ifError(err);
-            bbr.getEntry('allergies', aid1, function(err, entry) {
+            bbr.getEntry('allergies', 'testPatient1', aid1, function(err, entry) {
                 assert.ifError(err);
                 var attr = entry.metadata.attribution;
                 assert.equal(attr.length, 2);
@@ -231,9 +231,9 @@ describe('API Documentation Examples', function() {
     });
 
     it('updateEntry', function(done) {
-        bbr.updateEntry('allergies', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
+        bbr.updateEntry('allergies', 'testPatient1', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
             assert.ifError(err);
-            bbr.getEntry('allergies', aid1, function(err, entry) {
+            bbr.getEntry('allergies', 'testPatient1', aid1, function(err, entry) {
                 assert.ifError(err);
                 assert.equal(entry.severity, 'updatedSev');
                 var attr = entry.metadata.attribution;

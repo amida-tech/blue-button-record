@@ -125,16 +125,16 @@ exports.savePartialSection = function(secName, ptKey, inputSection, sourceId, ca
 
 // entry
 
-exports.getEntry = function(secName, id, callback) {
-    entry.get(dbinfo, secName, id, callback);
+exports.getEntry = function(secName, ptKey, id, callback) {
+    entry.get(dbinfo, secName, ptKey, id, callback);
 };
 
-exports.updateEntry = function(secName, id, sourceId, updateObject, callback) {
-    entry.update(dbinfo, secName, id, sourceId, updateObject, callback);
+exports.updateEntry = function(secName, ptKey, id, sourceId, updateObject, callback) {
+    entry.update(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
 };
 
-exports.duplicateEntry = function(secName, id, sourceId, callback) {
-    entry.duplicate(dbinfo, secName, id, sourceId, callback);
+exports.duplicateEntry = function(secName, ptKey, id, sourceId, callback) {
+    entry.duplicate(dbinfo, secName, ptKey, id, sourceId, callback);
 };
 
 // utility

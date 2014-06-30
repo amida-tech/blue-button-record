@@ -179,7 +179,7 @@ describe('API', function() {
     it('getEntry', function(done) {
         async.map(allergyIds, 
             function(id, cb) {
-                bbr.getEntry('allergies', id, cb);
+                bbr.getEntry('allergies', 'pat1', id, cb);
             },
             function(err, results) {
                 if (err) {
@@ -206,20 +206,20 @@ describe('API', function() {
     });
 
     it('duplicateEntry', function(done) {
-        bbr.duplicateEntry('allergies', allergyIds[0], sourceIds[4], function(err) {
+        bbr.duplicateEntry('allergies', 'pat1', allergyIds[0], sourceIds[4], function(err) {
             done(err);
         });
     });
 
     it('updateEntry', function(done) {
-        bbr.updateEntry('allergies', allergyIds[0], sourceIds[5], {severity: 'Severe'}, function(err) {
+        bbr.updateEntry('allergies', 'pat1', allergyIds[0], sourceIds[5], {severity: 'Severe'}, function(err) {
             allergySeverities[0] = 'Severe';
             done(err);
         });
     });
 
     it('getEntry', function(done) {
-        bbr.getEntry('allergies', allergyIds[0], function(err, result) {
+        bbr.getEntry('allergies', 'pat1', allergyIds[0], function(err, result) {
             expect(result.severity).to.equal('Severe');
             expect(result.allergen && result.allergen.name).to.equal(allergyNames[0]);
             expect(result.metadata).to.exist;
