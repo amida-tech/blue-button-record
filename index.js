@@ -79,20 +79,20 @@ exports.getMatches = function(secName, ptKey, fields, callback) {
     match.getAll(dbinfo, secName, ptKey, fields, callback);
 };
 
-exports.getMatch = function(secName, id, callback) {
-    match.get(dbinfo, secName, id, callback);
+exports.getMatch = function(secName, ptKey, id, callback) {
+    match.get(dbinfo, secName, ptKey, id, callback);
 };
 
 exports.matchCount = function(secName, ptKey, conditions, callback) {
     match.count(dbinfo, secName, ptKey, conditions, callback);
 };
 
-exports.cancelMatch = function(secName, id, reason, callback) {
-    match.cancel(dbinfo, secName, id, reason, callback);
+exports.cancelMatch = function(secName, ptKey, id, reason, callback) {
+    match.cancel(dbinfo, secName, ptKey, id, reason, callback);
 };
 
-exports.acceptMatch = function(secName, id, reason, callback) {
-    match.accept(dbinfo, secName, id, reason, callback);
+exports.acceptMatch = function(secName, ptKey, id, reason, callback) {
+    match.accept(dbinfo, secName, ptKey, id, reason, callback);
 };
 
 // section

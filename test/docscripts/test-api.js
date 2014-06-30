@@ -364,7 +364,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('getMatch', function(done) {
-        bbr.getMatch('allergies', paid1, function(err, matchInfo) {
+        bbr.getMatch('allergies', 'testPatient1', paid1, function(err, matchInfo) {
             assert.ifError(err);
             assert.equal(matchInfo.entry.severity, 'updatedSev');
             assert.equal(matchInfo.match_entry.severity, 'severity3');
@@ -391,7 +391,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('acceptMatch', function(done) {
-        bbr.acceptMatch('allergies', paid1, 'added', function(err) {
+        bbr.acceptMatch('allergies', 'testPatient1', paid1, 'added', function(err) {
             assert.ifError(err);
             bbr.getSection('allergies', 'testPatient1', function(err, entries) {
                 assert.ifError(err);
@@ -406,7 +406,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('cancelMatch', function(done) {
-        bbr.cancelMatch('allergies', paid2, 'ignored', function(err) {
+        bbr.cancelMatch('allergies', 'testPatient1', paid2, 'ignored', function(err) {
             assert.ifError(err);
             bbr.getSection('allergies', 'testPatient1', function(err, entries) {
                 assert.ifError(err);

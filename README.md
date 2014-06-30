@@ -205,7 +205,7 @@ bbr.getMatches('allergies', 'patientKey', 'allergen severity', function(err, res
 ```
 Individual match access is also available and will return the full blue-button data both for the Master Health Record enty and the Partial Health Record entry
 ``` javascript
-bbr.getMatch('allergies', matchId0, function(err, result) {
+bbr.getMatch('allergies', 'patientKey', matchId0, function(err, result) {
     console.log(result.entry.allergen.name);
     console.log(result.entry.status);
     console.log(result.match_entry.allergen.name);   
@@ -227,18 +227,18 @@ bbr.matchCount('allergies', 'patientKey', {percent: 90}, function(err, count) {
 
 Matches can be canceled with application specific reasons such as 'ignored' or 'merged'
 ``` javascript
-bbr.cancelMatch('allergies', matchId, 'ignored', function(err, count) {
+bbr.cancelMatch('allergies', 'patientKey', matchId0, 'ignored', function(err, count) {
   console.log(count);
 });
 
-bbr.cancelMatch('allergies', matchId, 'merged', function(err, count) {
+bbr.cancelMatch('allergies', 'patientKey', matchId0, 'merged', function(err, count) {
   console.log(count);
 });
 
 ```
 or they can be accepted and become part of the Master Health Record.
 ``` javascript
-bbr.acceptMatch('allergies', matchId1, 'added', function(err) {
+bbr.acceptMatch('allergies', 'patientKey', matchId1, 'added', function(err) {
     if (err) {throw err;}
 });   
 ```
@@ -867,19 +867,20 @@ bbr.getMatches('allergies', 'testPatient1', 'name severity value.code', function
 ```
 ---------------------------------------
 
-### getMatch(secName, id, callback)
+### getMatch(secName, ptKey, id, callback)
 
 Gets all the details of a partial entry, the matching entry in Master Health Record, and match information.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Id of the match.
 * `callback(err, matchInfo)` - A callback which is called when match information is retrieved, or an error occurs.  `match_entry` and `entry` contain patient health data for partial and matching existing data. 
 
 __Examples__
 
 ```js
-bbr.getMatch('allergies', paid1, function(err, matchInfo) {
+bbr.getMatch('allergies', 'testPatient1', paid1, function(err, matchInfo) {
     assert.ifError(err);
     assert.equal(matchInfo.entry.severity, 'updatedSev');
     assert.equal(matchInfo.match_entry.severity, 'severity3');
@@ -914,12 +915,13 @@ bbr.matchCount('allergies', 'testPatient1', {percent: 80}, function(err, count) 
 ```
 ---------------------------------------
 
-### acceptMatch(secName, id, reason, callback)
+### acceptMatch(secName, ptKey, id, reason, callback)
 
 Moves the partial entry to Master Health Record.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Id of the match.
 * `reason` - Reason for acceptance.
 * `callback(err)` - A callback which is called when acceptance is achieved, or an error occurs.
@@ -927,7 +929,7 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.acceptMatch('allergies', paid1, 'added', function(err) {
+bbr.acceptMatch('allergies', 'testPatient1', paid1, 'added', function(err) {
     assert.ifError(err);
     bbr.getSection('allergies', 'testPatient1', function(err, entries) {
         assert.ifError(err);
@@ -941,12 +943,13 @@ bbr.acceptMatch('allergies', paid1, 'added', function(err) {
 ```
 ---------------------------------------
 
-### cancelMatch(secName, id, reason, callback)
+### cancelMatch(secName, ptKey, id, reason, callback)
 
 Removes the partial entry from Partial Health Record.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Id of the match.
 * `reason` - Reason for cancellation.
 * `callback(err)` - A callback which is called when canceling is achieved, or an error occurs.
@@ -954,7 +957,7 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.cancelMatch('allergies', paid2, 'ignored', function(err) {
+bbr.cancelMatch('allergies', 'testPatient1', paid2, 'ignored', function(err) {
     assert.ifError(err);
     bbr.getSection('allergies', 'testPatient1', function(err, entries) {
         assert.ifError(err);

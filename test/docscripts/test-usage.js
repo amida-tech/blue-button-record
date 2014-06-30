@@ -224,7 +224,7 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 20', function(done) {
-        bbr.getMatch('allergies', matchId0, function(err, result) {
+        bbr.getMatch('allergies', 'patientKey', matchId0, function(err, result) {
             console.log(result.entry.allergen.name);
             console.log(result.entry.status);
             console.log(result.match_entry.allergen.name);   
@@ -250,21 +250,21 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 22 (a)', function(done) {
-        bbr.cancelMatch('allergies', matchId0, 'ignored', function(err) {
+        bbr.cancelMatch('allergies', 'patientKey', matchId0, 'ignored', function(err) {
             if (err) {throw err;}
             done();
         });   
     });
 
     it('script 22 (b)', function(done) {
-        bbr.cancelMatch('allergies', matchId0, 'merged', function(err) {
+        bbr.cancelMatch('allergies', 'patientKey', matchId0, 'merged', function(err) {
             if (err) {throw err;}
             done();
         });   
     });
 
     it('script 23', function(done) {
-        bbr.acceptMatch('allergies', matchId1, 'added', function(err) {
+        bbr.acceptMatch('allergies', 'patientKey', matchId1, 'added', function(err) {
             if (err) {throw err;}
             done();
         });   

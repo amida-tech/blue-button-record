@@ -368,7 +368,7 @@ describe('API', function() {
     });
 
     it('getMatch', function(done) {
-        bbr.getMatch('allergies', matchIds[0], function(err, result) {
+        bbr.getMatch('allergies', 'pat1', matchIds[0], function(err, result) {
             if (err) {
                 done(err);
             } else {
@@ -416,7 +416,7 @@ describe('API', function() {
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatch('allergies', matchIds[0], cb);}
+            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
                 if (err) {
@@ -434,7 +434,7 @@ describe('API', function() {
     });
 
     it('cancelMatch', function(done) {
-        bbr.cancelMatch('allergies', matchIds[0], 'ignored', function(err) {
+        bbr.cancelMatch('allergies', 'pat1', matchIds[0], 'ignored', function(err) {
             done(err);
         });
     });
@@ -445,7 +445,7 @@ describe('API', function() {
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatch('allergies', matchIds[0], cb);}
+            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
                 if (err) {
@@ -463,7 +463,7 @@ describe('API', function() {
     });
 
     it('acceptMatch', function(done) {
-        bbr.acceptMatch('allergies', matchIds[1], 'added', function(err) {
+        bbr.acceptMatch('allergies', 'pat1', matchIds[1], 'added', function(err) {
             done(err);
         });
     });
@@ -474,7 +474,7 @@ describe('API', function() {
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatch('allergies', matchIds[1], cb);}
+            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[1], cb);}
             ], 
             function(err, results) {
                 if (err) {

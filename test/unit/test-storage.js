@@ -71,7 +71,6 @@ describe('storage.js methods', function() {
     });
 
     it('saveRecord', function(done) {
-
         var f = function(fullCount, index, callback) {
             var fileinfo = {
                 name: getFileName(index),

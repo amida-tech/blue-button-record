@@ -288,8 +288,8 @@ describe('merge.js methods', function() {
 
     it('cancel some partials', function(done) {
         async.parallel([
-            function(callback) {refmodel.cancelMatch(context, 'testallergies', '0.1', 0, callback);},
-            function(callback) {refmodel.cancelMatch(context, 'testprocedures', '1.1', 0, callback);}
+            function(callback) {refmodel.cancelMatch(context, 'testallergies', 'pat0', '0.1', 0, callback);},
+            function(callback) {refmodel.cancelMatch(context, 'testprocedures', 'pat1', '1.1', 0, callback);}
             ],
             function(err) {
                 done(err);
@@ -306,8 +306,8 @@ describe('merge.js methods', function() {
 
     it('accept some partials', function(done) {
         async.parallel([
-            function(callback) {refmodel.acceptMatch(context, 'testprocedures', '0.1', 0, callback);},
-            function(callback) {refmodel.acceptMatch(context, 'testprocedures', '1.2', 0, callback);}
+            function(callback) {refmodel.acceptMatch(context, 'testprocedures', 'pat0', '0.1', 0, callback);},
+            function(callback) {refmodel.acceptMatch(context, 'testprocedures', 'pat1', '1.2', 0, callback);}
             ],
             function(err) {
                 done(err);
