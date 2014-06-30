@@ -96,7 +96,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('getRecord', function(done) {
-        bbr.getRecord(fileId1, function(err, name, content) {
+        bbr.getRecord('testPatient1', fileId1, function(err, name, content) {
             assert.ifError(err);
             assert.equal(name, 'expl1.xml');
             assert.equal(content, '<content value=1 />');

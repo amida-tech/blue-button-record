@@ -100,7 +100,7 @@ describe('API', function() {
     });
 
     it('getRecord', function(done) {
-        bbr.getRecord(sourceIds[0], function(err, filename, content) {
+        bbr.getRecord('pat0', sourceIds[0], function(err, filename, content) {
             if (err) {
                 done(err);
             } else {

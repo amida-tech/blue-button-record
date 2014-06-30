@@ -55,8 +55,8 @@ exports.getRecordList = function(ptKey, callback) {
     storage.getRecordList(dbinfo, ptKey, callback);
 };
 
-exports.getRecord = function(sourceId, callback) {
-    storage.getRecord(dbinfo, sourceId, callback);
+exports.getRecord = function(ptKey, sourceId, callback) {
+    storage.getRecord(dbinfo, ptKey, sourceId, callback);
 };
 
 exports.recordCount = function(ptKey, callback) {

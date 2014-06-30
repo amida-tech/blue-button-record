@@ -51,7 +51,7 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 5 (b)', function(done) {
-        bbr.getRecord(fileId, function(err, filename, content) {
+        bbr.getRecord('patientKey', fileId, function(err, filename, content) {
             console.log(filename);
             done();  
         });

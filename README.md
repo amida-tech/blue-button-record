@@ -56,7 +56,7 @@ bbr.getRecordList('patientKey', function(err, results) {
     console.log(results.length);
 });
 
-bbr.getRecord(fileId, function(err, filename, content) {
+bbr.getRecord('patientKey', fileId, function(err, filename, content) {
     console.log(filename);
 });
 
@@ -412,18 +412,19 @@ bbr.getRecordList('testPatient1', function(err, sources) {
 ```
 ---------------------------------------
 
-### getRecord(sourceId, callback)
+### getRecord(ptKey, sourceId, callback)
 
 Gets name and content of the Master Health Record source.
 
 __Arguments__
+* `ptKey` - Identification string for the patient.
 * `sourceId` - Database identification string of the source.
 * `callback(err, name, content)` - A callback which is called when name and content are retrieved, or an error occurs. 
 
 __Examples__
 
 ```js
-bbr.getRecord(fileId1, function(err, name, content) {
+bbr.getRecord('testPatient1', fileId1, function(err, name, content) {
     assert.ifError(err);
     assert.equal(name, 'expl1.xml');
     assert.equal(content, '<content value=1 />');
