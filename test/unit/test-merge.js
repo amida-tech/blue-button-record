@@ -277,10 +277,10 @@ describe('merge.js methods', function() {
         var matchInfo3 = refmodel.createMatchInformation('1.2', [2], ['partial']);
 
         async.parallel([
-            function(callback) {refmodel.savePartialSection(context, 'testallergies', 'pat0', '0.1', '0.0', matchInfo0, callback);},
-            function(callback) {refmodel.savePartialSection(context, 'testprocedures', 'pat0', '0.1', '0.0', matchInfo1, callback);},
-            function(callback) {refmodel.savePartialSection(context, 'testprocedures', 'pat1', '1.1', '1.0', matchInfo2, callback);},
-            function(callback) {refmodel.savePartialSection(context, 'testprocedures', 'pat1', '1.2', '1.0', matchInfo3, callback);},
+            function(callback) {refmodel.saveMatches(context, 'testallergies', 'pat0', '0.1', '0.0', matchInfo0, callback);},
+            function(callback) {refmodel.saveMatches(context, 'testprocedures', 'pat0', '0.1', '0.0', matchInfo1, callback);},
+            function(callback) {refmodel.saveMatches(context, 'testprocedures', 'pat1', '1.1', '1.0', matchInfo2, callback);},
+            function(callback) {refmodel.saveMatches(context, 'testprocedures', 'pat1', '1.2', '1.0', matchInfo3, callback);},
             ], 
             function(err) {done(err);}
         );

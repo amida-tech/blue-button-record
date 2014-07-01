@@ -75,6 +75,10 @@ exports.mergeCount = function(secName, ptKey, conditions, callback) {
 
 // matches
 
+exports.saveMatches = function(secName, ptKey, inputSection, sourceId, callback) {
+    section.savePartial(dbinfo, secName, ptKey, inputSection, sourceId, callback);
+};
+
 exports.getMatches = function(secName, ptKey, fields, callback) {
     match.getAll(dbinfo, secName, ptKey, fields, callback);
 };
@@ -111,16 +115,6 @@ exports.getAllSections = function(ptKey, callback) {
 
 exports.saveAllSections = function(ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
-};
-
-// partial section
-
-exports.getPartialSection = function(secName, ptKey, callback) {
-    section.getPartial(dbinfo, secName, ptKey, callback);
-};
-
-exports.savePartialSection = function(secName, ptKey, inputSection, sourceId, callback) {
-    section.savePartial(dbinfo, secName, ptKey, inputSection, sourceId, callback);
 };
 
 // entry
