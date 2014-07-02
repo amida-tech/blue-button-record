@@ -56,7 +56,7 @@ bbr.getRecordList('patientKey', function(err, results) {
     console.log(results.length);
 });
 
-bbr.getRecord(fileId, function(err, filename, content) {
+bbr.getRecord('patientKey', fileId, function(err, filename, content) {
     console.log(filename);
 });
 
@@ -99,12 +99,12 @@ bbr.getSection('allergies', 'patientKey', function(err, result) {
 ```
 In addition to [blue-button](https://github.com/amida-tech/blue-button) data, each entry also includes metadata and property `_id` which you can later use to update or access
 ``` javascript
-bbr.updateEntry('allergies', id, fileId, {severity: 'Severe'}, function(err) {
+bbr.updateEntry('allergies', 'patientKey', id, fileId, {severity: 'Severe'}, function(err) {
     if (err) {throw err;}
 });
 
 var allergy;
-bbr.getEntry('allergies', id, function(err, result) {
+bbr.getEntry('allergies', 'patientKey', id, function(err, result) {
     console.log(result.severity);
     allergy = result;
 });
@@ -119,14 +119,14 @@ which makes allergiesBBOnly comparable to ccdJSON.allergies.
 
 If you find an existing entry of Master Health Record in a new source, you can register the source as such
 ``` javascript
-bbr.duplicateEntry('allergies', id, fileId, function(err) {
+bbr.duplicateEntry('allergies', 'patientKey', id, fileId, function(err) {
   if (err) throw err;
 });
 ```
 
 Metadata property for each entry provides both the source of the data and the Merge History
 ``` javascript
-  bbr.getEntry('allergies', id, function(err, entry) {
+  bbr.getEntry('allergies', 'patientKey', id, function(err, entry) {
       var attribution = entry.metadata.attribution;
       console.log(attribution[0].merge_reason);     // 'new'
       console.log(attribution[0].record.filename);
@@ -205,7 +205,7 @@ bbr.getMatches('allergies', 'patientKey', 'allergen severity', function(err, res
 ```
 Individual match access is also available and will return the full blue-button data both for the Master Health Record enty and the Partial Health Record entry
 ``` javascript
-bbr.getMatch('allergies', matchId0, function(err, result) {
+bbr.getMatch('allergies', 'patientKey', matchId0, function(err, result) {
     console.log(result.entry.allergen.name);
     console.log(result.entry.status);
     console.log(result.match_entry.allergen.name);   
@@ -227,18 +227,18 @@ bbr.matchCount('allergies', 'patientKey', {percent: 90}, function(err, count) {
 
 Matches can be canceled with application specific reasons such as 'ignored' or 'merged'
 ``` javascript
-bbr.cancelMatch('allergies', matchId, 'ignored', function(err, count) {
+bbr.cancelMatch('allergies', 'patientKey', matchId0, 'ignored', function(err, count) {
   console.log(count);
 });
 
-bbr.cancelMatch('allergies', matchId, 'merged', function(err, count) {
+bbr.cancelMatch('allergies', 'patientKey', matchId0, 'merged', function(err, count) {
   console.log(count);
 });
 
 ```
 or they can be accepted and become part of the Master Health Record.
 ``` javascript
-bbr.acceptMatch('allergies', matchId1, 'added', function(err) {
+bbr.acceptMatch('allergies', 'patientKey', matchId1, 'added', function(err) {
     if (err) {throw err;}
 });   
 ```
@@ -412,18 +412,19 @@ bbr.getRecordList('testPatient1', function(err, sources) {
 ```
 ---------------------------------------
 
-### getRecord(sourceId, callback)
+### getRecord(ptKey, sourceId, callback)
 
 Gets name and content of the Master Health Record source.
 
 __Arguments__
+* `ptKey` - Identification string for the patient.
 * `sourceId` - Database identification string of the source.
 * `callback(err, name, content)` - A callback which is called when name and content are retrieved, or an error occurs. 
 
 __Examples__
 
 ```js
-bbr.getRecord(fileId1, function(err, name, content) {
+bbr.getRecord('testPatient1', fileId1, function(err, name, content) {
     assert.ifError(err);
     assert.equal(name, 'expl1.xml');
     assert.equal(content, '<content value=1 />');
@@ -606,19 +607,20 @@ bbr.getSection('procedures', 'testPatient2', function(err, entries) {
 ```
 ---------------------------------------
 
-### getEntry(secName, id, callback)
+### getEntry(secName, ptKey, id, callback)
 
 Gets an entry of a section `secName` from Master Health Record.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Database identifier for the entry.
 * `callback(err, entry)` - A callback which is called when entry is retrieved, or an error occurs.  `entry` fields are identical to [`getSection`](#getSection) in content.
 
 __Examples__
 
 ```js
-bbr.getEntry('allergies', aid2, function(err, entry) {
+bbr.getEntry('allergies', 'testPatient1', aid2, function(err, entry) {
     assert.ifError(err);
     assert.equal(entry.name, 'allergy2');
     assert.equal(entry.value.display, 'display2');
@@ -629,12 +631,13 @@ bbr.getEntry('allergies', aid2, function(err, entry) {
 ```
 ---------------------------------------
 
-### duplicateEntry(secName, id, sourceId, callback)
+### duplicateEntry(secName, ptKey, id, sourceId, callback)
 
 Registers source `sourceId` to include the duplicate of an existing entry `id`.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Database identifier for the entry.
 * `sourceId` - Id for the source. 
 * `callback(err)` - A callback which is called when duplication information is saved, or an error occurs.
@@ -642,9 +645,9 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.duplicateEntry('allergies', aid1, fileId2, function(err) {
+bbr.duplicateEntry('allergies', 'testPatient1', aid1, fileId2, function(err) {
     assert.ifError(err);
-    bbr.getEntry('allergies', aid1, function(err, entry) {
+    bbr.getEntry('allergies', 'testPatient1', aid1, function(err, entry) {
         assert.ifError(err);
         var attr = entry.metadata.attribution;
         assert.equal(attr.length, 2);
@@ -657,12 +660,13 @@ bbr.duplicateEntry('allergies', aid1, fileId2, function(err) {
 ```
 ---------------------------------------
 
-### updateEntry(secName, id, sourceId, updateObject, callback)
+### updateEntry(secName, ptKey, id, sourceId, updateObject, callback)
 
 Updates entry with the fields in `updateObject`.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Database identifier for the entry.
 * `sourceId` - Id for the source.
 * `updateObject` - JSON object with keys and values to update.
@@ -671,9 +675,9 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.updateEntry('allergies', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
+bbr.updateEntry('allergies', 'testPatient1', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
     assert.ifError(err);
-    bbr.getEntry('allergies', aid1, function(err, entry) {
+    bbr.getEntry('allergies', 'testPatient1', aid1, function(err, entry) {
         assert.ifError(err);
         assert.equal(entry.severity, 'updatedSev');
         var attr = entry.metadata.attribution;
@@ -866,19 +870,20 @@ bbr.getMatches('allergies', 'testPatient1', 'name severity value.code', function
 ```
 ---------------------------------------
 
-### getMatch(secName, id, callback)
+### getMatch(secName, ptKey, id, callback)
 
 Gets all the details of a partial entry, the matching entry in Master Health Record, and match information.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Id of the match.
 * `callback(err, matchInfo)` - A callback which is called when match information is retrieved, or an error occurs.  `match_entry` and `entry` contain patient health data for partial and matching existing data. 
 
 __Examples__
 
 ```js
-bbr.getMatch('allergies', paid1, function(err, matchInfo) {
+bbr.getMatch('allergies', 'testPatient1', paid1, function(err, matchInfo) {
     assert.ifError(err);
     assert.equal(matchInfo.entry.severity, 'updatedSev');
     assert.equal(matchInfo.match_entry.severity, 'severity3');
@@ -913,12 +918,13 @@ bbr.matchCount('allergies', 'testPatient1', {percent: 80}, function(err, count) 
 ```
 ---------------------------------------
 
-### acceptMatch(secName, id, reason, callback)
+### acceptMatch(secName, ptKey, id, reason, callback)
 
 Moves the partial entry to Master Health Record.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Id of the match.
 * `reason` - Reason for acceptance.
 * `callback(err)` - A callback which is called when acceptance is achieved, or an error occurs.
@@ -926,7 +932,7 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.acceptMatch('allergies', paid1, 'added', function(err) {
+bbr.acceptMatch('allergies', 'testPatient1', paid1, 'added', function(err) {
     assert.ifError(err);
     bbr.getSection('allergies', 'testPatient1', function(err, entries) {
         assert.ifError(err);
@@ -940,12 +946,13 @@ bbr.acceptMatch('allergies', paid1, 'added', function(err) {
 ```
 ---------------------------------------
 
-### cancelMatch(secName, id, reason, callback)
+### cancelMatch(secName, ptKey, id, reason, callback)
 
 Removes the partial entry from Partial Health Record.
 
 __Arguments__
 * `secName` - Section name.
+* `ptKey` - Identification string for the patient.
 * `id` - Id of the match.
 * `reason` - Reason for cancellation.
 * `callback(err)` - A callback which is called when canceling is achieved, or an error occurs.
@@ -953,7 +960,7 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.cancelMatch('allergies', paid2, 'ignored', function(err) {
+bbr.cancelMatch('allergies', 'testPatient1', paid2, 'ignored', function(err) {
     assert.ifError(err);
     bbr.getSection('allergies', 'testPatient1', function(err, entries) {
         assert.ifError(err);

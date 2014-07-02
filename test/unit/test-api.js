@@ -100,7 +100,7 @@ describe('API', function() {
     });
 
     it('getRecord', function(done) {
-        bbr.getRecord(sourceIds[0], function(err, filename, content) {
+        bbr.getRecord('pat0', sourceIds[0], function(err, filename, content) {
             if (err) {
                 done(err);
             } else {
@@ -179,7 +179,7 @@ describe('API', function() {
     it('getEntry', function(done) {
         async.map(allergyIds, 
             function(id, cb) {
-                bbr.getEntry('allergies', id, cb);
+                bbr.getEntry('allergies', 'pat1', id, cb);
             },
             function(err, results) {
                 if (err) {
@@ -206,20 +206,20 @@ describe('API', function() {
     });
 
     it('duplicateEntry', function(done) {
-        bbr.duplicateEntry('allergies', allergyIds[0], sourceIds[4], function(err) {
+        bbr.duplicateEntry('allergies', 'pat1', allergyIds[0], sourceIds[4], function(err) {
             done(err);
         });
     });
 
     it('updateEntry', function(done) {
-        bbr.updateEntry('allergies', allergyIds[0], sourceIds[5], {severity: 'Severe'}, function(err) {
+        bbr.updateEntry('allergies', 'pat1', allergyIds[0], sourceIds[5], {severity: 'Severe'}, function(err) {
             allergySeverities[0] = 'Severe';
             done(err);
         });
     });
 
     it('getEntry', function(done) {
-        bbr.getEntry('allergies', allergyIds[0], function(err, result) {
+        bbr.getEntry('allergies', 'pat1', allergyIds[0], function(err, result) {
             expect(result.severity).to.equal('Severe');
             expect(result.allergen && result.allergen.name).to.equal(allergyNames[0]);
             expect(result.metadata).to.exist;
@@ -368,7 +368,7 @@ describe('API', function() {
     });
 
     it('getMatch', function(done) {
-        bbr.getMatch('allergies', matchIds[0], function(err, result) {
+        bbr.getMatch('allergies', 'pat1', matchIds[0], function(err, result) {
             if (err) {
                 done(err);
             } else {
@@ -416,7 +416,7 @@ describe('API', function() {
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatch('allergies', matchIds[0], cb);}
+            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
                 if (err) {
@@ -434,7 +434,7 @@ describe('API', function() {
     });
 
     it('cancelMatch', function(done) {
-        bbr.cancelMatch('allergies', matchIds[0], 'ignored', function(err) {
+        bbr.cancelMatch('allergies', 'pat1', matchIds[0], 'ignored', function(err) {
             done(err);
         });
     });
@@ -445,7 +445,7 @@ describe('API', function() {
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatch('allergies', matchIds[0], cb);}
+            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
                 if (err) {
@@ -463,7 +463,7 @@ describe('API', function() {
     });
 
     it('acceptMatch', function(done) {
-        bbr.acceptMatch('allergies', matchIds[1], 'added', function(err) {
+        bbr.acceptMatch('allergies', 'pat1', matchIds[1], 'added', function(err) {
             done(err);
         });
     });
@@ -474,7 +474,7 @@ describe('API', function() {
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatch('allergies', matchIds[1], cb);}
+            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[1], cb);}
             ], 
             function(err, results) {
                 if (err) {

@@ -96,7 +96,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('getRecord', function(done) {
-        bbr.getRecord(fileId1, function(err, name, content) {
+        bbr.getRecord('testPatient1', fileId1, function(err, name, content) {
             assert.ifError(err);
             assert.equal(name, 'expl1.xml');
             assert.equal(content, '<content value=1 />');
@@ -203,7 +203,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('getEntry', function(done) {
-        bbr.getEntry('allergies', aid2, function(err, entry) {
+        bbr.getEntry('allergies', 'testPatient1', aid2, function(err, entry) {
             assert.ifError(err);
             assert.equal(entry.name, 'allergy2');
             assert.equal(entry.value.display, 'display2');
@@ -215,9 +215,9 @@ describe('API Documentation Examples', function() {
     });
 
     it('duplicateEntry', function(done) {
-        bbr.duplicateEntry('allergies', aid1, fileId2, function(err) {
+        bbr.duplicateEntry('allergies', 'testPatient1', aid1, fileId2, function(err) {
             assert.ifError(err);
-            bbr.getEntry('allergies', aid1, function(err, entry) {
+            bbr.getEntry('allergies', 'testPatient1', aid1, function(err, entry) {
                 assert.ifError(err);
                 var attr = entry.metadata.attribution;
                 assert.equal(attr.length, 2);
@@ -231,9 +231,9 @@ describe('API Documentation Examples', function() {
     });
 
     it('updateEntry', function(done) {
-        bbr.updateEntry('allergies', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
+        bbr.updateEntry('allergies', 'testPatient1', aid1, fileId3, {severity: 'updatedSev'}, function(err) {
             assert.ifError(err);
-            bbr.getEntry('allergies', aid1, function(err, entry) {
+            bbr.getEntry('allergies', 'testPatient1', aid1, function(err, entry) {
                 assert.ifError(err);
                 assert.equal(entry.severity, 'updatedSev');
                 var attr = entry.metadata.attribution;
@@ -364,7 +364,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('getMatch', function(done) {
-        bbr.getMatch('allergies', paid1, function(err, matchInfo) {
+        bbr.getMatch('allergies', 'testPatient1', paid1, function(err, matchInfo) {
             assert.ifError(err);
             assert.equal(matchInfo.entry.severity, 'updatedSev');
             assert.equal(matchInfo.match_entry.severity, 'severity3');
@@ -391,7 +391,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('acceptMatch', function(done) {
-        bbr.acceptMatch('allergies', paid1, 'added', function(err) {
+        bbr.acceptMatch('allergies', 'testPatient1', paid1, 'added', function(err) {
             assert.ifError(err);
             bbr.getSection('allergies', 'testPatient1', function(err, entries) {
                 assert.ifError(err);
@@ -406,7 +406,7 @@ describe('API Documentation Examples', function() {
     });
 
     it('cancelMatch', function(done) {
-        bbr.cancelMatch('allergies', paid2, 'ignored', function(err) {
+        bbr.cancelMatch('allergies', 'testPatient1', paid2, 'ignored', function(err) {
             assert.ifError(err);
             bbr.getSection('allergies', 'testPatient1', function(err, entries) {
                 assert.ifError(err);

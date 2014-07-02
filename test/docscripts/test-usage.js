@@ -51,7 +51,7 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 5 (b)', function(done) {
-        bbr.getRecord(fileId, function(err, filename, content) {
+        bbr.getRecord('patientKey', fileId, function(err, filename, content) {
             console.log(filename);
             done();  
         });
@@ -99,7 +99,7 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 10 (a)', function(done) {
-        bbr.updateEntry('allergies', id, fileId, {severity: 'Severe'}, function(err) {
+        bbr.updateEntry('allergies', 'patientKey', id, fileId, {severity: 'Severe'}, function(err) {
             if (err) {throw err;}
             done();
         });
@@ -108,7 +108,7 @@ describe('Usage Documentation Examples' , function() {
     var allergy;
 
     it('script 10 (b)', function(done) {
-        bbr.getEntry('allergies', id, function(err, result) {
+        bbr.getEntry('allergies', 'patientKey', id, function(err, result) {
             console.log(result.severity);
             allergy = result;
             done();
@@ -123,14 +123,14 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 12', function(done) {
-        bbr.duplicateEntry('allergies', id, fileId, function(err) {
+        bbr.duplicateEntry('allergies', 'patientKey', id, fileId, function(err) {
             if (err) {throw err;}
             done();
         });        
     });
 
     it('script 13', function(done) {
-        bbr.getEntry('allergies', id, function(err, entry) {
+        bbr.getEntry('allergies', 'patientKey', id, function(err, entry) {
             var attribution = entry.metadata.attribution;
             console.log(attribution[0].merge_reason);     // 'new'
             console.log(attribution[0].record.filename);
@@ -224,7 +224,7 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 20', function(done) {
-        bbr.getMatch('allergies', matchId0, function(err, result) {
+        bbr.getMatch('allergies', 'patientKey', matchId0, function(err, result) {
             console.log(result.entry.allergen.name);
             console.log(result.entry.status);
             console.log(result.match_entry.allergen.name);   
@@ -250,21 +250,21 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 22 (a)', function(done) {
-        bbr.cancelMatch('allergies', matchId0, 'ignored', function(err) {
+        bbr.cancelMatch('allergies', 'patientKey', matchId0, 'ignored', function(err) {
             if (err) {throw err;}
             done();
         });   
     });
 
     it('script 22 (b)', function(done) {
-        bbr.cancelMatch('allergies', matchId0, 'merged', function(err) {
+        bbr.cancelMatch('allergies', 'patientKey', matchId0, 'merged', function(err) {
             if (err) {throw err;}
             done();
         });   
     });
 
     it('script 23', function(done) {
-        bbr.acceptMatch('allergies', matchId1, 'added', function(err) {
+        bbr.acceptMatch('allergies', 'patientKey', matchId1, 'added', function(err) {
             if (err) {throw err;}
             done();
         });   

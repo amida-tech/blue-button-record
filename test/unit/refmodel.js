@@ -246,14 +246,14 @@ exports.createMatchInformation = function(recordIndex, destIndices, matchTypes) 
     }, []);
 };
 
-exports.cancelMatch = function(context, secName, recordKey, index, callback) {
+exports.cancelMatch = function(context, secName, ptKey, recordKey, index, callback) {
     var key = partialEntriesContextKey(secName, recordKey);
     var id = context[key][index]._id;
-    match.cancel(context.dbinfo, secName, id, 'cancel_' + recordKey + '.' + index, callback);
+    match.cancel(context.dbinfo, secName, ptKey, id, 'cancel_' + recordKey + '.' + index, callback);
 };
 
-exports.acceptMatch = function(context, secName, recordKey, index, callback) {
+exports.acceptMatch = function(context, secName, ptKey, recordKey, index, callback) {
     var key = partialEntriesContextKey(secName, recordKey);
     var id = context[key][index]._id;
-    match.accept(context.dbinfo, secName, id, 'accept_' + recordKey + '.' + index, callback);
+    match.accept(context.dbinfo, secName, ptKey, id, 'accept_' + recordKey + '.' + index, callback);
 };

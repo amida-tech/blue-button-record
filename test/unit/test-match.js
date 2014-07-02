@@ -194,10 +194,17 @@ describe('match.js methods', function() {
         );
     });
 
+    it('cancel (wrong patient)', function(done) {
+        refmodel.cancelMatch(context, 'testallergies', 'wrongpatient', '0.1', 2, function(err) {
+            expect(err).to.exist;
+            done();
+        });
+    });
+
     it('cancel', function(done) {
         async.parallel([
-            function(callback) {refmodel.cancelMatch(context, 'testallergies', '0.1', 2, callback);},
-            function(callback) {refmodel.cancelMatch(context, 'testprocedures', '1.1', 0, callback);}
+            function(callback) {refmodel.cancelMatch(context, 'testallergies', 'pat0', '0.1', 2, callback);},
+            function(callback) {refmodel.cancelMatch(context, 'testprocedures', 'pat1', '1.1', 0, callback);}
             ],
             function(err) {
                 done(err);
@@ -237,10 +244,17 @@ describe('match.js methods', function() {
         });
     });
 
+    it('accept (wrong patient)', function(done) {
+        refmodel.acceptMatch(context, 'testallergies', 'wrongpatient', '2.1', 0, function(err) {
+            expect(err).to.exist;
+            done();
+        });
+    });
+
     it('accept', function(done) {
         async.parallel([
-            function(callback) {refmodel.acceptMatch(context, 'testallergies', '2.1', 0, callback);},
-            function(callback) {refmodel.acceptMatch(context, 'testprocedures', '1.2', 1, callback);}
+            function(callback) {refmodel.acceptMatch(context, 'testallergies', 'pat2', '2.1', 0, callback);},
+            function(callback) {refmodel.acceptMatch(context, 'testprocedures', 'pat1', '1.2', 1, callback);}
             ],
             function(err) {
                 done(err);
@@ -273,10 +287,10 @@ describe('match.js methods', function() {
         });
     });
 
-    var callGet = function(secName, recordIndex, index, callback) {
+    var callGet = function(secName, ptKey, recordIndex, index, callback) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
         var id = context[key][index]._id;
-        match.get(context.dbinfo, secName, id, callback);
+        match.get(context.dbinfo, secName, ptKey, id, callback);
     };
 
     var verifyGetContent = function(result, recordIndex, index, destRecordIndex, destIndex, secName, diffType, reason) {
@@ -309,15 +323,15 @@ describe('match.js methods', function() {
 
     it('get', function(done) {
         async.parallel([
-            function(callback) {callGet('testallergies', '0.1', 0, callback);},
-            function(callback) {callGet('testallergies', '0.1', 1, callback);},
-            function(callback) {callGet('testallergies', '0.1', 2, callback);},
-            function(callback) {callGet('testallergies', '2.1', 0, callback);},
-            function(callback) {callGet('testprocedures', '0.1', 0, callback);},
-            function(callback) {callGet('testprocedures', '1.1', 0, callback);},
-            function(callback) {callGet('testprocedures', '1.1', 1, callback);},
-            function(callback) {callGet('testprocedures', '1.2', 0, callback);},
-            function(callback) {callGet('testprocedures', '1.2', 1, callback);},
+            function(callback) {callGet('testallergies', 'pat0', '0.1', 0, callback);},
+            function(callback) {callGet('testallergies', 'pat0', '0.1', 1, callback);},
+            function(callback) {callGet('testallergies', 'pat0', '0.1', 2, callback);},
+            function(callback) {callGet('testallergies', 'pat2', '2.1', 0, callback);},
+            function(callback) {callGet('testprocedures', 'pat0',  '0.1', 0, callback);},
+            function(callback) {callGet('testprocedures', 'pat1',  '1.1', 0, callback);},
+            function(callback) {callGet('testprocedures', 'pat1',  '1.1', 1, callback);},
+            function(callback) {callGet('testprocedures', 'pat1',  '1.2', 0, callback);},
+            function(callback) {callGet('testprocedures', 'pat1',  '1.2', 1, callback);},
             ], 
             function(err, results) {
                 if (err) {
@@ -337,6 +351,13 @@ describe('match.js methods', function() {
                 }
             }
         );
+    });
+
+    it('get (wrong patient)', function(done) {
+        callGet('testallergies', 'wrongpatient', '0.1', 0, function(err) {
+            expect(err).to.exist;
+            done();
+        });
     });
 
     after(function(done) {

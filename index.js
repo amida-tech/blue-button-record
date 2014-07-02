@@ -55,8 +55,8 @@ exports.getRecordList = function(ptKey, callback) {
     storage.getRecordList(dbinfo, ptKey, callback);
 };
 
-exports.getRecord = function(sourceId, callback) {
-    storage.getRecord(dbinfo, sourceId, callback);
+exports.getRecord = function(ptKey, sourceId, callback) {
+    storage.getRecord(dbinfo, ptKey, sourceId, callback);
 };
 
 exports.recordCount = function(ptKey, callback) {
@@ -79,20 +79,20 @@ exports.getMatches = function(secName, ptKey, fields, callback) {
     match.getAll(dbinfo, secName, ptKey, fields, callback);
 };
 
-exports.getMatch = function(secName, id, callback) {
-    match.get(dbinfo, secName, id, callback);
+exports.getMatch = function(secName, ptKey, id, callback) {
+    match.get(dbinfo, secName, ptKey, id, callback);
 };
 
 exports.matchCount = function(secName, ptKey, conditions, callback) {
     match.count(dbinfo, secName, ptKey, conditions, callback);
 };
 
-exports.cancelMatch = function(secName, id, reason, callback) {
-    match.cancel(dbinfo, secName, id, reason, callback);
+exports.cancelMatch = function(secName, ptKey, id, reason, callback) {
+    match.cancel(dbinfo, secName, ptKey, id, reason, callback);
 };
 
-exports.acceptMatch = function(secName, id, reason, callback) {
-    match.accept(dbinfo, secName, id, reason, callback);
+exports.acceptMatch = function(secName, ptKey, id, reason, callback) {
+    match.accept(dbinfo, secName, ptKey, id, reason, callback);
 };
 
 // section
@@ -125,16 +125,16 @@ exports.savePartialSection = function(secName, ptKey, inputSection, sourceId, ca
 
 // entry
 
-exports.getEntry = function(secName, id, callback) {
-    entry.get(dbinfo, secName, id, callback);
+exports.getEntry = function(secName, ptKey, id, callback) {
+    entry.get(dbinfo, secName, ptKey, id, callback);
 };
 
-exports.updateEntry = function(secName, id, sourceId, updateObject, callback) {
-    entry.update(dbinfo, secName, id, sourceId, updateObject, callback);
+exports.updateEntry = function(secName, ptKey, id, sourceId, updateObject, callback) {
+    entry.update(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
 };
 
-exports.duplicateEntry = function(secName, id, sourceId, callback) {
-    entry.duplicate(dbinfo, secName, id, sourceId, callback);
+exports.duplicateEntry = function(secName, ptKey, id, sourceId, callback) {
+    entry.duplicate(dbinfo, secName, ptKey, id, sourceId, callback);
 };
 
 // utility

@@ -71,7 +71,6 @@ describe('storage.js methods', function() {
     });
 
     it('saveRecord', function(done) {
-
         var f = function(fullCount, index, callback) {
             var fileinfo = {
                 name: getFileName(index),
@@ -142,7 +141,7 @@ describe('storage.js methods', function() {
     it('getRecord', function(done) {
         var count = 0;
         var f = function(index) {
-            storage.getRecord(dbinfo, ids[index].toString(), function(err, filename, content) {
+            storage.getRecord(dbinfo, pats[index], ids[index].toString(), function(err, filename, content) {
                 if (err) {
                     done(err);
                 } else {
@@ -159,6 +158,13 @@ describe('storage.js methods', function() {
         for (var i = 0; i < 6; ++i) {
             f(i);
         }
+    });
+
+    it('getRecord (wrong patient)', function(done) {
+        storage.getRecord(dbinfo, 'wrongpatient', ids[0].toString(), function(err, filename, content) {
+            expect(err).to.exist;
+            done();
+        });
     });
 
     it('recordCount', function(done) {

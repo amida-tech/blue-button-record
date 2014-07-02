@@ -212,17 +212,24 @@ describe('merge.js methods', function() {
         });
     });
 
-    var duplicateEntry = function(context, secName, recordIndex, index, callback) {
+    var duplicateEntry = function(context, secName, ptKey, recordIndex, index, callback) {
         var key = refmodel.newEntriesContextKey(secName, recordIndex);
         var id = context[key][index];
         var rid = context.storageIds[recordIndex];
-        entry.duplicate(context.dbinfo, secName, id, rid, callback);
+        entry.duplicate(context.dbinfo, secName, ptKey, id, rid, callback);
     };
+
+    it('entry.duplicate (wrong patient)', function(done) {
+        duplicateEntry(context, 'testallergies', 'wrongpatient', '0.0', 1, function(err) {
+            expect(err).to.exist;
+            done();
+        });
+    });
 
     it('entry.duplicate', function(done) {
         async.parallel([
-            function(callback) {duplicateEntry(context, 'testallergies', '0.0', 1, callback);},
-            function(callback) {duplicateEntry(context, 'testprocedures', '1.0', 0, callback);},
+            function(callback) {duplicateEntry(context, 'testallergies', 'pat0', '0.0', 1, callback);},
+            function(callback) {duplicateEntry(context, 'testprocedures', 'pat1', '1.0', 0, callback);},
             ], 
             function(err) {done(err);}
         );
@@ -288,8 +295,8 @@ describe('merge.js methods', function() {
 
     it('cancel some partials', function(done) {
         async.parallel([
-            function(callback) {refmodel.cancelMatch(context, 'testallergies', '0.1', 0, callback);},
-            function(callback) {refmodel.cancelMatch(context, 'testprocedures', '1.1', 0, callback);}
+            function(callback) {refmodel.cancelMatch(context, 'testallergies', 'pat0', '0.1', 0, callback);},
+            function(callback) {refmodel.cancelMatch(context, 'testprocedures', 'pat1', '1.1', 0, callback);}
             ],
             function(err) {
                 done(err);
@@ -306,8 +313,8 @@ describe('merge.js methods', function() {
 
     it('accept some partials', function(done) {
         async.parallel([
-            function(callback) {refmodel.acceptMatch(context, 'testprocedures', '0.1', 0, callback);},
-            function(callback) {refmodel.acceptMatch(context, 'testprocedures', '1.2', 0, callback);}
+            function(callback) {refmodel.acceptMatch(context, 'testprocedures', 'pat0', '0.1', 0, callback);},
+            function(callback) {refmodel.acceptMatch(context, 'testprocedures', 'pat1', '1.2', 0, callback);}
             ],
             function(err) {
                 done(err);
@@ -370,19 +377,29 @@ describe('merge.js methods', function() {
         });
     });
     
-    var updateEntry = function(context, secName, recordIndex, index, updateObject, sourceIndex, callback) {
+    var updateEntry = function(context, secName, ptKey, recordIndex, index, updateObject, sourceIndex, callback) {
         var key = refmodel.newEntriesContextKey(secName, recordIndex);
         var id = context[key][index];
         var rid = context.storageIds[sourceIndex];
-        entry.update(context.dbinfo, secName, id, rid, updateObject, callback);
+        entry.update(context.dbinfo, secName, ptKey, id, rid, updateObject, callback);
     };
 
-    var updateEntryPartial = function(context, secName, recordIndex, index, updateObject, sourceIndex, callback) {
+    var updateEntryPartial = function(context, secName, ptKey, recordIndex, index, updateObject, sourceIndex, callback) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
         var id = context[key][index].match_entry;
         var rid = context.storageIds[sourceIndex];
-        entry.update(context.dbinfo, secName, id, rid, updateObject, callback);
+        entry.update(context.dbinfo, secName, ptKey, id, rid, updateObject, callback);
     };
+
+    it('entry.dupdate (wrong patient)', function(done) {
+        var updObj0 = {
+            name: "name_upd_0.2.0"
+        };
+        updateEntry(context, 'testallergies', 'wrongpatient', '0.0', 0, updObj0, '0.2', function(err) {
+            expect(err).to.exist;
+            done();
+        });
+    });
 
     it('entry.update', function(done) {
         var updObj0 = {
@@ -395,9 +412,9 @@ describe('merge.js methods', function() {
             name: "name_upd_1.4.0"
         };
         async.parallel([
-            function(callback) {updateEntry(context, 'testallergies', '0.0', 0, updObj0, '0.2', callback);},
-            function(callback) {updateEntry(context, 'testprocedures', '1.0', 0, updObj1, '1.3', callback);},
-            function(callback) {updateEntryPartial(context, 'testprocedures', '1.2', 0, updObj2, '1.4', callback);}
+            function(callback) {updateEntry(context, 'testallergies', 'pat0', '0.0', 0, updObj0, '0.2', callback);},
+            function(callback) {updateEntry(context, 'testprocedures', 'pat1', '1.0', 0, updObj1, '1.3', callback);},
+            function(callback) {updateEntryPartial(context, 'testprocedures', 'pat1', '1.2', 0, updObj2, '1.4', callback);}
             ],
             function(err) {
                 done(err);
@@ -441,16 +458,16 @@ describe('merge.js methods', function() {
         });
     });
     
-    var getEntry = function(context, secName, recordIndex, index, callback) {
+    var getEntry = function(context, secName, ptKey, recordIndex, index, callback) {
         var key = refmodel.newEntriesContextKey(secName, recordIndex);
         var id = context[key][index];
-        entry.get(context.dbinfo, secName, id, callback);
+        entry.get(context.dbinfo, secName, ptKey, id, callback);
     };
 
-    var getEntryPartial = function(context, secName, recordIndex, index, callback) {
+    var getEntryPartial = function(context, secName, ptKey, recordIndex, index, callback) {
         var key = refmodel.partialEntriesContextKey(secName, recordIndex);
         var id = context[key][index].match_entry;
-        entry.get(context.dbinfo, secName, id, callback);
+        entry.get(context.dbinfo, secName, ptKey, id, callback);
     };
 
     var verifyEntryGet = function(context, result, secName, recordIndex, index, sourceIndex) {
@@ -495,11 +512,18 @@ describe('merge.js methods', function() {
         expect(r).to.deep.equal(expected);
     };
 
+    it('entry.get (wrong patient)', function(done) {
+         getEntry(context, 'testallergies', 'wrongpatient', '0.0', 0, function(err) {
+            expect(err).to.exist;
+            done();
+        });
+    });
+
     it('entry.get', function(done) {
       async.parallel([
-            function(callback) {getEntry(context, 'testallergies', '0.0', 0, callback);},
-            function(callback) {getEntry(context, 'testprocedures', '1.0', 0, callback);},
-            function(callback) {getEntryPartial(context, 'testprocedures', '1.2', 0, callback);}
+            function(callback) {getEntry(context, 'testallergies', 'pat0', '0.0', 0, callback);},
+            function(callback) {getEntry(context, 'testprocedures', 'pat1', '1.0', 0, callback);},
+            function(callback) {getEntryPartial(context, 'testprocedures', 'pat1', '1.2', 0, callback);}
             ],
             function(err, results) {
                 if (err) {
