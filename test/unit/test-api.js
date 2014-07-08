@@ -44,7 +44,7 @@ describe('API', function() {
         });
     });
 
-    it('saveRecord', function(done) {
+    it('saveSource', function(done) {
         var fileInfo = [
             {name: 'ccd_0.xml', type: 'text/xml'},
             {name: 'ccd_1.xml', type: 'text/xml'},
@@ -55,13 +55,13 @@ describe('API', function() {
             {name: 'ccd_6.xml', type: 'text/xml'}
         ];
         async.parallel([
-            function(cb) {bbr.saveRecord('pat0', 'content0', fileInfo[0], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat0', 'content1', fileInfo[1], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat0', 'content2', fileInfo[2], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat1', 'content3', fileInfo[3], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat1', 'content4', fileInfo[4], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat1', 'content5', fileInfo[5], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat1', 'content6', fileInfo[6], 'ccda', cb);}
+            function(cb) {bbr.saveSource('pat0', 'content0', fileInfo[0], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat0', 'content1', fileInfo[1], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat0', 'content2', fileInfo[2], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat1', 'content3', fileInfo[3], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat1', 'content4', fileInfo[4], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat1', 'content5', fileInfo[5], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat1', 'content6', fileInfo[6], 'ccda', cb);}
             ],
             function(err, results) {
                 if (err) {
@@ -82,8 +82,8 @@ describe('API', function() {
         );
     });
 
-    it('getRecordList', function(done) {
-        bbr.getRecordList('pat0', function(err, results) {
+    it('getSourceList', function(done) {
+        bbr.getSourceList('pat0', function(err, results) {
             if (err) {
                 done(err);
             } else {
@@ -99,8 +99,8 @@ describe('API', function() {
         });
     });
 
-    it('getRecord', function(done) {
-        bbr.getRecord('pat0', sourceIds[0], function(err, filename, content) {
+    it('getSource', function(done) {
+        bbr.getSource('pat0', sourceIds[0], function(err, filename, content) {
             if (err) {
                 done(err);
             } else {
@@ -111,8 +111,8 @@ describe('API', function() {
         });
     });
 
-    it('recordCount', function(done) {
-        bbr.recordCount('pat0', function(err, result) {
+    it('sourceCount', function(done) {
+        bbr.sourceCount('pat0', function(err, result) {
             if (err) {
                 done(err);
             } else {

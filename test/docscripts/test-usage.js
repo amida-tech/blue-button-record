@@ -37,28 +37,28 @@ describe('Usage Documentation Examples' , function() {
             name: 'CCD_demo1.xml',
             type: 'text/xml'
         };
-        bbr.saveRecord('patientKey', xmlString, fileInfo, 'ccda', function(err, id) {
+        bbr.saveSource('patientKey', xmlString, fileInfo, 'ccda', function(err, id) {
             fileId = id;
             done();
         });
     });
 
     it('script 5 (a)', function(done) {
-        bbr.getRecordList('patientKey', function(err, results) {
+        bbr.getSourceList('patientKey', function(err, results) {
             console.log(results.length);
             done();
         });
     });
 
     it('script 5 (b)', function(done) {
-        bbr.getRecord('patientKey', fileId, function(err, filename, content) {
+        bbr.getSource('patientKey', fileId, function(err, filename, content) {
             console.log(filename);
             done();  
         });
     });
 
     it('script 5 (c)', function(done) {
-        bbr.recordCount('patientKey', function(err, count) {
+        bbr.sourceCount('patientKey', function(err, count) {
             console.log(count);
             done();
         });

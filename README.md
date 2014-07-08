@@ -46,21 +46,21 @@ var fileInfo = {
     type: 'text/xml'
 };
 var fileId;
-bbr.saveRecord('patientKey', xmlString, fileInfo, 'ccda', function(err, id) {
+bbr.saveSource('patientKey', xmlString, fileInfo, 'ccda', function(err, id) {
     fileId = id;
 });
 ```
 For simplicity we will only use this `fileId` in usage documentation as if it has several types of data.  Methods are provided to access patient data source records as a list or individually
 ``` javascript
-bbr.getRecordList('patientKey', function(err, results) {
+bbr.getSourceList('patientKey', function(err, results) {
     console.log(results.length);
 });
 
-bbr.getRecord('patientKey', fileId, function(err, filename, content) {
+bbr.getSource('patientKey', fileId, function(err, filename, content) {
     console.log(filename);
 });
 
-bbr.recordCount('patientKey', function(err, count) {
+bbr.sourceCount('patientKey', function(err, count) {
     console.log(count);
 });
 ```
@@ -335,7 +335,7 @@ bbr.clearDatabase(function(err) {
 ```
 ---------------------------------------
 
-### saveRecord(ptKey, content, sourceInfo, contentType, callback)
+### saveSource(ptKey, content, sourceInfo, contentType, callback)
 
 Saves a source of patient data.  Currently only text files are supported.
 
@@ -352,7 +352,7 @@ __Examples__
 
 ```js
 var fileId1;
-bbr.saveRecord('testPatient1', '<content value=1 />', {type: 'text/xml', name: 'expl1.xml'}, 'ccda', function(err, id) {
+bbr.saveSource('testPatient1', '<content value=1 />', {type: 'text/xml', name: 'expl1.xml'}, 'ccda', function(err, id) {
     assert.ifError(err);
     fileId1 = id;
 });
@@ -360,7 +360,7 @@ bbr.saveRecord('testPatient1', '<content value=1 />', {type: 'text/xml', name: '
 
 ```js
 var fileId2;
-bbr.saveRecord('testPatient1', '<content value=2 />', {type: 'application/xml', name: 'expl2.xml'}, 'c32', function(err, id) {
+bbr.saveSource('testPatient1', '<content value=2 />', {type: 'application/xml', name: 'expl2.xml'}, 'c32', function(err, id) {
     assert.ifError(err);
     fileId2 = id;
 });
@@ -368,7 +368,7 @@ bbr.saveRecord('testPatient1', '<content value=2 />', {type: 'application/xml', 
 
 ```js
 var fileId3;
-bbr.saveRecord('testPatient1', 'content 3', {type: 'text/plain', name: 'expl3.xml'}, 'ccda', function(err, id) {
+bbr.saveSource('testPatient1', 'content 3', {type: 'text/plain', name: 'expl3.xml'}, 'ccda', function(err, id) {
     assert.ifError(err);
     fileId3 = id;
 });
@@ -376,7 +376,7 @@ bbr.saveRecord('testPatient1', 'content 3', {type: 'text/plain', name: 'expl3.xm
 
 ```js
 var fileId4;
-bbr.saveRecord('testPatient2', '<content value=4 />', {type: 'text/xml', name: 'expl4.xml'}, 'ccda', function(err, id) {
+bbr.saveSource('testPatient2', '<content value=4 />', {type: 'text/xml', name: 'expl4.xml'}, 'ccda', function(err, id) {
     assert.ifError(err);
     fileId4 = id;
 });
@@ -384,7 +384,7 @@ bbr.saveRecord('testPatient2', '<content value=4 />', {type: 'text/xml', name: '
 
 ---------------------------------------
 
-### getRecordList(ptKey, callback)
+### getSourceList(ptKey, callback)
 
 Gets all the sources of Master Health Record in the database.
 
@@ -401,7 +401,7 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getRecordList('testPatient1', function(err, sources) {
+bbr.getSourceList('testPatient1', function(err, sources) {
     assert.ifError(err);
     assert.equal(sources.length, 3);
     var names = sources.map(function(source) {return source.file_name;});
@@ -412,7 +412,7 @@ bbr.getRecordList('testPatient1', function(err, sources) {
 ```
 ---------------------------------------
 
-### getRecord(ptKey, sourceId, callback)
+### getSource(ptKey, sourceId, callback)
 
 Gets name and content of the Master Health Record source.
 
@@ -424,7 +424,7 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getRecord('testPatient1', fileId1, function(err, name, content) {
+bbr.getSource('testPatient1', fileId1, function(err, name, content) {
     assert.ifError(err);
     assert.equal(name, 'expl1.xml');
     assert.equal(content, '<content value=1 />');
@@ -432,7 +432,7 @@ bbr.getRecord('testPatient1', fileId1, function(err, name, content) {
 ```
 ---------------------------------------
 
-### recordCount(ptKey, callback)
+### sourceCount(ptKey, callback)
 
 Gets the number of sources in the database for the patient.
 
@@ -443,7 +443,7 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.recordCount('testPatient1', function(err, count) {
+bbr.sourceCount('testPatient1', function(err, count) {
     assert.ifError(err);
     assert.equal(count, 3);
 });

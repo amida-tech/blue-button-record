@@ -51,40 +51,40 @@ describe('API Documentation Examples', function() {
     var fileId3;
     var fileId4;
 
-    it('saveRecord (1)', function(done) {
-        bbr.saveRecord('testPatient1', '<content value=1 />', {type: 'text/xml', name: 'expl1.xml'}, 'ccda', function(err, id) {
+    it('saveSource (1)', function(done) {
+        bbr.saveSource('testPatient1', '<content value=1 />', {type: 'text/xml', name: 'expl1.xml'}, 'ccda', function(err, id) {
             assert.ifError(err);
             fileId1 = id;
             done();
         });
     });
 
-    it('saveRecord (2)', function(done) {
-        bbr.saveRecord('testPatient1', '<content value=2 />', {type: 'application/xml', name: 'expl2.xml'}, 'c32', function(err, id) {
+    it('saveSource (2)', function(done) {
+        bbr.saveSource('testPatient1', '<content value=2 />', {type: 'application/xml', name: 'expl2.xml'}, 'c32', function(err, id) {
             assert.ifError(err);
             fileId2 = id;
             done();
         });
     });
 
-    it('saveRecord (3)', function(done) {
-        bbr.saveRecord('testPatient1', 'content 3', {type: 'text/plain', name: 'expl3.xml'}, 'ccda', function(err, id) {
+    it('saveSource (3)', function(done) {
+        bbr.saveSource('testPatient1', 'content 3', {type: 'text/plain', name: 'expl3.xml'}, 'ccda', function(err, id) {
             assert.ifError(err);
             fileId3 = id;
             done();
         });
     });
 
-    it('saveRecord (4)', function(done) {
-        bbr.saveRecord('testPatient2', '<content value=4 />', {type: 'text/xml', name: 'expl4.xml'}, 'ccda', function(err, id) {
+    it('saveSource (4)', function(done) {
+        bbr.saveSource('testPatient2', '<content value=4 />', {type: 'text/xml', name: 'expl4.xml'}, 'ccda', function(err, id) {
             assert.ifError(err);
             fileId4 = id;
             done();
         });
     });
 
-    it('getRecordList', function(done) {
-        bbr.getRecordList('testPatient1', function(err, sources) {
+    it('getSourceList', function(done) {
+        bbr.getSourceList('testPatient1', function(err, sources) {
             assert.ifError(err);
             assert.equal(sources.length, 3);
             var names = sources.map(function(source) {return source.file_name;});
@@ -95,8 +95,8 @@ describe('API Documentation Examples', function() {
         });
     });
 
-    it('getRecord', function(done) {
-        bbr.getRecord('testPatient1', fileId1, function(err, name, content) {
+    it('getSource', function(done) {
+        bbr.getSource('testPatient1', fileId1, function(err, name, content) {
             assert.ifError(err);
             assert.equal(name, 'expl1.xml');
             assert.equal(content, '<content value=1 />');
@@ -104,8 +104,8 @@ describe('API Documentation Examples', function() {
         });
     });
 
-    it('recordCount', function(done) {
-        bbr.recordCount('testPatient1', function(err, count) {
+    it('sourceCount', function(done) {
+        bbr.sourceCount('testPatient1', function(err, count) {
             assert.ifError(err);
             assert.equal(count, 3);
             done();

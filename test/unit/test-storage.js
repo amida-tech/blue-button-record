@@ -70,13 +70,13 @@ describe('storage.js methods', function() {
         done();
     });
 
-    it('saveRecord', function(done) {
+    it('saveSource', function(done) {
         var f = function(fullCount, index, callback) {
             var fileinfo = {
                 name: getFileName(index),
                 type: getContentType(index)
             };
-            storage.saveRecord(dbinfo, pats[index], contents[index], fileinfo, classes[index], function(err, result) {
+            storage.saveSource(dbinfo, pats[index], contents[index], fileinfo, classes[index], function(err, result) {
                 if (err) {
                     callback(err);
                 } else {
@@ -101,10 +101,10 @@ describe('storage.js methods', function() {
         }
     });
 
-    it('getRecordList', function(done) {
+    it('getSourceList', function(done) {
         var count = 0;
         var f = function(start, end) {
-            storage.getRecordList(dbinfo, pats[start], function(err, result) {
+            storage.getSourceList(dbinfo, pats[start], function(err, result) {
                 var n = result.length;
                 expect(n).to.equal(end - start);
                 for (var i = start; i < end; ++i) {
@@ -138,10 +138,10 @@ describe('storage.js methods', function() {
         f(5, 6);
     });
 
-    it('getRecord', function(done) {
+    it('getSource', function(done) {
         var count = 0;
         var f = function(index) {
-            storage.getRecord(dbinfo, pats[index], ids[index].toString(), function(err, filename, content) {
+            storage.getSource(dbinfo, pats[index], ids[index].toString(), function(err, filename, content) {
                 if (err) {
                     done(err);
                 } else {
@@ -160,14 +160,14 @@ describe('storage.js methods', function() {
         }
     });
 
-    it('getRecord (wrong patient)', function(done) {
-        storage.getRecord(dbinfo, 'wrongpatient', ids[0].toString(), function(err, filename, content) {
+    it('getSource (wrong patient)', function(done) {
+        storage.getSource(dbinfo, 'wrongpatient', ids[0].toString(), function(err, filename, content) {
             expect(err).to.exist;
             done();
         });
     });
 
-    it('recordCount', function(done) {
+    it('sourceCount', function(done) {
         var count = 0;
         var doneIf3 = function() {
             ++count;
@@ -176,7 +176,7 @@ describe('storage.js methods', function() {
             }
         };
         var f = function(pat, expected) {
-            storage.recordCount(dbinfo, pat, function(err, num) {
+            storage.sourceCount(dbinfo, pat, function(err, num) {
                 if (err) {
                     done(err);
                 } else {
