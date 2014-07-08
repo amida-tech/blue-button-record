@@ -341,8 +341,8 @@ describe('API Documentation Examples', function() {
             var i = [entries[0].name, entries[1].name].indexOf('allergy1');
             assert.equal(entries[i].name, 'allergy1');
             assert.equal(entries[i].severity, 'severity3');
-            assert.equal(entries[i+1 % 2].name, 'allergy2');
-            assert.equal(entries[i+1 % 2].value.code, 'code5');
+            assert.equal(entries[(i+1) % 2].name, 'allergy2');
+            assert.equal(entries[(i+1) % 2].value.code, 'code5');
             done();
         });
     });
@@ -355,10 +355,10 @@ describe('API Documentation Examples', function() {
             assert.equal(entries[i].match_entry.severity, 'severity3');
             assert.equal(entries[i].percent, 80);
             assert.deepEqual(entries[i].subelements, ['severity']);
-            assert.equal(entries[i+1 % 2].entry.value.code, 'code2');
-            assert.equal(entries[i+1 % 2].match_entry.value.code, 'code5');
-            assert.equal(entries[i+1 % 2].percent, 90);
-            assert.deepEqual(entries[i+1 % 2].subelements, ['value.code']);            
+            assert.equal(entries[(i+1) % 2].entry.value.code, 'code2');
+            assert.equal(entries[(i+1) % 2].match_entry.value.code, 'code5');
+            assert.equal(entries[(i+1) % 2].percent, 90);
+            assert.deepEqual(entries[(i+1) % 2].subelements, ['value.code']);            
             done();
         });
     });
