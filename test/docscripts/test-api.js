@@ -339,16 +339,14 @@ describe('API Documentation Examples', function() {
         bbr.getMatches('allergies', 'testPatient1', 'name severity value.code', function(err, entries) {
             assert.ifError(err);
             var i = [entries[0].entry.name, entries[1].entry.name].indexOf('allergy1');
-            assert.equal(entries[i].entry.name, 'allergy1');
             assert.equal(entries[i].entry.severity, 'updatedSev');
             assert.equal(entries[i].match_entry.severity, 'severity3');
             assert.equal(entries[i].percent, 80);
             assert.deepEqual(entries[i].subelements, ['severity']);
-            assert.equal(entries[i+1 % 2].entry.name, 'allergy2');
-            assert.equal(entries[i+1 % 2].entry.value.code, 'code2');
-            assert.equal(entries[i+1 % 2].match_entry.value.code, 'code5');
-            assert.equal(entries[i+1 % 2].percent, 90);
-            assert.deepEqual(entries[i+1 % 2].subelements, ['value.code']);            
+            assert.equal(entries[(i+1) % 2].entry.value.code, 'code2');
+            assert.equal(entries[(i+1) % 2].match_entry.value.code, 'code5');
+            assert.equal(entries[(i+1) % 2].percent, 90);
+            assert.deepEqual(entries[(i+1) % 2].subelements, ['value.code']);            
             done();
         });
     });
