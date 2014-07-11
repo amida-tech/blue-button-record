@@ -17,16 +17,16 @@ describe('Usage Documentation Examples' , function() {
         });
     });
 
-    var ccdJSON;
-    var xmlString;
+    var cmsJSON;
+    var cmsString;
 
     it('script 3', function(done) {
         var fs = require('fs');
         var path = require('path');
-        var filepath  = path.join(__dirname, '../artifacts/standard/CCD_demo1.xml');
-        xmlString = fs.readFileSync(filepath, 'utf-8');
-        var result = bb.parseString(xmlString);
-        ccdJSON = result.data;
+        var filepath  = path.join(__dirname, '../artifacts/standard/cms_sample.txt');
+        cmsString = fs.readFileSync(filepath, 'utf-8');
+        var result = bb.parseText(cmsString);
+        cmsJSON = result.data;
         done();
     });
 
@@ -34,10 +34,10 @@ describe('Usage Documentation Examples' , function() {
 
     it('script 4', function(done) {
         var fileInfo = {
-            name: 'CCD_demo1.xml',
-            type: 'text/xml'
+            name: 'cms_sample.txt',
+            type: 'text/plain'
         };
-        bbr.saveRecord('patientKey', xmlString, fileInfo, 'ccda', function(err, id) {
+        bbr.saveRecord('patientKey', cmsString, fileInfo, 'cms', function(err, id) {
             fileId = id;
             done();
         });
@@ -65,14 +65,14 @@ describe('Usage Documentation Examples' , function() {
     });
 
     it('script 6', function(done) {
-        bbr.saveAllSections('patientKey', ccdJSON, fileId, function(err) {
+        bbr.saveAllSections('patientKey', cmsJSON, fileId, function(err) {
             if (err) {throw err;}
             done();
         });
     });
 
     it('script 7', function(done) {
-        bbr.saveSection('allergies', 'patientKey', ccdJSON.allergies, fileId, function(err) {
+        bbr.saveSection('allergies', 'patientKey', cmsJSON.allergies, fileId, function(err) {
             if (err) {throw err;}
             done();
         });
@@ -179,7 +179,7 @@ describe('Usage Documentation Examples' , function() {
 
     it('script 16', function(done) {
         partialAllergy = {
-            partial_entry: ccdJSON.allergies[0],
+            partial_entry: cmsJSON.allergies[0],
             partial_match: {
                 diff: {severity: 'new'},
                 percent: 80,
