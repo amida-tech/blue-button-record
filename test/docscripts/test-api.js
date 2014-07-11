@@ -296,7 +296,7 @@ describe('API Documentation Examples', function() {
     var paid1;
     var paid2;
 
-    it('savePartialSection', function(done) {
+    it('saveMatches', function(done) {
         var inputSection = [{
             partial_entry : {
                 name: 'allergy1',
@@ -327,22 +327,10 @@ describe('API Documentation Examples', function() {
             },
             match_entry_id: aid2
         }];
-        bbr.savePartialSection('allergies', 'testPatient1', inputSection, fileId4, function(err, ids) {
+        bbr.saveMatches('allergies', 'testPatient1', inputSection, fileId4, function(err, ids) {
             assert.ifError(err);
             paid1 = ids[0];
             paid2 = ids[1];
-            done();
-        });
-    });
-
-    it('getPartialSection', function(done) {
-        bbr.getPartialSection('allergies', 'testPatient1', function(err, entries) {
-            assert.ifError(err);
-            var i = [entries[0].name, entries[1].name].indexOf('allergy1');
-            assert.equal(entries[i].name, 'allergy1');
-            assert.equal(entries[i].severity, 'severity3');
-            assert.equal(entries[(i+1) % 2].name, 'allergy2');
-            assert.equal(entries[(i+1) % 2].value.code, 'code5');
             done();
         });
     });

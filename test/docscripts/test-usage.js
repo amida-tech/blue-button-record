@@ -193,15 +193,8 @@ describe('Usage Documentation Examples' , function() {
     it('script 17', function(done) {
         // for simplicity use the same here, these would be different in reality
         var partialAllergies = [partialAllergy, partialAllergy];
-        bbr.savePartialSection('allergies', 'patientKey', partialAllergies, fileId, function(err) {
+        bbr.saveMatches('allergies', 'patientKey', partialAllergies, fileId, function(err) {
             if (err) {throw err;}
-            done();        
-         });
-    });
-
-    it('script 18', function(done) {
-        bbr.getPartialSection('allergies', 'patientKey', function(err, result) {
-            console.log(result[0].allergen.name);
             done();        
          });
     });

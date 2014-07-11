@@ -279,7 +279,7 @@ describe('API', function() {
         );
     });
 
-    it('savePartialSection', function(done) {
+    it('saveMatches', function(done) {
         var match1 = {
             diff: {severity: 'new'},
             percent: 80
@@ -306,27 +306,8 @@ describe('API', function() {
                 match_entry_id: allergyIds[2]  
             }
         ];
-        bbr.savePartialSection('allergies', 'pat1', partialInput, sourceIds[6], function(err, result) {
+        bbr.saveMatches('allergies', 'pat1', partialInput, sourceIds[6], function(err, result) {
             done(err);
-        });
-    });
-
-    it('getPartialSection', function(done) {
-        bbr.getPartialSection('allergies', 'pat1', function(err, result) {
-            if (err) {
-                done(err);
-            } else {
-                var actual = bbr.cleanSection(result);
-                var expected = [partialInput[0].partial_entry, partialInput[1].partial_entry];
-                expect(actual).to.deep.include.members(expected);
-                expect(expected).to.deep.include.members(actual);
-                if (ccd.allergies[1].allergen.name === result[0].allergen.name) {
-                    partialAllergyIds = [result[0]._id, result[1]._id];
-                } else {
-                    partialAllergyIds = [result[1]._id, result[0]._id];
-                }
-                done(err);
-            }
         });
     });
 
@@ -341,6 +322,7 @@ describe('API', function() {
                     result[0] = result[1];
                     result[1] = temp;
                 }
+                partialAllergyIds = [result[0].match_entry._id, result[1].match_entry._id];
                 expect(result[0].entry.allergen.name).to.equal(allergyNames[1]);
                 expect(result[0].entry.severity).to.equal(allergySeverities[1]);
                 expect(result[0].entry.status).to.equal(allergyStatuses[1]);
@@ -415,7 +397,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
@@ -444,7 +426,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
@@ -473,7 +455,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[1], cb);}
             ], 
             function(err, results) {
