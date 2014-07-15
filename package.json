@@ -19,7 +19,7 @@
         "mongoose": "3.8.8",
         "underscore": "1.6.x",
         "async": "0.9.x",
-        "blue-button": "git://github.com/amida-tech/blue-button.git#bj-fixes1.1.0"
+        "blue-button": "git://github.com/amida-tech/blue-button.git#bjs-branch"
     },
     "devDependencies": {
         "grunt": "0.4.x",
