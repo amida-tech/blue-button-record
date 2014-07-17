@@ -55,6 +55,10 @@ exports.getSourceList = function(ptKey, callback) {
     storage.getSourceList(dbinfo, ptKey, callback);
 };
 
+exports.updateSource = function(ptKey, sourceId, update, callback) {
+    storage.updateSource(dbinfo, ptKey, sourceId, update, callback);
+};
+
 exports.getSource = function(ptKey, sourceId, callback) {
     storage.getSource(dbinfo, ptKey, sourceId, callback);
 };
