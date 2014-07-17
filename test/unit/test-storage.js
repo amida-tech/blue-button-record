@@ -10,7 +10,7 @@ var storage = require('../../lib/storage');
 
 var expect = chai.expect;
 
-describe('storage.js methods', function() {
+describe('storage.js methods', function () {
     this.timeout(5000);
     var dbinfo = null;
     var ids = [];
@@ -21,7 +21,7 @@ describe('storage.js methods', function() {
     var classes = ['ccda', undefined, 'ccda', null, 'ccda', undefined];
     var contents = [];
 
-    var getContentType = function(index) {
+    var getContentType = function (index) {
         if (types[index] === 'xml') {
             return 'text/xml';
         } else {
@@ -29,11 +29,11 @@ describe('storage.js methods', function() {
         }
     };
 
-    var getFileName = function(index) {
+    var getFileName = function (index) {
         return 'c' + index + '.' + types[index];
     };
 
-    var createFileContent = function(index) {
+    var createFileContent = function (index) {
         var content = "<root\n";
         for (var i = 0; i < sizes[index]; ++i) {
             var line = util.format('a%s=d%s\n', i, i);
@@ -43,7 +43,7 @@ describe('storage.js methods', function() {
         return content;
     };
 
-    before(function(done) {
+    before(function (done) {
         for (var i = 0; i < 6; ++i) {
             contents[i] = createFileContent(i);
         }
@@ -52,7 +52,7 @@ describe('storage.js methods', function() {
             supportedSections: [],
             typeToSchemaDesc: {}
         };
-        db.connect('localhost', options, function(err, result) {
+        db.connect('localhost', options, function (err, result) {
             if (err) {
                 done(err);
             } else {
@@ -62,7 +62,7 @@ describe('storage.js methods', function() {
         });
     });
 
-    it('check connection and models', function(done) {
+    it('check connection and models', function (done) {
         expect(dbinfo).to.exist;
         expect(dbinfo.db).to.exist;
         expect(dbinfo.grid).to.exist;
@@ -70,13 +70,13 @@ describe('storage.js methods', function() {
         done();
     });
 
-    it('saveSource', function(done) {
-        var f = function(fullCount, index, callback) {
+    it('saveSource', function (done) {
+        var f = function (fullCount, index, callback) {
             var fileinfo = {
                 name: getFileName(index),
                 type: getContentType(index)
             };
-            storage.saveSource(dbinfo, pats[index], contents[index], fileinfo, classes[index], function(err, result) {
+            storage.saveSource(dbinfo, pats[index], contents[index], fileinfo, classes[index], function (err, result) {
                 if (err) {
                     callback(err);
                 } else {
@@ -94,17 +94,19 @@ describe('storage.js methods', function() {
             });
         };
 
-        var e=function(err){done(err);};
+        var e = function (err) {
+            done(err);
+        };
 
         for (var i = 0; i < 6; ++i) {
             f(6, i, e);
         }
     });
 
-    it('getSourceList', function(done) {
+    it('getSourceList', function (done) {
         var count = 0;
-        var f = function(start, end) {
-            storage.getSourceList(dbinfo, pats[start], function(err, result) {
+        var f = function (start, end) {
+            storage.getSourceList(dbinfo, pats[start], function (err, result) {
                 var n = result.length;
                 expect(n).to.equal(end - start);
                 for (var i = start; i < end; ++i) {
@@ -121,6 +123,7 @@ describe('storage.js methods', function() {
                     expect(r.file_name).to.equal(getFileName(index));
                     expect(r.file_mime_type).to.equal(getContentType(index));
                     expect(r.patient_key).to.equal(pats[index]);
+                    expect(r.file_parsed).to.not.exist;
                     if (classes[index]) {
                         expect(r.file_class).to.equal(classes[index]);
                     } else {
@@ -138,10 +141,10 @@ describe('storage.js methods', function() {
         f(5, 6);
     });
 
-    it('getSource', function(done) {
+    it('getSource', function (done) {
         var count = 0;
-        var f = function(index) {
-            storage.getSource(dbinfo, pats[index], ids[index].toString(), function(err, filename, content) {
+        var f = function (index) {
+            storage.getSource(dbinfo, pats[index], ids[index].toString(), function (err, filename, content) {
                 if (err) {
                     done(err);
                 } else {
@@ -160,23 +163,57 @@ describe('storage.js methods', function() {
         }
     });
 
-    it('getSource (wrong patient)', function(done) {
-        storage.getSource(dbinfo, 'wrongpatient', ids[0].toString(), function(err, filename, content) {
+    it('updateSource', function (done) {
+        var count = 0;
+        var f = function (index) {
+            storage.updateSource(dbinfo, pats[index], ids[index].toString(), {
+                'metadata.parsed': new Date()
+            }, function (err, content) {
+                if (err) {
+                    done(err);
+                } else {
+                    ++count;
+                    if (count === 6) {
+
+                        var pats_counter = 0;
+
+                        for (var pat_i in pats) {
+                            storage.getSourceList(dbinfo, pats[0], function (err, results) {
+                                for (var i in results) {
+                                    expect(results[i].file_parsed).to.exist;
+                                    pats_counter++;
+                                    if (pats_counter === pats.length) {
+                                        done();
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        };
+        for (var i = 0; i < 6; ++i) {
+            f(i);
+        }
+    });
+
+    it('getSource (wrong patient)', function (done) {
+        storage.getSource(dbinfo, 'wrongpatient', ids[0].toString(), function (err, filename, content) {
             expect(err).to.exist;
             done();
         });
     });
 
-    it('sourceCount', function(done) {
+    it('sourceCount', function (done) {
         var count = 0;
-        var doneIf3 = function() {
+        var doneIf3 = function () {
             ++count;
             if (count === 4) {
                 done();
             }
         };
-        var f = function(pat, expected) {
-            storage.sourceCount(dbinfo, pat, function(err, num) {
+        var f = function (pat, expected) {
+            storage.sourceCount(dbinfo, pat, function (err, num) {
                 if (err) {
                     done(err);
                 } else {
@@ -191,12 +228,12 @@ describe('storage.js methods', function() {
         f('patnone', 0);
     });
 
-    after(function(done) {
-        dbinfo.db.dropDatabase(function(err) {
+    after(function (done) {
+        dbinfo.db.dropDatabase(function (err) {
             if (err) {
                 done(err);
             } else {
-                dbinfo.connection.close(function(err) {
+                dbinfo.connection.close(function (err) {
                     done(err);
                 });
             }
