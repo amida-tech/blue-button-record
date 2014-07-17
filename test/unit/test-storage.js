@@ -165,6 +165,21 @@ describe('storage.js methods', function () {
 
     it('updateSource', function (done) {
         var count = 0;
+        var patient_counter = 0;
+
+        function checkSources(patient, pat_len) {
+            storage.getSourceList(dbinfo, patient, function (err, results) {
+                for (var i in results) {
+                    expect(results[i].file_parsed).to.exist;
+                    patient_counter++;
+                    if (patient_counter === pat_len) {
+                        done();
+                    }
+
+                }
+            });
+        }
+
         var f = function (index) {
             storage.updateSource(dbinfo, pats[index], ids[index].toString(), {
                 'metadata.parsed': new Date()
@@ -174,19 +189,8 @@ describe('storage.js methods', function () {
                 } else {
                     ++count;
                     if (count === 6) {
-
-                        var pats_counter = 0;
-
                         for (var pat_i in pats) {
-                            storage.getSourceList(dbinfo, pats[0], function (err, results) {
-                                for (var i in results) {
-                                    expect(results[i].file_parsed).to.exist;
-                                    pats_counter++;
-                                    if (pats_counter === pats.length) {
-                                        done();
-                                    }
-                                }
-                            });
+                            checkSources(pats[pat_i], pats.length);
                         }
                     }
                 }
