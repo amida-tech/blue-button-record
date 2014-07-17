@@ -80,6 +80,7 @@ describe('Usage Documentation Examples' , function() {
 
     it('script 8', function(done) {
         bbr.getAllSections('patientKey',function(err, result) {
+            console.log(JSON.stringify(result.claims, null, 2));
             done();
         });
     });

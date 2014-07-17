@@ -110,7 +110,7 @@ var matchObjectInstance = exports.matchObjectInstance = {
 };
 
 var createStorage = function(context, pat, filename, index, callback) {
-    storage.saveRecord(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, id) {
+    storage.saveSource(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, id) {
         if (err) {
             callback(err);
         } else {
@@ -167,7 +167,7 @@ var saveSection = exports.saveSection = function(context, secName, pat_key, reco
     });
 };
 
-exports.savePartialSection = function(context, secName, pat_key, recordIndex, destRecordIndex, extraContent, callback) {
+exports.saveMatches = function(context, secName, pat_key, recordIndex, destRecordIndex, extraContent, callback) {
     var data = createTestSection(secName, recordIndex, extraContent.length);
     var sourceId = context.storageIds[recordIndex];
     var key = newEntriesContextKey(secName, destRecordIndex);

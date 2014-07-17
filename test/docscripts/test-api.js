@@ -51,40 +51,40 @@ describe('API Documentation Examples', function() {
     var fileId3;
     var fileId4;
 
-    it('saveRecord (1)', function(done) {
-        bbr.saveRecord('testPatient1', '<content value=1 />', {type: 'text/xml', name: 'expl1.xml'}, 'ccda', function(err, id) {
+    it('saveSource (1)', function(done) {
+        bbr.saveSource('testPatient1', '<content value=1 />', {type: 'text/xml', name: 'expl1.xml'}, 'ccda', function(err, id) {
             assert.ifError(err);
             fileId1 = id;
             done();
         });
     });
 
-    it('saveRecord (2)', function(done) {
-        bbr.saveRecord('testPatient1', '<content value=2 />', {type: 'application/xml', name: 'expl2.xml'}, 'c32', function(err, id) {
+    it('saveSource (2)', function(done) {
+        bbr.saveSource('testPatient1', '<content value=2 />', {type: 'application/xml', name: 'expl2.xml'}, 'c32', function(err, id) {
             assert.ifError(err);
             fileId2 = id;
             done();
         });
     });
 
-    it('saveRecord (3)', function(done) {
-        bbr.saveRecord('testPatient1', 'content 3', {type: 'text/plain', name: 'expl3.xml'}, 'ccda', function(err, id) {
+    it('saveSource (3)', function(done) {
+        bbr.saveSource('testPatient1', 'content 3', {type: 'text/plain', name: 'expl3.xml'}, 'ccda', function(err, id) {
             assert.ifError(err);
             fileId3 = id;
             done();
         });
     });
 
-    it('saveRecord (4)', function(done) {
-        bbr.saveRecord('testPatient2', '<content value=4 />', {type: 'text/xml', name: 'expl4.xml'}, 'ccda', function(err, id) {
+    it('saveSource (4)', function(done) {
+        bbr.saveSource('testPatient2', '<content value=4 />', {type: 'text/xml', name: 'expl4.xml'}, 'ccda', function(err, id) {
             assert.ifError(err);
             fileId4 = id;
             done();
         });
     });
 
-    it('getRecordList', function(done) {
-        bbr.getRecordList('testPatient1', function(err, sources) {
+    it('getSourceList', function(done) {
+        bbr.getSourceList('testPatient1', function(err, sources) {
             assert.ifError(err);
             assert.equal(sources.length, 3);
             var names = sources.map(function(source) {return source.file_name;});
@@ -95,8 +95,8 @@ describe('API Documentation Examples', function() {
         });
     });
 
-    it('getRecord', function(done) {
-        bbr.getRecord('testPatient1', fileId1, function(err, name, content) {
+    it('getSource', function(done) {
+        bbr.getSource('testPatient1', fileId1, function(err, name, content) {
             assert.ifError(err);
             assert.equal(name, 'expl1.xml');
             assert.equal(content, '<content value=1 />');
@@ -104,8 +104,8 @@ describe('API Documentation Examples', function() {
         });
     });
 
-    it('recordCount', function(done) {
-        bbr.recordCount('testPatient1', function(err, count) {
+    it('sourceCount', function(done) {
+        bbr.sourceCount('testPatient1', function(err, count) {
             assert.ifError(err);
             assert.equal(count, 3);
             done();
@@ -296,7 +296,7 @@ describe('API Documentation Examples', function() {
     var paid1;
     var paid2;
 
-    it('savePartialSection', function(done) {
+    it('saveMatches', function(done) {
         var inputSection = [{
             partial_entry : {
                 name: 'allergy1',
@@ -327,22 +327,10 @@ describe('API Documentation Examples', function() {
             },
             match_entry_id: aid2
         }];
-        bbr.savePartialSection('allergies', 'testPatient1', inputSection, fileId4, function(err, ids) {
+        bbr.saveMatches('allergies', 'testPatient1', inputSection, fileId4, function(err, ids) {
             assert.ifError(err);
             paid1 = ids[0];
             paid2 = ids[1];
-            done();
-        });
-    });
-
-    it('getPartialSection', function(done) {
-        bbr.getPartialSection('allergies', 'testPatient1', function(err, entries) {
-            assert.ifError(err);
-            var i = [entries[0].name, entries[1].name].indexOf('allergy1');
-            assert.equal(entries[i].name, 'allergy1');
-            assert.equal(entries[i].severity, 'severity3');
-            assert.equal(entries[i+1 % 2].name, 'allergy2');
-            assert.equal(entries[i+1 % 2].value.code, 'code5');
             done();
         });
     });
@@ -355,10 +343,10 @@ describe('API Documentation Examples', function() {
             assert.equal(entries[i].match_entry.severity, 'severity3');
             assert.equal(entries[i].percent, 80);
             assert.deepEqual(entries[i].subelements, ['severity']);
-            assert.equal(entries[i+1 % 2].entry.value.code, 'code2');
-            assert.equal(entries[i+1 % 2].match_entry.value.code, 'code5');
-            assert.equal(entries[i+1 % 2].percent, 90);
-            assert.deepEqual(entries[i+1 % 2].subelements, ['value.code']);            
+            assert.equal(entries[(i+1) % 2].entry.value.code, 'code2');
+            assert.equal(entries[(i+1) % 2].match_entry.value.code, 'code5');
+            assert.equal(entries[(i+1) % 2].percent, 90);
+            assert.deepEqual(entries[(i+1) % 2].subelements, ['value.code']);            
             done();
         });
     });

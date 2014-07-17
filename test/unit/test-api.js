@@ -44,7 +44,7 @@ describe('API', function() {
         });
     });
 
-    it('saveRecord', function(done) {
+    it('saveSource', function(done) {
         var fileInfo = [
             {name: 'ccd_0.xml', type: 'text/xml'},
             {name: 'ccd_1.xml', type: 'text/xml'},
@@ -55,13 +55,13 @@ describe('API', function() {
             {name: 'ccd_6.xml', type: 'text/xml'}
         ];
         async.parallel([
-            function(cb) {bbr.saveRecord('pat0', 'content0', fileInfo[0], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat0', 'content1', fileInfo[1], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat0', 'content2', fileInfo[2], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat1', 'content3', fileInfo[3], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat1', 'content4', fileInfo[4], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat1', 'content5', fileInfo[5], 'ccda', cb);},
-            function(cb) {bbr.saveRecord('pat1', 'content6', fileInfo[6], 'ccda', cb);}
+            function(cb) {bbr.saveSource('pat0', 'content0', fileInfo[0], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat0', 'content1', fileInfo[1], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat0', 'content2', fileInfo[2], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat1', 'content3', fileInfo[3], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat1', 'content4', fileInfo[4], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat1', 'content5', fileInfo[5], 'ccda', cb);},
+            function(cb) {bbr.saveSource('pat1', 'content6', fileInfo[6], 'ccda', cb);}
             ],
             function(err, results) {
                 if (err) {
@@ -82,8 +82,8 @@ describe('API', function() {
         );
     });
 
-    it('getRecordList', function(done) {
-        bbr.getRecordList('pat0', function(err, results) {
+    it('getSourceList', function(done) {
+        bbr.getSourceList('pat0', function(err, results) {
             if (err) {
                 done(err);
             } else {
@@ -99,8 +99,8 @@ describe('API', function() {
         });
     });
 
-    it('getRecord', function(done) {
-        bbr.getRecord('pat0', sourceIds[0], function(err, filename, content) {
+    it('getSource', function(done) {
+        bbr.getSource('pat0', sourceIds[0], function(err, filename, content) {
             if (err) {
                 done(err);
             } else {
@@ -111,8 +111,8 @@ describe('API', function() {
         });
     });
 
-    it('recordCount', function(done) {
-        bbr.recordCount('pat0', function(err, result) {
+    it('sourceCount', function(done) {
+        bbr.sourceCount('pat0', function(err, result) {
             if (err) {
                 done(err);
             } else {
@@ -279,7 +279,7 @@ describe('API', function() {
         );
     });
 
-    it('savePartialSection', function(done) {
+    it('saveMatches', function(done) {
         var match1 = {
             diff: {severity: 'new'},
             percent: 80
@@ -306,27 +306,8 @@ describe('API', function() {
                 match_entry_id: allergyIds[2]  
             }
         ];
-        bbr.savePartialSection('allergies', 'pat1', partialInput, sourceIds[6], function(err, result) {
+        bbr.saveMatches('allergies', 'pat1', partialInput, sourceIds[6], function(err, result) {
             done(err);
-        });
-    });
-
-    it('getPartialSection', function(done) {
-        bbr.getPartialSection('allergies', 'pat1', function(err, result) {
-            if (err) {
-                done(err);
-            } else {
-                var actual = bbr.cleanSection(result);
-                var expected = [partialInput[0].partial_entry, partialInput[1].partial_entry];
-                expect(actual).to.deep.include.members(expected);
-                expect(expected).to.deep.include.members(actual);
-                if (ccd.allergies[1].allergen.name === result[0].allergen.name) {
-                    partialAllergyIds = [result[0]._id, result[1]._id];
-                } else {
-                    partialAllergyIds = [result[1]._id, result[0]._id];
-                }
-                done(err);
-            }
         });
     });
 
@@ -341,6 +322,7 @@ describe('API', function() {
                     result[0] = result[1];
                     result[1] = temp;
                 }
+                partialAllergyIds = [result[0].match_entry._id, result[1].match_entry._id];
                 expect(result[0].entry.allergen.name).to.equal(allergyNames[1]);
                 expect(result[0].entry.severity).to.equal(allergySeverities[1]);
                 expect(result[0].entry.status).to.equal(allergyStatuses[1]);
@@ -415,7 +397,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
@@ -444,7 +426,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
@@ -473,7 +455,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getPartialSection('allergies', 'pat1', cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[1], cb);}
             ], 
             function(err, results) {

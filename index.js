@@ -47,20 +47,20 @@ exports.clearDatabase = function(callback) {
 
 // records
 
-exports.saveRecord = function(ptKey, content, sourceInfo, contentType, callback) {
-    storage.saveRecord(dbinfo, ptKey, content, sourceInfo, contentType, callback);
+exports.saveSource = function(ptKey, content, sourceInfo, contentType, callback) {
+    storage.saveSource(dbinfo, ptKey, content, sourceInfo, contentType, callback);
 };
 
-exports.getRecordList = function(ptKey, callback) {
-    storage.getRecordList(dbinfo, ptKey, callback);
+exports.getSourceList = function(ptKey, callback) {
+    storage.getSourceList(dbinfo, ptKey, callback);
 };
 
-exports.getRecord = function(ptKey, sourceId, callback) {
-    storage.getRecord(dbinfo, ptKey, sourceId, callback);
+exports.getSource = function(ptKey, sourceId, callback) {
+    storage.getSource(dbinfo, ptKey, sourceId, callback);
 };
 
-exports.recordCount = function(ptKey, callback) {
-    storage.recordCount(dbinfo, ptKey, callback);
+exports.sourceCount = function(ptKey, callback) {
+    storage.sourceCount(dbinfo, ptKey, callback);
 };
 
 // merges
@@ -74,6 +74,10 @@ exports.mergeCount = function(secName, ptKey, conditions, callback) {
 };
 
 // matches
+
+exports.saveMatches = function(secName, ptKey, inputSection, sourceId, callback) {
+    section.savePartial(dbinfo, secName, ptKey, inputSection, sourceId, callback);
+};
 
 exports.getMatches = function(secName, ptKey, fields, callback) {
     match.getAll(dbinfo, secName, ptKey, fields, callback);
@@ -111,16 +115,6 @@ exports.getAllSections = function(ptKey, callback) {
 
 exports.saveAllSections = function(ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
-};
-
-// partial section
-
-exports.getPartialSection = function(secName, ptKey, callback) {
-    section.getPartial(dbinfo, secName, ptKey, callback);
-};
-
-exports.savePartialSection = function(secName, ptKey, inputSection, sourceId, callback) {
-    section.savePartial(dbinfo, secName, ptKey, inputSection, sourceId, callback);
 };
 
 // entry
