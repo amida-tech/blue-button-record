@@ -140,14 +140,34 @@ describe('Usage Documentation Examples' , function() {
         });
     });
 
-    it('script 14 - get merges', function(done) {
+    it('script 14 (a)- get merges allergies', function(done) {
         bbr.getMerges('allergies', 'patientKey', 'allergen severity', 'filename uploadDate', function(err, mergeList) {
             var explMerge = mergeList[0];
+            console.log('where is the merge problem');
+            console.log(explMerge);
             console.log(explMerge.merge_reason);
             console.log(explMerge.entry.allergen.name);
             console.log(explMerge.entry.severity);
             console.log(explMerge.record.filename);
             console.log(explMerge.record.uploadDate);
+            done();
+        });
+    });
+
+    it('script 14 (b)- get merges insurance', function(done) {
+        //need to test insurances and claims here
+        bbr.getMerges('insurance', 'patientKey', 'plan_id payer_name', 'filename uploadDate', function(err, mergeList) {
+            var explMerge = mergeList[0];
+            console.log(explMerge);
+            done();
+        });
+    });
+
+    it('script 14 (c)- get merges claims', function(done) {
+        //need to test insurances and claims here
+        bbr.getMerges('claims', 'patientKey', 'payer number start_date ', 'filename uploadDate', function(err, mergeList) {
+            var explMerge = mergeList[0];
+            console.log(explMerge);
             done();
         });
     });
