@@ -77,7 +77,7 @@ describe('API', function() {
                         expect(sourceId).to.exist;
                     });
                     done();
-                }               
+                }
             }
         );
     });
@@ -106,7 +106,7 @@ describe('API', function() {
             } else {
                 expect(filename).to.equal('ccd_0.xml');
                 expect(content).to.equal('content0');
-                done(); 
+                done();
             }
         });
     });
@@ -117,7 +117,7 @@ describe('API', function() {
                 done(err);
             } else {
                 expect(result).to.equal(3);
-                done(); 
+                done();
             }
         });
     });
@@ -128,7 +128,7 @@ describe('API', function() {
                 done(err);
             } else {
                 done();
-            }   
+            }
         });
     });
 
@@ -137,7 +137,13 @@ describe('API', function() {
             if (err) {
                 done(err);
             } else {
-                Object.keys(allSections).forEach(function(secName) {
+                Object.keys(allSections).every(function(secName) {
+                    if(!(secName in allSections)) {
+                        return false;
+                    }
+                    if(!(secName in ccd)) {
+                        return false;
+                    }
                     var actual = bbr.cleanSection(allSections[secName]);
                     var expected = ccd[secName];
                     if (secName === 'demographics' || secName === 'social_history') {
@@ -145,9 +151,10 @@ describe('API', function() {
                     }
                     expect(actual).to.deep.include.members(expected);
                     expect(expected).to.deep.include.members(actual);
+                    return true;
                 });
                 done();
-            }   
+            }
         });
     });
 
@@ -164,7 +171,7 @@ describe('API', function() {
 
     it('getSection, cleanSection', function(done) {
         bbr.getSection('allergies', 'pat1', function(err, result) {
-            if (err) {  
+            if (err) {
                 done(err);
             } else {
                 var actual = bbr.cleanSection(result);
@@ -177,7 +184,7 @@ describe('API', function() {
     });
 
     it('getEntry', function(done) {
-        async.map(allergyIds, 
+        async.map(allergyIds,
             function(id, cb) {
                 bbr.getEntry('allergies', 'pat1', id, cb);
             },
@@ -264,7 +271,7 @@ describe('API', function() {
             function(cb) {bbr.mergeCount('allergies', 'pat1', {merge_reason: 'new'}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {merge_reason: 'duplicate'}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {merge_reason: 'update'}, cb);},
-            ], 
+            ],
             function(err, results) {
                 if (err) {
                     done(err);
@@ -298,12 +305,12 @@ describe('API', function() {
             {
                 partial_entry: allergies1,
                 partial_match: match1,
-                match_entry_id: allergyIds[1]  
+                match_entry_id: allergyIds[1]
             },
             {
                 partial_entry: allergies2,
                 partial_match: match2,
-                match_entry_id: allergyIds[2]  
+                match_entry_id: allergyIds[2]
             }
         ];
         bbr.saveMatches('allergies', 'pat1', partialInput, sourceIds[6], function(err, result) {
@@ -318,7 +325,7 @@ describe('API', function() {
             } else {
                 expect(result).to.have.length(2);
                 if (result[0].entry.allergen.name !== allergyNames[1]) {
-                    var temp = result[0];                   
+                    var temp = result[0];
                     result[0] = result[1];
                     result[1] = temp;
                 }
@@ -362,7 +369,7 @@ describe('API', function() {
                 expect(result.match_entry.allergen.name).to.equal(allergyNames[1]);
                 expect(result.match_entry.severity).to.equal('Severe');
                 expect(result.match_entry.status).to.equal(allergyStatuses[1]);
-                
+
                 expect(result.diff.severity).to.equal('new');
                 expect(result.percent).to.equal(80);
 
@@ -377,7 +384,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {percent: 80}, cb);},
             function(cb) {bbr.matchCount('allergies', 'pat1', {percent: 90}, cb);},
             function(cb) {bbr.matchCount('allergies', 'pat1', {percent: 95}, cb);},
-            ], 
+            ],
             function(err, results) {
                 if (err) {
                     done(err);
@@ -399,7 +406,7 @@ describe('API', function() {
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
-            ], 
+            ],
             function(err, results) {
                 if (err) {
                     done(err);
@@ -428,7 +435,7 @@ describe('API', function() {
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
-            ], 
+            ],
             function(err, results) {
                 if (err) {
                     done(err);
@@ -457,7 +464,7 @@ describe('API', function() {
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
             function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[1], cb);}
-            ], 
+            ],
             function(err, results) {
                 if (err) {
                     done(err);
