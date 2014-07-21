@@ -124,6 +124,7 @@ describe('storage.js methods', function () {
                     expect(r.file_mime_type).to.equal(getContentType(index));
                     expect(r.patient_key).to.equal(pats[index]);
                     expect(r.file_parsed).to.not.exist;
+                    expect(r.file_archived).to.not.exist;
                     if (classes[index]) {
                         expect(r.file_class).to.equal(classes[index]);
                     } else {
@@ -171,6 +172,7 @@ describe('storage.js methods', function () {
             storage.getSourceList(dbinfo, patient, function (err, results) {
                 for (var i in results) {
                     expect(results[i].file_parsed).to.exist;
+                    expect(results[i].file_archived).to.exist;
                     patient_counter++;
                     if (patient_counter === pat_len) {
                         done();
@@ -182,7 +184,8 @@ describe('storage.js methods', function () {
 
         var f = function (index) {
             storage.updateSource(dbinfo, pats[index], ids[index].toString(), {
-                'metadata.parsed': new Date()
+                'metadata.parsed': new Date(),
+                'metadata.archived': new Date()
             }, function (err, content) {
                 if (err) {
                     done(err);
