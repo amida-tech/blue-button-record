@@ -98,6 +98,7 @@ describe('merge.js methods', function() {
                     expect(r0).to.have.length(2);
                     expect([r0[0].entry.name, r0[1].entry.name]).to.include.members(['name_0.0.0', 'name_0.0.1']);
                     expect([r0[0].entry.severity, r0[1].entry.severity]).to.include.members(['severity_0.0.0', 'severity_0.0.1']);
+                    expect([r0[0].entry.value, r0[1].entry.value]).to.deep.equal([undefined, undefined]);
                     for (i=0; i<2; ++i) {
                         expect(r0[i].record.filename).to.equal('c00.xml');
                         expect(r0[i].entry_type).to.equal('testallergies');
@@ -110,6 +111,7 @@ describe('merge.js methods', function() {
                     expect(r2).to.have.length(3);
                     expect([r2[0].entry.name, r2[1].entry.name, r2[2].entry.name]).to.include.members(['name_2.0.0', 'name_2.0.1', 'name_2.0.2']);
                     expect([r2[0].entry.value.code, r2[1].entry.value.code, r2[2].entry.value.code]).to.include.members(['code_2.0.0', 'code_2.0.1', 'code_2.0.2']);
+                    expect([r2[0].entry.severity, r2[1].entry.severity, r2[2].entry.severity]).to.deep.equal([undefined, undefined, undefined]);
                     for (i=0; i<3; ++i) {
                         expect(r2[i].record.filename).to.equal('c20.xml');
                         expect(r2[i].record.metadata.fileClass).to.equal('ccda');
