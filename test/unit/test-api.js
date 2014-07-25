@@ -397,7 +397,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', "", cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
@@ -426,7 +426,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', "", cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
             ], 
             function(err, results) {
@@ -455,7 +455,7 @@ describe('API', function() {
             function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
             function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatches('allergies', 'pat1', {}, cb);},
+            function(cb) {bbr.getMatches('allergies', 'pat1', "", cb);},
             function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[1], cb);}
             ], 
             function(err, results) {
