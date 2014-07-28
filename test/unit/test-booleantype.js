@@ -15,6 +15,7 @@ describe('boolean model field type verification', function() {
     before(function(done) {
         var options = {
             dbName: 'booleanTest',
+            supported_sections: ['sectiona', 'sectionb'],
             schemas: {
                 sectiona: {
                     name: 'string',
