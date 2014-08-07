@@ -9,6 +9,7 @@ describe('API Documentation Examples', function() {
         assert = require('assert');
         var options = {
             dbName: 'test',
+            supported_sections: ['allergies', 'procedures'],
             schemas: {
                 allergies: {
                     name: 'string',
