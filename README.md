@@ -957,7 +957,7 @@ var schema = {
 
 ### Patient data and metadata
 
-Each [supported section](#connectDatabase) in patient health data has its own collection.  Each document in a section collection consists of an entry data and metadata about the entry.  Schemas are identical for each collection
+Each [supported section](#connectDatabase) in patient health data has its own collection.  Each document in a section collection consists of entry data and metadata about the entry.  Schemas are identical for each collection
 ``` javascript
 var schema = {
   data: {},
@@ -990,9 +990,9 @@ var schema = {
 
 'entry_type' is a convenience field and holds the section name like allergies.  'pat_key' is the patient key.  'entry' and 'record' respectively link the merge history to patient data and source file.  'merged' is the time that the merge history record is created.  'merge_reason' can currently be 'new', 'update' or 'duplicate'.  'archived=true' identifies all the merge history entries that is linked to patient data collections that has the same flag and is an another convenience field.  
 
-### Partial Match
+### Match List
 
-Collections for partial match history describe partial matches and the action that the patient took.  There is one partial match history collection for each patient data collection.  The schema for each are identical
+Collections for match list describe matches and the action that the patient took.  There is one match list collection for each patient data section collection.  The schema for each are identical
 
 ``` javascript
 var schema = {
