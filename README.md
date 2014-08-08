@@ -8,14 +8,14 @@ Master Health Record and Data Reconciliation Engine Persistance Layer (MongoDB)
 [![Build Status](https://travis-ci.org/amida-tech/blue-button-record.svg)](https://travis-ci.org/amida-tech/blue-button-record)
 [![Coverage Status](https://coveralls.io/repos/amida-tech/blue-button-record/badge.png)](https://coveralls.io/r/amida-tech/blue-button-record)
 
-blue-button-record is a module to persist patient health data.  It is primarily designed to support [blue-button](https://github.com/amida-tech/blue-button) data model however other models can also be [specified](#connectDatabase).  This module provides the following functionality:
+blue-button-record is a module to persist patient health data.  It is primarily designed to support [blue-button](https://github.com/amida-tech/blue-button) data model however there is no specific schema dependence and other models can also be [used](#connectDatabase).  This module provides the following functionality:
 
 - Persist Master Health Record (blue-button data) per patient:  Master Health Record contains all historical data about patients' health.  Master Health Record is organized in sections such as allergies and medications and blue-button-record API is built based on this sectional organization.  Each section is further organized as a set of entries even when there is only one entry as in demographics.
 - Persist all sources of Master Health Record:  Currently only text files are supported.  Source content as well as various metadata such as name and upload time are stored.  Each entry in Master Health Record is linked to a source.    
 - Persist Merge History:  Since blue-button data is historical, entries in Master Health Record is expected to appear in multiple sources.  Merge History keeps track of all the sources from which entries are created or updated. In addition it is also possible to register sources where the entries appear as it is in the Master Health Record (duplicates). 
 - Persist Match List:  This module also stores a second set of entries seperate from Master Health Record called Match List.  Match List is designed to store entries that are similar to existing entries in Master Health Record but cannot be identified as duplicate or seperate and thus require further review.  Both the Match List entries, Master Health Record entries that the Match List entries match, and match details are stored.  Match List entries are eventually either added to Master Health Record or removed; blue-button-record API provides methods for both.
 
-This implementation of blue-button-record uses MongoDB.
+This implementation of blue-button-record uses MongoDB.  
 
 ## Usage
 
@@ -255,8 +255,8 @@ __Arguments__
 * `server` - The server that hosts the database.  Port number can also be included.
 * `options` - Optional configuration options for the database.  The following properties are supported.  All of them are optional.
   * `dbName` - Name for the database.  Defaults to `dre`.
-  * `schemas` - Schemas to use for Master Health Record entries.  This is a JSON object with leaf values describe the type of the data to be stored.  It describes patient data in sections and the root properties are used as the section names of Master Health Record throughout the other API methods.  Hierarchy of the JSON object describes the hierarchy of the patient data and one element arrays are used to describe array of patient data.  Defaults to `ccd` schema available from [blue-button](https://github.com/amida-tech/blue-button).  Arrays are not supported for top values (entry schema descriptions) and silently converted to their first elements.  Leaf node types can be `"string"`, `"datetime"`, `"number"`, `"boolean"`, and `"any"`.  All but `"any"` corresponds to Javascript types.  `"any"` can be used to accept any data.
-  * `matchFields` - Schema to describe match information between Partial and Master Health Record entries.  It is a JSON object similar to `schemas` in structure.  Defaults to `{percent: 'number', diff: 'any', subelements: 'any'}` to support [blue-button-match](https://github.com/amida-tech/blue-button-match).   
+  * `supported_sections` - Supported top level sections for health data.  It is an array of section names and defaults to [blue-button-meta](https://github.com/amida-tech/blue-button-meta) `supported_sections` property.
+  * `matchFields` - Schema to describe match information between Partial and Master Health Record entries.  This is a JSON object with leaf values describe the type of the data to be stored.  Hierarchy of the JSON object describes the hierarchy of the patient data and one element arrays are used to describe array of patient data. Leaf node types can be `"string"`, `"datetime"`, `"number"`, `"boolean"`, and `"any"`.  All but `"any"` corresponds to Javascript types.  `"any"` can be used to accept any data.  Defaults to `{percent: 'number', diff: 'any', subelements: 'any'}` to support [blue-button-match](https://github.com/amida-tech/blue-button-match).   
 * `callback(err)` - A callback which is called when connection is established, or an error occurs.
 
 __Examples__
@@ -266,24 +266,7 @@ var bbr = require('blue-button-record');
 var assert = require('assert');
 var options = {
     dbName: 'test',
-    schemas: {
-        allergies: {
-            name: 'string',
-            severity: 'string',
-            value: {
-                code: 'string', 
-                display: 'string'
-            }
-        },
-        procedures : {
-            name: 'string',
-            proc_type: 'string',
-            proc_value: {
-                code: 'string',
-                display: 'string'
-            }
-        }
-    },
+    supported_sections: ['allergies', 'procedures'],
     matchFields: {
         percent: 'number',
         subelements: 'any'
@@ -951,7 +934,7 @@ Underlying MongoDB collections can be classified into four categories
 
 - Patient data and metadata
 - Merge history
-- Partial match
+- Match list
 - Source file storage
 
 ### Source file storage
@@ -974,45 +957,10 @@ var schema = {
 
 ### Patient data and metadata
 
-Default patient data collections closely follows [blue-button](https://github.com/amida-tech/blue-button) models that implement CCDA header or sections.  Allergy schema is
-
+Each [supported section](#connectDatabase) in patient health data has its own collection.  Each document in a section collection consists of an entry data and metadata about the entry.  Schemas are identical for each collection
 ``` javascript
 var schema = {
-  allergen: {
-    name: String,
-    code: String,
-    code_system_name: String,
-    nullFlavor: String
-    translations: [{
-      name: String,
-      code: String,
-      code_system_name: String,
-      nullFlavor: String
-    }]
-  },
-  date: [{date: Date, precision: String}],
-  identifiers: [{
-     identifier:String,
-     identifier_type: String
-  }],
-  severity: String,
-  status: String,
-  reaction: [{
-    reaction: {  
-      code: String, 
-      name: String, 
-      code_system_name: String,
-      nullFlavor: String
-      translations: [{
-        name: String,
-        code: String,
-        code_system_name: String
-        nullFlavor: String
-      }],
-     severity: String
-    }
-  }],
-  
+  data: {},
   pat_key: String,
   metadata: {
     attribution: [{type: ObjectId, ref: 'allergiesmerges'}]
@@ -1022,21 +970,17 @@ var schema = {
 };
 ```
 
-All the fields before 'pat_key' directly comes from [blue-button](https://github.com/amida-tech/blue-button) models and is documented there.  Remaining fields are identical for all collections.  'pat_key' is the key for the patient whom this entry belongs.  'metadata.attribution' links patient data collections to merge history collections.  'reviewed=false' identifies all partial entries.  'archieved=true' identifies all partial entries that are ignored or merged and is not part of the health record.
-
-If an alternative patient data schema is given during [`connectDatabase`](#connectDatabase) then they simply replace all the fields before 'pat_key'.
-
-Since schema for all other collections follows the same pattern they will not be explicitly shown here.
+'data' holds the entry data and there is no schema validation for it.  'pat_key' is the key for the patient whom this entry belongs.  'metadata.attribution' links patient data collections to merge history collections.  'reviewed=false' identifies all partial entries.  'archieved=true' identifies all partial entries that are ignored or merged and is not part of the health record.
 
 ### Merge History
 
-Collections for merge history hold information on where and how a patient data entry is added to the health record.  There is one merge history collection for each patient data collection.  The schema for each follows a general pattern and shown for 'allergiesmerges' below
+Collections for merge history hold information on where and how a patient data entry is added to the health record.  There is one merge history collection for each patient data collection.  The schema for each are identical
 
 ``` javascript
 var schema = {
   entry_type: String,
   pat_key: String,
-  entry: {type: ObjectId, ref: allergies},
+  entry: ObjectId,
   record: {type: ObjectId, ref: 'storage.files'},
   merged: Date,
   merge_reason: String,
@@ -1048,13 +992,13 @@ var schema = {
 
 ### Partial Match
 
-Collections for partial match history describe partial matches and the action that the patient took.  There is one partial match history collection for each patient data collection.  The schema for each follows a general pattern and shown for 'allergiesmatches' below
+Collections for partial match history describe partial matches and the action that the patient took.  There is one partial match history collection for each patient data collection.  The schema for each are identical
 
 ``` javascript
 var schema = {
   entry_type: String,
   pat_key: String,
-  entry: {type: ObjectId, ref: allergies},
+  entry: ObjectId,
   record: {type: ObjectId, ref: 'storage.files'},
   determination: String,
 
