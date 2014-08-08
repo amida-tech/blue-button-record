@@ -10,24 +10,6 @@ describe('API Documentation Examples', function() {
         var options = {
             dbName: 'test',
             supported_sections: ['allergies', 'procedures'],
-            schemas: {
-                allergies: {
-                    name: 'string',
-                    severity: 'string',
-                    value: {
-                        code: 'string', 
-                        display: 'string'
-                    }
-                },
-                procedures : {
-                    name: 'string',
-                    proc_type: 'string',
-                    proc_value: {
-                        code: 'string',
-                        display: 'string'
-                    }
-                }
-            },
             matchFields: {
                 percent: 'number',
                 subelements: 'any'
