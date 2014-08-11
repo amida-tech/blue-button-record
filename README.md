@@ -186,7 +186,7 @@ var partialAllergy = {
     match_entry_id: id
 };
 ```
-By default match information is assumed to have three fields: diff, subelements, and percent.  diff and sublements can be of any object and percent must be a number.  This default is to accomodate match information available from [blue-button-match](https://github.com/amida-tech/blue-button-match).  
+Here match information is assumed to have three fields: diff, subelements, and percent.  The match fields are application specific and are not validated.
 
 Match List entries are persisted as sections
 ``` javascript
@@ -268,7 +268,6 @@ __Arguments__
 * `options` - Optional configuration options for the database.  The following properties are supported.  All of them are optional.
   * `dbName` - Name for the database.  Defaults to `dre`.
   * `supported_sections` - Supported top level sections for health data.  It is an array of section names and defaults to [blue-button-meta](https://github.com/amida-tech/blue-button-meta) `supported_sections` property.
-  * `matchFields` - Schema to describe match information between Partial and Master Health Record entries.  This is a JSON object with leaf values describe the type of the data to be stored.  Hierarchy of the JSON object describes the hierarchy of the patient data and one element arrays are used to describe array of patient data. Leaf node types can be `"string"`, `"datetime"`, `"number"`, `"boolean"`, and `"any"`.  All but `"any"` corresponds to Javascript types.  `"any"` can be used to accept any data.  Defaults to `{percent: 'number', diff: 'any', subelements: 'any'}` to support [blue-button-match](https://github.com/amida-tech/blue-button-match).   
 * `callback(err)` - A callback which is called when connection is established, or an error occurs.
 
 __Examples__
@@ -278,11 +277,7 @@ var bbr = require('blue-button-record');
 var assert = require('assert');
 var options = {
     dbName: 'test',
-    supported_sections: ['allergies', 'procedures'],
-    matchFields: {
-        percent: 'number',
-        subelements: 'any'
-    }
+    supported_sections: ['allergies', 'procedures']
 };
 
 bbr.connectDatabase('localhost', options, function(err) {
@@ -783,8 +778,8 @@ __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
 * `inputSection` - An array of Match List entries and match information.  Each element in the array has three top level properties:
-  * partial_entry - Section entry with the schema as specified in [`connectDatabase`](#connectDatabase).
-  * partial_match - Match information with the schema as specified in [`connectDatabase`](#connectDatabase).
+  * partial_entry - Section entry.  The fields are expected to be identical to the section entries in Master Health Record.
+  * partial_match - Match information.  This information is save to database as is without any validation.
   * match_entry_id - Id of the existing section entry which partial_entry matches.
 * `sourceId` - Id for the source where the `inputSection` is located. 
 * `callback(err, ids)` - A callback which is called when saving partial entries is succesfull, or an error occurs.  `ids` are database assigned identifiers for entries specified in `partial_entry` in the same order as in `inputSection`.
@@ -890,7 +885,7 @@ Gets number of section entries in Match List.
 __Arguments__
 * `secName` - Section name.
 * `ptKey` - Identification string for the patient.
-* `conditions` - Conditions for the count.
+* `conditions` - Conditions for the count.  Only field names from match information are supported.
 * `callback(err, count)` - A callback which is called when count is retrieved, or an error occurs.
 
 __Examples__
@@ -1039,13 +1034,8 @@ var schema = {
   entry: ObjectId,
   record: {type: ObjectId, ref: 'storage.files'},
   determination: String,
-
-  percent: Number,
-  diff: {},
-  subelements: {}
+  match_obj: {}
 };
 ```
 
-All the fields until the percent has identical descriptions to corresponding merge history collection. 'percent', 'diff' and 'subelements' describe the details of the partial match for which detailed information can be found in [blue-button-match](https://github.com/amida-tech/blue-button-match).  'determination' describes the action that user took such as 'merged', 'added' or 'ignored'.
-
-If alternative match fields are given during [`connectDatabase`](#connectDatabase) they simply replace 'percent', 'diff' and 'subelements' above.
+All the fields except 'match_obj' has identical descriptions to corresponding merge history collection. 'match_obj' describe the details of the partial match and application specific; examples can be found in [blue-button-match](https://github.com/amida-tech/blue-button-match).  'match_obj' is not validated.  determination' describes the action that user took such as 'merged', 'added' or 'ignored'.

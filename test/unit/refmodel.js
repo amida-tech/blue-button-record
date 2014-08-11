@@ -39,14 +39,7 @@ var schemas = {
 var getConnectionOptions = function(dbName) {
     return {
         dbName: dbName,
-        supported_sections: ['testallergies', 'testprocedures', 'testdemographics'],
-        schemas: schemas,
-        matchFields: {
-            match: "string",
-            percent: "number",
-            diff: "string",
-            subelements: 'any'
-        }
+        supported_sections: ['testallergies', 'testprocedures', 'testdemographics']
     };
 };
 
