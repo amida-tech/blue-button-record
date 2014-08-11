@@ -1038,4 +1038,4 @@ var schema = {
 };
 ```
 
-All the fields except 'match_obj' has identical descriptions to corresponding merge history collection. 'match_obj' describe the details of the partial match and application specific; examples can be found in [blue-button-match](https://github.com/amida-tech/blue-button-match).  'match_obj' is not validated.  determination' describes the action that user took such as 'merged', 'added' or 'ignored'.
+All the fields except 'match_obj' and 'determination' have identical descriptions to corresponding merge history collection. 'match_obj' describes the details of the partial match and is application specific; some examples can be found in [blue-button-match](https://github.com/amida-tech/blue-button-match).  'match_obj' is not validated.  'determination' describes the action that user took such as 'merged', 'added' or 'ignored'.
