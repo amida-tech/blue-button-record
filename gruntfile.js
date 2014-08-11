@@ -1,13 +1,14 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-jsbeautifier');
 
-    grunt.registerTask('default', ['jshint', 'mochaTest']);
+    grunt.registerTask('default', ['jshint', 'mochaTest', 'jsbeautifier']);
 
     // Print a timestamp (useful for when watching)
-    grunt.registerTask('timestamp', function() {
+    grunt.registerTask('timestamp', function () {
         grunt.log.subhead(Date());
     });
 
@@ -37,6 +38,12 @@ module.exports = function(grunt) {
                     'after': true,
                     'done': true
                 }
+            }
+        },
+        jsbeautifier: {
+            files: ['Gruntfile.js', 'index.js', 'lib/*.js', 'test/**/*.js'],
+            options: {
+                config: '.jsbeautifyrc'
             }
         },
         watch: {

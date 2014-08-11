@@ -12,16 +12,16 @@ var refmodel = require('./refmodel');
 var expect = chai.expect;
 chai.config.includeStack = true;
 
-describe('allsections.js methods', function() {
+describe('allsections.js methods', function () {
     var context = {}; // populated by refmodel common methods
 
     refmodel.prepareConnection('allsectionstest2', context)();
 
-    it('add records', function(done) {
+    it('add records', function (done) {
         refmodel.addRecordsPerPatient(context, [1, 1], done);
     });
 
-    var save = function(ptKey, recordIndex, counts, callback) {
+    var save = function (ptKey, recordIndex, counts, callback) {
         var a = refmodel.createTestSection('testallergies', recordIndex, counts[0]);
         var p = refmodel.createTestSection('testprocedures', recordIndex, counts[1]);
         var d = refmodel.createTestSection('testdemographics', recordIndex, 1);
@@ -31,37 +31,47 @@ describe('allsections.js methods', function() {
             testdemographics: d[0]
         };
         var sourceId = context.storageIds[recordIndex];
-        allsections.save(context.dbinfo, ptKey, r, sourceId, callback);     
+        allsections.save(context.dbinfo, ptKey, r, sourceId, callback);
     };
 
-    it('save', function(done) {
+    it('save', function (done) {
         async.parallel([
-            function(cb) {save('pat0', '0.0', [3, 3], cb);},
-            function(cb) {save('pat1', '1.0', [2, 4], cb);}
+
+                function (cb) {
+                    save('pat0', '0.0', [3, 3], cb);
+                },
+                function (cb) {
+                    save('pat1', '1.0', [2, 4], cb);
+                }
             ],
-            function(err) {
+            function (err) {
                 done(err);
             }
         );
     });
 
-    var verify = function(actual, secName, recordIndex, count) {
+    var verify = function (actual, secName, recordIndex, count) {
         var expected = refmodel.createTestSection(secName, recordIndex, count);
         var actualSection = actual[secName];
         expect(expected).to.deep.include.members(actualSection);
         expect(actualSection).to.deep.include.members(expected);
     };
 
-    it('get', function(done) {
+    it('get', function (done) {
         async.parallel([
-            function(cb) {allsections.get(context.dbinfo, 'pat0', cb);},
-            function(cb) {allsections.get(context.dbinfo, 'pat1', cb);},
+
+                function (cb) {
+                    allsections.get(context.dbinfo, 'pat0', cb);
+                },
+                function (cb) {
+                    allsections.get(context.dbinfo, 'pat1', cb);
+                },
             ],
-            function(err, results) {
+            function (err, results) {
                 if (err) {
                     done(err);
                 } else {
-                    var actuals = results.map(function(result) {
+                    var actuals = results.map(function (result) {
                         return modelutil.mongooseToBBModelFullRecord(result);
                     });
                     verify(actuals[0], 'testallergies', '0.0', 3);
@@ -76,12 +86,12 @@ describe('allsections.js methods', function() {
         );
     });
 
-    after(function(done) {
-        context.dbinfo.db.dropDatabase(function(err) {
+    after(function (done) {
+        context.dbinfo.db.dropDatabase(function (err) {
             if (err) {
                 done(err);
             } else {
-                context.dbinfo.connection.close(function(err) {
+                context.dbinfo.connection.close(function (err) {
                     done(err);
                 });
             }

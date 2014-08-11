@@ -14,7 +14,7 @@ var modelutil = require('../../lib/modelutil');
 var expect = chai.expect;
 chai.config.includeStack = true;
 
-describe('API', function() {
+describe('API', function () {
     var ccd = null;
 
     var sourceIds = null;
@@ -26,16 +26,16 @@ describe('API', function() {
     var partialInput = null;
     var matchIds = null;
 
-    before(function(done) {
-        var filepath  = path.join(__dirname, '../artifacts/standard/CCD_demo1.xml');
+    before(function (done) {
+        var filepath = path.join(__dirname, '../artifacts/standard/CCD_demo1.xml');
         var xml = fs.readFileSync(filepath, 'utf-8');
         var result = bb.parseString(xml);
         ccd = result.data;
         done();
     });
 
-    it('connectDatabase', function(done) {
-        bbr.connectDatabase('localhost', function(err) {
+    it('connectDatabase', function (done) {
+        bbr.connectDatabase('localhost', function (err) {
             if (err) {
                 done(err);
             } else {
@@ -44,50 +44,78 @@ describe('API', function() {
         });
     });
 
-    it('saveSource', function(done) {
-        var fileInfo = [
-            {name: 'ccd_0.xml', type: 'text/xml'},
-            {name: 'ccd_1.xml', type: 'text/xml'},
-            {name: 'ccd_2.xml', type: 'text/xml'},
-            {name: 'ccd_3.xml', type: 'text/xml'},
-            {name: 'ccd_4.xml', type: 'text/xml'},
-            {name: 'ccd_5.xml', type: 'text/xml'},
-            {name: 'ccd_6.xml', type: 'text/xml'}
-        ];
+    it('saveSource', function (done) {
+        var fileInfo = [{
+            name: 'ccd_0.xml',
+            type: 'text/xml'
+        }, {
+            name: 'ccd_1.xml',
+            type: 'text/xml'
+        }, {
+            name: 'ccd_2.xml',
+            type: 'text/xml'
+        }, {
+            name: 'ccd_3.xml',
+            type: 'text/xml'
+        }, {
+            name: 'ccd_4.xml',
+            type: 'text/xml'
+        }, {
+            name: 'ccd_5.xml',
+            type: 'text/xml'
+        }, {
+            name: 'ccd_6.xml',
+            type: 'text/xml'
+        }];
         async.parallel([
-            function(cb) {bbr.saveSource('pat0', 'content0', fileInfo[0], 'ccda', cb);},
-            function(cb) {bbr.saveSource('pat0', 'content1', fileInfo[1], 'ccda', cb);},
-            function(cb) {bbr.saveSource('pat0', 'content2', fileInfo[2], 'ccda', cb);},
-            function(cb) {bbr.saveSource('pat1', 'content3', fileInfo[3], 'ccda', cb);},
-            function(cb) {bbr.saveSource('pat1', 'content4', fileInfo[4], 'ccda', cb);},
-            function(cb) {bbr.saveSource('pat1', 'content5', fileInfo[5], 'ccda', cb);},
-            function(cb) {bbr.saveSource('pat1', 'content6', fileInfo[6], 'ccda', cb);}
+
+                function (cb) {
+                    bbr.saveSource('pat0', 'content0', fileInfo[0], 'ccda', cb);
+                },
+                function (cb) {
+                    bbr.saveSource('pat0', 'content1', fileInfo[1], 'ccda', cb);
+                },
+                function (cb) {
+                    bbr.saveSource('pat0', 'content2', fileInfo[2], 'ccda', cb);
+                },
+                function (cb) {
+                    bbr.saveSource('pat1', 'content3', fileInfo[3], 'ccda', cb);
+                },
+                function (cb) {
+                    bbr.saveSource('pat1', 'content4', fileInfo[4], 'ccda', cb);
+                },
+                function (cb) {
+                    bbr.saveSource('pat1', 'content5', fileInfo[5], 'ccda', cb);
+                },
+                function (cb) {
+                    bbr.saveSource('pat1', 'content6', fileInfo[6], 'ccda', cb);
+                }
             ],
-            function(err, results) {
+            function (err, results) {
                 if (err) {
                     done(err);
                 } else {
-                    sourceIds = results.reduce(function(r, result) {
+                    sourceIds = results.reduce(function (r, result) {
                         var v = result.toString();
                         r.push(v);
                         return r;
                     }, []);
                     expect(sourceIds).to.have.length(7);
-                    sourceIds.forEach(function(sourceId) {
+                    sourceIds.forEach(function (sourceId) {
                         expect(sourceId).to.exist;
                     });
                     done();
-                }               
+                }
             }
         );
     });
 
-    it('getSourceList', function(done) {
-        bbr.getSourceList('pat0', function(err, results) {
+    it('getSourceList', function (done) {
+        bbr.getSourceList('pat0', function (err, results) {
             if (err) {
                 done(err);
             } else {
-                var actual = results.map(function(result) {
+                var actual = results.map(function (result) {
                     return result.file_id.toString();
                 });
                 actual.sort();
@@ -99,55 +127,55 @@ describe('API', function() {
         });
     });
 
-    it('getSource', function(done) {
-        bbr.getSource('pat0', sourceIds[0], function(err, filename, content) {
+    it('getSource', function (done) {
+        bbr.getSource('pat0', sourceIds[0], function (err, filename, content) {
             if (err) {
                 done(err);
             } else {
                 expect(filename).to.equal('ccd_0.xml');
                 expect(content).to.equal('content0');
-                done(); 
+                done();
             }
         });
     });
 
-    it('updateSource', function(done) {
+    it('updateSource', function (done) {
         var updateInfo = {
             'metadata.parsed': new Date(),
             'metadata.archived': new Date()
         };
-        bbr.updateSource('pat0', sourceIds[0], updateInfo, function(err) {
+        bbr.updateSource('pat0', sourceIds[0], updateInfo, function (err) {
             done(err);
         });
     });
 
-    it('sourceCount', function(done) {
-        bbr.sourceCount('pat0', function(err, result) {
+    it('sourceCount', function (done) {
+        bbr.sourceCount('pat0', function (err, result) {
             if (err) {
                 done(err);
             } else {
                 expect(result).to.equal(3);
-                done(); 
+                done();
             }
         });
     });
 
-    it('saveAllSections', function(done) {
-        bbr.saveAllSections('pat0', ccd, sourceIds[0], function(err) {
+    it('saveAllSections', function (done) {
+        bbr.saveAllSections('pat0', ccd, sourceIds[0], function (err) {
             if (err) {
                 done(err);
             } else {
                 done();
-            }   
+            }
         });
     });
 
-    it('getAllSections, cleanSection', function(done) {
-        bbr.getAllSections('pat0', function(err, allSections) {
+    it('getAllSections, cleanSection', function (done) {
+        bbr.getAllSections('pat0', function (err, allSections) {
             if (err) {
                 done(err);
             } else {
-                Object.keys(allSections).forEach(function(secName) {
+                Object.keys(allSections).forEach(function (secName) {
                     var actual = bbr.cleanSection(allSections[secName]);
                     var expected = ccd[secName];
                     if (secName === 'demographics' || secName === 'social_history') {
@@ -157,12 +185,12 @@ describe('API', function() {
                     expect(expected).to.deep.include.members(actual);
                 });
                 done();
-            }   
+            }
         });
     });
 
-    it('saveSection', function(done) {
-        bbr.saveSection('allergies', 'pat1', ccd.allergies, sourceIds[3], function(err, result) {
+    it('saveSection', function (done) {
+        bbr.saveSection('allergies', 'pat1', ccd.allergies, sourceIds[3], function (err, result) {
             if (err) {
                 done(err);
             } else {
@@ -172,9 +200,9 @@ describe('API', function() {
         });
     });
 
-    it('getSection, cleanSection', function(done) {
-        bbr.getSection('allergies', 'pat1', function(err, result) {
-            if (err) {  
+    it('getSection, cleanSection', function (done) {
+        bbr.getSection('allergies', 'pat1', function (err, result) {
+            if (err) {
                 done(err);
             } else {
                 var actual = bbr.cleanSection(result);
@@ -186,26 +214,32 @@ describe('API', function() {
         });
     });
 
-    it('getEntry', function(done) {
-        async.map(allergyIds, 
-            function(id, cb) {
+    it('getEntry', function (done) {
+        async.map(allergyIds,
+            function (id, cb) {
                 bbr.getEntry('allergies', 'pat1', id, cb);
             },
-            function(err, results) {
+            function (err, results) {
                 if (err) {
                     done(err);
                 } else {
                     var actual = bbr.cleanSection(results);
                     modelutil.mongooseCleanSection(actual);
-                    actual.forEach(function(e) {
+                    actual.forEach(function (e) {
                         delete e._id;
                     });
                     expect(actual).to.deep.include.members(ccd.allergies);
                     expect(ccd.allergies).to.deep.include.members(actual);
-                    allergySeverities = results.map(function(result) {return result.severity;});
-                    allergyNames = results.map(function(result) {return result.allergen && result.allergen.name;});
-                    allergyStatuses = results.map(function(result) {return result.status;});
-                    [allergyNames, allergyStatuses, allergySeverities].forEach(function(arr) {
+                    allergySeverities = results.map(function (result) {
+                        return result.severity;
+                    });
+                    allergyNames = results.map(function (result) {
+                        return result.allergen && result.allergen.name;
+                    });
+                    allergyStatuses = results.map(function (result) {
+                        return result.status;
+                    });
+                    [allergyNames, allergyStatuses, allergySeverities].forEach(function (arr) {
                         expect(arr).to.not.include(undefined);
                         expect(arr).to.not.include(null);
                     });
@@ -215,27 +249,33 @@ describe('API', function() {
         );
     });
 
-    it('duplicateEntry', function(done) {
-        bbr.duplicateEntry('allergies', 'pat1', allergyIds[0], sourceIds[4], function(err) {
+    it('duplicateEntry', function (done) {
+        bbr.duplicateEntry('allergies', 'pat1', allergyIds[0], sourceIds[4], function (err) {
             done(err);
         });
     });
 
-    it('updateEntry', function(done) {
-        bbr.updateEntry('allergies', 'pat1', allergyIds[0], sourceIds[5], {severity: 'Severe'}, function(err) {
+    it('updateEntry', function (done) {
+        bbr.updateEntry('allergies', 'pat1', allergyIds[0], sourceIds[5], {
+            severity: 'Severe'
+        }, function (err) {
             allergySeverities[0] = 'Severe';
             done(err);
         });
     });
 
-    it('getEntry', function(done) {
-        bbr.getEntry('allergies', 'pat1', allergyIds[0], function(err, result) {
+    it('getEntry', function (done) {
+        bbr.getEntry('allergies', 'pat1', allergyIds[0], function (err, result) {
             expect(result.severity).to.equal('Severe');
             expect(result.allergen && result.allergen.name).to.equal(allergyNames[0]);
             expect(result.metadata).to.exist;
             expect(result.metadata.attribution).to.exist;
-            var reasons = result.metadata.attribution.map(function(a) {return a.merge_reason;});
-            var sources = result.metadata.attribution.map(function(a) {return a.record._id.toString();});
+            var reasons = result.metadata.attribution.map(function (a) {
+                return a.merge_reason;
+            });
+            var sources = result.metadata.attribution.map(function (a) {
+                return a.record._id.toString();
+            });
             expect(reasons).to.deep.equal(['new', 'duplicate', 'update']);
             var expectedSources = sourceIds.slice(3, 6);
             expect(sources).to.deep.equal(expectedSources);
@@ -243,13 +283,13 @@ describe('API', function() {
         });
     });
 
-    it('getMerges', function(done) {
-        bbr.getMerges('allergies', 'pat1', 'allergen.name severity', 'filename', function(err, results) {
+    it('getMerges', function (done) {
+        bbr.getMerges('allergies', 'pat1', 'allergen.name severity', 'filename', function (err, results) {
             if (err) {
                 done(err);
             } else {
                 expect(results).to.have.length(5);
-                results.forEach(function(result) {
+                results.forEach(function (result) {
                     expect(allergyNames).to.include(result.entry.allergen.name);
                     expect(allergySeverities).to.include(result.entry.severity);
                     var filename = result.record.filename;
@@ -268,14 +308,29 @@ describe('API', function() {
         });
     });
 
-    it('mergeCount', function(done) {
+    it('mergeCount', function (done) {
         async.parallel([
-            function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
-            function(cb) {bbr.mergeCount('allergies', 'pat1', {merge_reason: 'new'}, cb);},
-            function(cb) {bbr.mergeCount('allergies', 'pat1', {merge_reason: 'duplicate'}, cb);},
-            function(cb) {bbr.mergeCount('allergies', 'pat1', {merge_reason: 'update'}, cb);},
-            ], 
-            function(err, results) {
+
+                function (cb) {
+                    bbr.mergeCount('allergies', 'pat1', {}, cb);
+                },
+                function (cb) {
+                    bbr.mergeCount('allergies', 'pat1', {
+                        merge_reason: 'new'
+                    }, cb);
+                },
+                function (cb) {
+                    bbr.mergeCount('allergies', 'pat1', {
+                        merge_reason: 'duplicate'
+                    }, cb);
+                },
+                function (cb) {
+                    bbr.mergeCount('allergies', 'pat1', {
+                        merge_reason: 'update'
+                    }, cb);
+                },
+            ],
+            function (err, results) {
                 if (err) {
                     done(err);
                 } else {
@@ -289,13 +344,17 @@ describe('API', function() {
         );
     });
 
-    it('saveMatches', function(done) {
+    it('saveMatches', function (done) {
         var match1 = {
-            diff: {severity: 'new'},
+            diff: {
+                severity: 'new'
+            },
             percent: 80
         };
         var match2 = {
-            diff: {status: 'new'},
+            diff: {
+                status: 'new'
+            },
             percent: 90
         };
         var allergies1 = _.clone(ccd.allergies[1]);
@@ -304,31 +363,28 @@ describe('API', function() {
         var allergies2 = _.clone(ccd.allergies[2]);
         expect(allergies2.status).to.not.equal('Inactive');
         allergies2.status = 'Inactive';
-        partialInput = [
-            {
-                partial_entry: allergies1,
-                partial_match: match1,
-                match_entry_id: allergyIds[1]  
-            },
-            {
-                partial_entry: allergies2,
-                partial_match: match2,
-                match_entry_id: allergyIds[2]  
-            }
-        ];
-        bbr.saveMatches('allergies', 'pat1', partialInput, sourceIds[6], function(err, result) {
+        partialInput = [{
+            partial_entry: allergies1,
+            partial_match: match1,
+            match_entry_id: allergyIds[1]
+        }, {
+            partial_entry: allergies2,
+            partial_match: match2,
+            match_entry_id: allergyIds[2]
+        }];
+        bbr.saveMatches('allergies', 'pat1', partialInput, sourceIds[6], function (err, result) {
             done(err);
         });
     });
 
-    it('getMatches', function(done) {
-        bbr.getMatches('allergies', 'pat1', 'allergen.name severity status', function(err, result) {
+    it('getMatches', function (done) {
+        bbr.getMatches('allergies', 'pat1', 'allergen.name severity status', function (err, result) {
             if (err) {
                 done(err);
             } else {
                 expect(result).to.have.length(2);
                 if (result[0].entry.allergen.name !== allergyNames[1]) {
-                    var temp = result[0];                   
+                    var temp = result[0];
                     result[0] = result[1];
                     result[1] = temp;
                 }
@@ -359,8 +415,8 @@ describe('API', function() {
         });
     });
 
-    it('getMatch', function(done) {
-        bbr.getMatch('allergies', 'pat1', matchIds[0], function(err, result) {
+    it('getMatch', function (done) {
+        bbr.getMatch('allergies', 'pat1', matchIds[0], function (err, result) {
             if (err) {
                 done(err);
             } else {
@@ -372,7 +428,7 @@ describe('API', function() {
                 expect(result.match_entry.allergen.name).to.equal(allergyNames[1]);
                 expect(result.match_entry.severity).to.equal('Severe');
                 expect(result.match_entry.status).to.equal(allergyStatuses[1]);
-                
+
                 expect(result.diff.severity).to.equal('new');
                 expect(result.percent).to.equal(80);
 
@@ -381,14 +437,29 @@ describe('API', function() {
         });
     });
 
-    it('matchCount', function(done) {
+    it('matchCount', function (done) {
         async.parallel([
-            function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
-            function(cb) {bbr.matchCount('allergies', 'pat1', {percent: 80}, cb);},
-            function(cb) {bbr.matchCount('allergies', 'pat1', {percent: 90}, cb);},
-            function(cb) {bbr.matchCount('allergies', 'pat1', {percent: 95}, cb);},
-            ], 
-            function(err, results) {
+
+                function (cb) {
+                    bbr.matchCount('allergies', 'pat1', {}, cb);
+                },
+                function (cb) {
+                    bbr.matchCount('allergies', 'pat1', {
+                        percent: 80
+                    }, cb);
+                },
+                function (cb) {
+                    bbr.matchCount('allergies', 'pat1', {
+                        percent: 90
+                    }, cb);
+                },
+                function (cb) {
+                    bbr.matchCount('allergies', 'pat1', {
+                        percent: 95
+                    }, cb);
+                },
+            ],
+            function (err, results) {
                 if (err) {
                     done(err);
                 } else {
@@ -402,15 +473,26 @@ describe('API', function() {
         );
     });
 
-    it('-- verify state', function(done) {
+    it('-- verify state', function (done) {
         async.parallel([
-            function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
-            function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
-            function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatches('allergies', 'pat1', "", cb);},
-            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
-            ], 
-            function(err, results) {
+
+                function (cb) {
+                    bbr.matchCount('allergies', 'pat1', {}, cb);
+                },
+                function (cb) {
+                    bbr.mergeCount('allergies', 'pat1', {}, cb);
+                },
+                function (cb) {
+                    bbr.getSection('allergies', 'pat1', cb);
+                },
+                function (cb) {
+                    bbr.getMatches('allergies', 'pat1', "", cb);
+                },
+                function (cb) {
+                    bbr.getMatch('allergies', 'pat1', matchIds[0], cb);
+                }
+            ],
+            function (err, results) {
                 if (err) {
                     done(err);
                 } else {
@@ -425,21 +507,32 @@ describe('API', function() {
         );
     });
 
-    it('cancelMatch', function(done) {
-        bbr.cancelMatch('allergies', 'pat1', matchIds[0], 'ignored', function(err) {
+    it('cancelMatch', function (done) {
+        bbr.cancelMatch('allergies', 'pat1', matchIds[0], 'ignored', function (err) {
             done(err);
         });
     });
 
-    it('-- verify state', function(done) {
+    it('-- verify state', function (done) {
         async.parallel([
-            function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
-            function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
-            function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatches('allergies', 'pat1', "", cb);},
-            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[0], cb);}
-            ], 
-            function(err, results) {
+
+                function (cb) {
+                    bbr.matchCount('allergies', 'pat1', {}, cb);
+                },
+                function (cb) {
+                    bbr.mergeCount('allergies', 'pat1', {}, cb);
+                },
+                function (cb) {
+                    bbr.getSection('allergies', 'pat1', cb);
+                },
+                function (cb) {
+                    bbr.getMatches('allergies', 'pat1', "", cb);
+                },
+                function (cb) {
+                    bbr.getMatch('allergies', 'pat1', matchIds[0], cb);
+                }
+            ],
+            function (err, results) {
                 if (err) {
                     done(err);
                 } else {
@@ -454,21 +547,32 @@ describe('API', function() {
         );
     });
 
-    it('acceptMatch', function(done) {
-        bbr.acceptMatch('allergies', 'pat1', matchIds[1], 'added', function(err) {
+    it('acceptMatch', function (done) {
+        bbr.acceptMatch('allergies', 'pat1', matchIds[1], 'added', function (err) {
             done(err);
         });
     });
 
-    it('-- verify state', function(done) {
+    it('-- verify state', function (done) {
         async.parallel([
-            function(cb) {bbr.matchCount('allergies', 'pat1', {}, cb);},
-            function(cb) {bbr.mergeCount('allergies', 'pat1', {}, cb);},
-            function(cb) {bbr.getSection('allergies', 'pat1', cb);},
-            function(cb) {bbr.getMatches('allergies', 'pat1', "", cb);},
-            function(cb) {bbr.getMatch('allergies', 'pat1', matchIds[1], cb);}
-            ], 
-            function(err, results) {
+
+                function (cb) {
+                    bbr.matchCount('allergies', 'pat1', {}, cb);
+                },
+                function (cb) {
+                    bbr.mergeCount('allergies', 'pat1', {}, cb);
+                },
+                function (cb) {
+                    bbr.getSection('allergies', 'pat1', cb);
+                },
+                function (cb) {
+                    bbr.getMatches('allergies', 'pat1', "", cb);
+                },
+                function (cb) {
+                    bbr.getMatch('allergies', 'pat1', matchIds[1], cb);
+                }
+            ],
+            function (err, results) {
                 if (err) {
                     done(err);
                 } else {
@@ -483,14 +587,14 @@ describe('API', function() {
         );
     });
 
-    it('clearDatabase', function(done) {
-        bbr.clearDatabase(function(err) {
+    it('clearDatabase', function (done) {
+        bbr.clearDatabase(function (err) {
             done(err);
         });
     });
 
-    after(function(done) {
-        bbr.disconnect(function(err) {
+    after(function (done) {
+        bbr.disconnect(function (err) {
             done(err);
         });
     });
