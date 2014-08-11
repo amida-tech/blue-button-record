@@ -66,6 +66,18 @@ describe('API Documentation Examples', function() {
         });
     });
 
+
+    it('updateSource', function(done) {
+        var updateInfo = {
+            'metadata.parsed': new Date(),
+            'metadata.archived': new Date()
+        };
+        bbr.updateSource('testPatient1', fileId1, updateInfo, function(err) {
+            assert.ifError(err);
+            done();
+        });
+    });
+
     it('getSourceList', function(done) {
         bbr.getSourceList('testPatient1', function(err, sources) {
             assert.ifError(err);

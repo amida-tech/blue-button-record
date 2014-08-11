@@ -43,6 +43,17 @@ describe('Usage Documentation Examples' , function() {
         });
     });
 
+    it('script 4 (b)', function(done) {
+        var updateInfo = {
+            'metadata.parsed': new Date(),
+            'metadata.archived': new Date()
+        };
+        bbr.updateSource('patientKey', fileId, updateInfo, function (err) {
+            if (err) {throw err;}
+            done();
+        });
+    });
+
     it('script 5 (a)', function(done) {
         bbr.getSourceList('patientKey', function(err, results) {
             console.log(results.length);

@@ -50,6 +50,18 @@ bbr.saveSource('patientKey', xmlString, fileInfo, 'ccda', function(err, id) {
     fileId = id;
 });
 ```
+
+After source is persisted it can also be updated
+``` javascript
+var updateInfo = {
+    'metadata.parsed': new Date(),
+    'metadata.archived': new Date()
+};
+bbr.updateSource('patientKey', fileId, updateInfo, function(err) {
+    if (err) {throw err;}
+});
+```
+
 For simplicity we will only use this `fileId` in usage documentation as if it has several types of data.  Methods are provided to access patient data source records as a list or individually
 ``` javascript
 bbr.getSourceList('patientKey', function(err, results) {
@@ -356,6 +368,30 @@ var fileId4;
 bbr.saveSource('testPatient2', '<content value=4 />', {type: 'text/xml', name: 'expl4.xml'}, 'ccda', function(err, id) {
     assert.ifError(err);
     fileId4 = id;
+});
+```
+
+---------------------------------------
+
+### updateSource(ptKey, sourceId, update, callback)
+
+Updates fields of source information.
+
+__Arguments__
+* `ptKey` - Identification string for the patient.
+* `sourceId` - Database identification string of the source.
+* `update`- JSON object for field and field values to be updated.
+* `callback(err)` - A callback which is called when source is updated, or an error occurs.
+
+__Examples__
+
+```js
+var updateInfo = {
+  'metadata.parsed': new Date(),
+  'metadata.archived': new Date()
+};
+bbr.updateSource('testPatient1', fileId1, updateInfo, function(err) {
+  assert.ifError(err);
 });
 ```
 
@@ -916,7 +952,7 @@ __Examples__
 ```js
 bbr.cancelMatch('allergies', 'testPatient1', paid2, 'ignored', function(err) {
     assert.ifError(err);
-    bbr.getSection('allergies', 'testPatient1', function(err, entries) {
+    bbr.getSection('allergies', 'testPatient1', function(ierr, entries) {
         assert.ifError(err);
         assert.equal(entries.length, 3); // not added to Master Health Record
         bbr.matchCount('allergies', 'testPatient1', {}, function(err, count) {
@@ -948,12 +984,14 @@ var schema = {
   uploadDate: Date,
   metadata: {
     pat_key: String,
-    fileClass: String
+    fileClass: String,
+    parsed: Date,
+    archived: Date
   }
 };
 ```
 
-'contentType' is the file MIME type such as 'application/xml'.  'pat_key' is used to identify the patient file belongs to.  If it exists 'fileClass' indicates the content type (ex: 'ccda').
+'contentType' is the file MIME type such as 'application/xml'.  'pat_key' is used to identify the patient file belongs to.  If it exists 'fileClass' indicates the content type (ex: 'ccda').  'parsed' can be used to record the first parsing of the source for health data by applications. 'archived' can be used to by applications for removal functionality.  Currently API methods does not use 'archived' for such functionality. 
 
 ### Patient data and metadata
 
