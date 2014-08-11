@@ -81,10 +81,10 @@ describe('storage.js methods', function () {
                 name: getFileName(index),
                 type: getContentType(index)
             };
-            storage.saveSource(dbinfo, pats[index], contents[index], fileinfo, classes[index], callback); 
+            storage.saveSource(dbinfo, pats[index], contents[index], fileinfo, classes[index], callback);
         };
         var r = _.range(6);
-        async.map(r, f, function(err, result) {
+        async.map(r, f, function (err, result) {
             if (err) {
                 done(err);
             } else {
@@ -130,8 +130,15 @@ describe('storage.js methods', function () {
                 }
             });
         };
-        var inputs = [[0, 3], [3, 5], [5,6]].map(function(v) {
-            return {start: v[0], end: v[1]};
+        var inputs = [
+            [0, 3],
+            [3, 5],
+            [5, 6]
+        ].map(function (v) {
+            return {
+                start: v[0],
+                end: v[1]
+            };
         });
         async.each(inputs, f, done);
     });
@@ -186,8 +193,15 @@ describe('storage.js methods', function () {
                 }
             });
         };
-        var inputs = [[0, 3], [3, 5], [5,6]].map(function(v) {
-            return {start: v[0], end: v[1]};
+        var inputs = [
+            [0, 3],
+            [3, 5],
+            [5, 6]
+        ].map(function (v) {
+            return {
+                start: v[0],
+                end: v[1]
+            };
         });
         async.each(inputs, f, done);
     });
@@ -210,8 +224,16 @@ describe('storage.js methods', function () {
                 }
             });
         };
-        var inputs = [['pat1', 3], ['pat2', 2], ['pat3', 1], ['patnone', 0]].map(function(a) {
-            return {patient: a[0], count: a[1]};
+        var inputs = [
+            ['pat1', 3],
+            ['pat2', 2],
+            ['pat3', 1],
+            ['patnone', 0]
+        ].map(function (a) {
+            return {
+                patient: a[0],
+                count: a[1]
+            };
         });
         async.each(inputs, f, done);
     });

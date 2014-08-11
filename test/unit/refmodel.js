@@ -18,11 +18,11 @@ var schemas = {
         name: 'string',
         severity: 'string',
         value: {
-            code: 'string', 
+            code: 'string',
             display: 'string'
         }
     },
-    testprocedures : {
+    testprocedures: {
         name: 'string',
         proc_type: 'string',
         proc_value: {
@@ -30,13 +30,13 @@ var schemas = {
             display: 'string'
         }
     },
-    testdemographics : {
+    testdemographics: {
         name: 'string',
         lastname: 'string',
     }
 };
 
-var getConnectionOptions = function(dbName) {
+var getConnectionOptions = function (dbName) {
     return {
         dbName: dbName,
         supported_sections: ['testallergies', 'testprocedures', 'testdemographics']
@@ -44,27 +44,27 @@ var getConnectionOptions = function(dbName) {
 };
 
 var testObjectInstance = exports.testObjectInstance = {
-    testallergies: function(suffix) {
+    testallergies: function (suffix) {
         return {
             name: 'name' + suffix,
             severity: 'severity' + suffix,
             value: {
-                code: 'code' + suffix, 
+                code: 'code' + suffix,
                 display: 'display' + suffix
             }
         };
     },
-    testprocedures: function(suffix) {
+    testprocedures: function (suffix) {
         return {
             name: 'name' + suffix,
             proc_type: 'proc_type' + suffix,
             proc_value: {
-                code: 'code' + suffix, 
+                code: 'code' + suffix,
                 display: 'display' + suffix
             }
         };
     },
-    testdemographics: function(suffix) {
+    testdemographics: function (suffix) {
         return {
             name: 'name' + suffix,
             lastname: 'lastname' + suffix
@@ -73,43 +73,46 @@ var testObjectInstance = exports.testObjectInstance = {
 };
 
 var matchObjectInstance = exports.matchObjectInstance = {
-    diff: function(suffix, entryIndex) {
+    diff: function (suffix, entryIndex) {
         return {
             match: 'diff',
             diff: 'diff' + suffix
         };
     },
-    partial: function(suffix, entryIndex) {
+    partial: function (suffix, entryIndex) {
         return {
             match: 'partial',
             percent: (entryIndex + 1) * 10,
-            diff: 'diff' + suffix            
+            diff: 'diff' + suffix
         };
     },
-   diffsub: function(suffix, entryIndex) {
+    diffsub: function (suffix, entryIndex) {
         return {
             match: 'diff',
             diff: 'diff' + suffix,
             subelements: 'subelements' + suffix
         };
     },
-    partialsub: function(suffix, entryIndex) {
+    partialsub: function (suffix, entryIndex) {
         return {
             match: 'partial',
             percent: (entryIndex + 1) * 10,
             diff: 'diff' + suffix,
             subelements: 'subelements' + suffix
         };
-    }    
+    }
 };
 
-var createStorage = function(context, pat, filename, index, callback) {
-    storage.saveSource(context.dbinfo, pat, 'content', {type: 'text/xml', name: filename}, 'ccda', function(err, id) {
+var createStorage = function (context, pat, filename, index, callback) {
+    storage.saveSource(context.dbinfo, pat, 'content', {
+        type: 'text/xml',
+        name: filename
+    }, 'ccda', function (err, id) {
         if (err) {
             callback(err);
         } else {
             expect(id).to.exist;
-            if (! context.storageIds) {
+            if (!context.storageIds) {
                 context.storageIds = {};
             }
             context.storageIds[index] = id;
@@ -118,54 +121,54 @@ var createStorage = function(context, pat, filename, index, callback) {
     });
 };
 
-var createTestSection = exports.createTestSection = function(secName, recordIndex, count) {
-    return _.range(count).reduce(function(r, i) {
+var createTestSection = exports.createTestSection = function (secName, recordIndex, count) {
+    return _.range(count).reduce(function (r, i) {
         var suffix = '_' + recordIndex + '.' + i;
         r[i] = testObjectInstance[secName](suffix);
-        return r;            
+        return r;
     }, []);
 };
 
-var newEntriesContextKey = exports.newEntriesContextKey = function(secName, recordIndex) {
-    return util.format("new.%s.%s", secName, recordIndex);   
+var newEntriesContextKey = exports.newEntriesContextKey = function (secName, recordIndex) {
+    return util.format("new.%s.%s", secName, recordIndex);
 };
 
-var partialEntriesContextKey = exports.partialEntriesContextKey = function(secName, recordIndex) {
-    return util.format("partial.%s.%s", secName, recordIndex);   
+var partialEntriesContextKey = exports.partialEntriesContextKey = function (secName, recordIndex) {
+    return util.format("partial.%s.%s", secName, recordIndex);
 };
 
-exports.propertyToFilename = function(value) {
+exports.propertyToFilename = function (value) {
     var n = value.length;
-    return util.format('c%s%s.xml', value.charAt(n-5), value.charAt(n-3));
+    return util.format('c%s%s.xml', value.charAt(n - 5), value.charAt(n - 3));
 };
 
-var pushToContext = exports.pushToContext = function(context, keyGen, secName, recordIndex, values) {
+var pushToContext = exports.pushToContext = function (context, keyGen, secName, recordIndex, values) {
     if (values) {
         var key = keyGen(secName, recordIndex);
         var r = context[key];
-        if (! r) {
+        if (!r) {
             r = context[key] = [];
         }
         Array.prototype.push.apply(r, values);
     }
 };
 
-var saveSection = exports.saveSection = function(context, secName, pat_key, recordIndex, count, callback) {
+var saveSection = exports.saveSection = function (context, secName, pat_key, recordIndex, count, callback) {
     var data = createTestSection(secName, recordIndex, count);
     var sourceId = context.storageIds[recordIndex];
-    section.save(context.dbinfo, secName, pat_key, data, sourceId, function(err, ids) {
-        if (! err) {
+    section.save(context.dbinfo, secName, pat_key, data, sourceId, function (err, ids) {
+        if (!err) {
             pushToContext(context, newEntriesContextKey, secName, recordIndex, ids);
         }
         callback(err);
     });
 };
 
-exports.saveMatches = function(context, secName, pat_key, recordIndex, destRecordIndex, extraContent, callback) {
+exports.saveMatches = function (context, secName, pat_key, recordIndex, destRecordIndex, extraContent, callback) {
     var data = createTestSection(secName, recordIndex, extraContent.length);
     var sourceId = context.storageIds[recordIndex];
     var key = newEntriesContextKey(secName, destRecordIndex);
-    var extendedData = data.reduce(function(r, e, index) {
+    var extendedData = data.reduce(function (r, e, index) {
         var v = {
             partial_entry: e,
             partial_match: extraContent[index].matchObject,
@@ -174,17 +177,17 @@ exports.saveMatches = function(context, secName, pat_key, recordIndex, destRecor
         r.push(v);
         return r;
     }, []);
-    section.savePartial(context.dbinfo, secName, pat_key, extendedData, sourceId, function(err, result) {
-        if (! err) {
+    section.savePartial(context.dbinfo, secName, pat_key, extendedData, sourceId, function (err, result) {
+        if (!err) {
             pushToContext(context, partialEntriesContextKey, secName, recordIndex, result);
         }
         callback(err);
     });
 };
 
-var setConnectionContext = exports.setConnectionContext = function(dbName, context, callback) {
+var setConnectionContext = exports.setConnectionContext = function (dbName, context, callback) {
     var options = getConnectionOptions(dbName);
-    db.connect('localhost', options, function(err, result) {
+    db.connect('localhost', options, function (err, result) {
         if (err) {
             callback(err);
         } else {
@@ -194,13 +197,13 @@ var setConnectionContext = exports.setConnectionContext = function(dbName, conte
     });
 };
 
-exports.prepareConnection = function(dbname, context) {
-    return function() {
-        before(function(done) {
+exports.prepareConnection = function (dbname, context) {
+    return function () {
+        before(function (done) {
             setConnectionContext(dbname, context, done);
         });
 
-        it('check connection and models', function(done) {
+        it('check connection and models', function (done) {
             expect(context.dbinfo).to.exist;
             expect(context.dbinfo.db).to.exist;
             expect(context.dbinfo.grid).to.exist;
@@ -212,13 +215,15 @@ exports.prepareConnection = function(dbname, context) {
     };
 };
 
-var addRecordsPerPatient = exports.addRecordsPerPatient = function(context, countPerPatient, callback) {
-    var fs = countPerPatient.reduce(function(r, fileCount, i) {
+var addRecordsPerPatient = exports.addRecordsPerPatient = function (context, countPerPatient, callback) {
+    var fs = countPerPatient.reduce(function (r, fileCount, i) {
         var pat_key = util.format('pat%d', i);
-        return _.range(fileCount).reduce(function(q, j) {
+        return _.range(fileCount).reduce(function (q, j) {
             var filename = util.format('c%d%d.xml', i, j);
             var recordIndex = util.format('%d.%d', i, j);
-            var f = function(cb) {createStorage(context, pat_key, filename, recordIndex, cb);};
+            var f = function (cb) {
+                createStorage(context, pat_key, filename, recordIndex, cb);
+            };
             q.push(f);
             return q;
         }, r);
@@ -227,8 +232,8 @@ var addRecordsPerPatient = exports.addRecordsPerPatient = function(context, coun
     async.parallel(fs, callback);
 };
 
-exports.createMatchInformation = function(recordIndex, destIndices, matchTypes) {
-    return matchTypes.reduce(function(r, matchType, index) {
+exports.createMatchInformation = function (recordIndex, destIndices, matchTypes) {
+    return matchTypes.reduce(function (r, matchType, index) {
         var destIndex = destIndices[index];
         var suffix = '_' + recordIndex + '.' + destIndex;
         var v = {
@@ -240,13 +245,13 @@ exports.createMatchInformation = function(recordIndex, destIndices, matchTypes) 
     }, []);
 };
 
-exports.cancelMatch = function(context, secName, ptKey, recordKey, index, callback) {
+exports.cancelMatch = function (context, secName, ptKey, recordKey, index, callback) {
     var key = partialEntriesContextKey(secName, recordKey);
     var id = context[key][index]._id;
     match.cancel(context.dbinfo, secName, ptKey, id, 'cancel_' + recordKey + '.' + index, callback);
 };
 
-exports.acceptMatch = function(context, secName, ptKey, recordKey, index, callback) {
+exports.acceptMatch = function (context, secName, ptKey, recordKey, index, callback) {
     var key = partialEntriesContextKey(secName, recordKey);
     var id = context[key][index]._id;
     match.accept(context.dbinfo, secName, ptKey, id, 'accept_' + recordKey + '.' + index, callback);

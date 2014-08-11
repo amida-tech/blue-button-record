@@ -6,8 +6,8 @@ var modelutil = require('../../lib/modelutil');
 
 var expect = chai.expect;
 
-describe('modelutil.js', function() {
-    it('empty array/inside object/inside object', function(done) {
+describe('modelutil.js', function () {
+    it('empty array/inside object/inside object', function (done) {
         var input = [{
             "pat_key": "pat1",
             "precondition": {
@@ -24,4 +24,3 @@ describe('modelutil.js', function() {
         done();
     });
 });
-

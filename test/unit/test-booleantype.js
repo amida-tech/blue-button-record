@@ -9,21 +9,21 @@ var bbr = require('../../index');
 var expect = chai.expect;
 chai.config.includeStack = true;
 
-describe('boolean model field type verification', function() {
+describe('boolean model field type verification', function () {
     var ids;
 
-    before(function(done) {
+    before(function (done) {
         var options = {
             dbName: 'booleanTest',
             supported_sections: ['sectiona', 'sectionb']
         };
-    
-        bbr.connectDatabase('localhost', options, function(err) {
+
+        bbr.connectDatabase('localhost', options, function (err) {
             done(err);
         });
-    });   
+    });
 
-    it('save test data', function(done) {
+    it('save test data', function (done) {
         var record = {
             sectiona: [{
                 name: 'namea0',
@@ -53,9 +53,9 @@ describe('boolean model field type verification', function() {
                 }
             }]
         };
-        
+
         var sourceId = mongoose.Types.ObjectId();
-        bbr.saveAllSections('btest', record, sourceId, function(err, result) {
+        bbr.saveAllSections('btest', record, sourceId, function (err, result) {
             if (err) {
                 done(err);
             } else {
@@ -68,31 +68,31 @@ describe('boolean model field type verification', function() {
         });
     });
 
-    var checkSortEntries = function(entries) {
+    var checkSortEntries = function (entries) {
         expect(entries).to.exist;
         expect(entries).have.length(3);
-        entries.forEach(function(entry) {
+        entries.forEach(function (entry) {
             expect(entry).to.exist;
             expect(entry.name).to.exist;
         });
-        entries.sort(function(a, b) {
+        entries.sort(function (a, b) {
             return a.name < b.name ? -1 : (b.name < a.name ? 1 : 0);
         });
     };
 
-    it('check booleans after getAllSections', function(done) {
-        bbr.getAllSections('btest', function(err, record) {
+    it('check booleans after getAllSections', function (done) {
+        bbr.getAllSections('btest', function (err, record) {
             if (err) {
                 done(err);
             } else {
                 expect(record).to.exist;
                 checkSortEntries(record.sectiona);
-                var valuesa = record.sectiona.map(function(entry) {
+                var valuesa = record.sectiona.map(function (entry) {
                     return entry.flag;
                 });
                 expect(valuesa).to.deep.equal([undefined, true, false]);
                 checkSortEntries(record.sectionb);
-                var valuesb = record.sectionb.map(function(entry) {
+                var valuesb = record.sectionb.map(function (entry) {
                     return entry.value && entry.value.active;
                 });
                 expect(valuesb).to.deep.equal([undefined, true, false]);
@@ -101,13 +101,13 @@ describe('boolean model field type verification', function() {
         });
     });
 
-    it('check booleans after getSections', function(done) {
-        bbr.getSection('sectiona', 'btest', function(err, result) {
+    it('check booleans after getSections', function (done) {
+        bbr.getSection('sectiona', 'btest', function (err, result) {
             if (err) {
                 done(err);
             } else {
                 checkSortEntries(result);
-                var values = result.map(function(entry) {
+                var values = result.map(function (entry) {
                     return entry.flag;
                 });
                 expect(values).to.deep.equal([undefined, true, false]);
@@ -116,24 +116,24 @@ describe('boolean model field type verification', function() {
         });
     });
 
-    it('check booleans after getEntry', function(done) {
-        var generator = function(sectionName, sectionIndex, entryIndex) {
-            return function(cb) {
+    it('check booleans after getEntry', function (done) {
+        var generator = function (sectionName, sectionIndex, entryIndex) {
+            return function (cb) {
                 bbr.getEntry(sectionName, 'btest', ids[sectionIndex][entryIndex], cb);
             };
         };
         var fs = [];
-        ['sectiona', 'sectionb'].forEach(function(sectionName, sectionIndex) {
-            for (var j=0; j<3; ++j) {
+        ['sectiona', 'sectionb'].forEach(function (sectionName, sectionIndex) {
+            for (var j = 0; j < 3; ++j) {
                 var f = generator(sectionName, sectionIndex, j);
                 fs.push(f);
             }
         });
-        async.parallel(fs, function(err, results) {
+        async.parallel(fs, function (err, results) {
             if (err) {
                 done(err);
             } else {
-                var values = results.map(function(entry, index) {
+                var values = results.map(function (entry, index) {
                     return index < 3 ? entry.flag : entry.value.active;
                 });
                 expect(values).to.deep.equal([undefined, true, false, undefined, true, false]);
@@ -142,13 +142,13 @@ describe('boolean model field type verification', function() {
         });
     });
 
-    after(function(done) {
-        bbr.clearDatabase(function(err) {
+    after(function (done) {
+        bbr.clearDatabase(function (err) {
             if (err) {
                 done(err);
             } else {
                 bbr.disconnect(done);
             }
-        });    
+        });
     });
 });
