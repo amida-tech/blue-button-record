@@ -234,5 +234,48 @@ describe('deep clean empty', function() {
         expect(input[0].partial).to.have.length(1);
         expect(input[0].partial[0].v).to.equal(true);
         done();
+    });   
+});
+
+describe('movePropUp', function() {
+    it('basic', function(done) {
+        var data = {
+            a: 'a',
+            b: {
+                string: 'string',
+                array: [1, 2, 3, 4]
+            },
+            c: 'c'
+        };
+    
+        var obj = {
+            x: 'x',
+            data: data,
+            y: {
+                y1: 1,
+                y2: 2
+            },
+            z: 'z'
+        };
+
+        jsutil.movePropUp(obj, 'data');
+ 
+        var expected = {
+            x: 'x',
+            a: 'a',
+            b: {
+                string: 'string',
+                array: [1, 2, 3, 4]
+            },
+            c: 'c',
+            y: {
+                y1: 1,
+                y2: 2
+            },
+            z: 'z'
+        };
+
+        expect(obj).to.deep.equal(expected);
+        done();
     });
 });

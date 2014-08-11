@@ -9,11 +9,7 @@ describe('API Documentation Examples', function() {
         assert = require('assert');
         var options = {
             dbName: 'test',
-            supported_sections: ['allergies', 'procedures'],
-            matchFields: {
-                percent: 'number',
-                subelements: 'any'
-            }
+            supported_sections: ['allergies', 'procedures']
         };    
 
         bbr.connectDatabase('localhost', options, function(err) {

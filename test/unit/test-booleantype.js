@@ -15,23 +15,7 @@ describe('boolean model field type verification', function() {
     before(function(done) {
         var options = {
             dbName: 'booleanTest',
-            supported_sections: ['sectiona', 'sectionb'],
-            schemas: {
-                sectiona: {
-                    name: 'string',
-                    flag: 'boolean',
-                },
-                sectionb : {
-                    name: 'string',
-                    value: {
-                        code: 'string',
-                        active: 'boolean'
-                    }
-                }
-            },
-            matchFields: {
-                elements: ['string']
-            }
+            supported_sections: ['sectiona', 'sectionb']
         };
     
         bbr.connectDatabase('localhost', options, function(err) {
