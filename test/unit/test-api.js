@@ -111,6 +111,16 @@ describe('API', function() {
         });
     });
 
+    it('updateSource', function(done) {
+        var updateInfo = {
+            'metadata.parsed': new Date(),
+            'metadata.archived': new Date()
+        };
+        bbr.updateSource('pat0', sourceIds[0], updateInfo, function(err) {
+            done(err);
+        });
+    });
+
     it('sourceCount', function(done) {
         bbr.sourceCount('pat0', function(err, result) {
             if (err) {

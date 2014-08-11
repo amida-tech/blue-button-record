@@ -1,13 +1,16 @@
 "use strict";
 
 var chai = require('chai');
+var chaidatetime = require('chai-datetime');
 var util = require('util');
 var path = require('path');
 var async = require('async');
+var _ = require('underscore');
 
 var db = require('../../lib/db');
 var storage = require('../../lib/storage');
 
+chai.use(chaidatetime);
 var expect = chai.expect;
 
 describe('storage.js methods', function () {
@@ -20,6 +23,8 @@ describe('storage.js methods', function () {
     var pats = ['pat1', 'pat1', 'pat1', 'pat2', 'pat2', 'pat3'];
     var classes = ['ccda', undefined, 'ccda', null, 'ccda', undefined];
     var contents = [];
+
+    var testNow = new Date();
 
     var getContentType = function (index) {
         if (types[index] === 'xml') {
@@ -71,137 +76,120 @@ describe('storage.js methods', function () {
     });
 
     it('saveSource', function (done) {
-        var f = function (fullCount, index, callback) {
+        var f = function (index, callback) {
             var fileinfo = {
                 name: getFileName(index),
                 type: getContentType(index)
             };
-            storage.saveSource(dbinfo, pats[index], contents[index], fileinfo, classes[index], function (err, result) {
-                if (err) {
-                    callback(err);
-                } else {
-                    ids[index] = result;
-                    var count = 0;
-                    for (var j = 0; j < fullCount; ++j) {
-                        if (ids[j]) {
-                            ++count;
-                        }
-                    }
-                    if (count === fullCount) {
-                        callback();
-                    }
-                }
-            });
+            storage.saveSource(dbinfo, pats[index], contents[index], fileinfo, classes[index], callback); 
         };
-
-        var e = function (err) {
-            done(err);
-        };
-
-        for (var i = 0; i < 6; ++i) {
-            f(6, i, e);
-        }
+        var r = _.range(6);
+        async.map(r, f, function(err, result) {
+            if (err) {
+                done(err);
+            } else {
+                ids = result;
+                done();
+            }
+        });
     });
 
     it('getSourceList', function (done) {
-        var count = 0;
-        var f = function (start, end) {
+        var f = function (input, callback) {
+            var start = input.start;
+            var end = input.end;
             storage.getSourceList(dbinfo, pats[start], function (err, result) {
-                var n = result.length;
-                expect(n).to.equal(end - start);
-                for (var i = start; i < end; ++i) {
-                    var r = result[i - start];
-                    var index = -1;
-                    for (var j = 0; j < 6; ++j) {
-                        if (ids[j].equals(r.file_id)) {
-                            index = j;
-                            break;
+                if (err) {
+                    callback(err);
+                } else {
+                    var n = result.length;
+                    expect(n).to.equal(end - start);
+                    for (var i = start; i < end; ++i) {
+                        var r = result[i - start];
+                        var index = -1;
+                        for (var j = 0; j < 6; ++j) {
+                            if (ids[j].equals(r.file_id)) {
+                                index = j;
+                                break;
+                            }
+                        }
+                        expect(index).to.not.equal(-1);
+                        expect(r).to.exist;
+                        expect(r.file_name).to.equal(getFileName(index));
+                        expect(r.file_mime_type).to.equal(getContentType(index));
+                        expect(r.patient_key).to.equal(pats[index]);
+                        expect(r.file_parsed).to.not.exist;
+                        expect(r.file_archived).to.not.exist;
+                        if (classes[index]) {
+                            expect(r.file_class).to.equal(classes[index]);
+                        } else {
+                            expect(r.file_class).to.not.exist;
                         }
                     }
-                    expect(index).to.not.equal(-1);
-                    expect(r).to.exist;
-                    expect(r.file_name).to.equal(getFileName(index));
-                    expect(r.file_mime_type).to.equal(getContentType(index));
-                    expect(r.patient_key).to.equal(pats[index]);
-                    expect(r.file_parsed).to.not.exist;
-                    expect(r.file_archived).to.not.exist;
-                    if (classes[index]) {
-                        expect(r.file_class).to.equal(classes[index]);
-                    } else {
-                        expect(r.file_class).to.not.exist;
-                    }
-                }
-                ++count;
-                if (count === 3) {
-                    done();
+                    callback();
                 }
             });
         };
-        f(0, 3);
-        f(3, 5);
-        f(5, 6);
+        var inputs = [[0, 3], [3, 5], [5,6]].map(function(v) {
+            return {start: v[0], end: v[1]};
+        });
+        async.each(inputs, f, done);
     });
 
     it('getSource', function (done) {
-        var count = 0;
-        var f = function (index) {
+        var f = function (index, callback) {
             storage.getSource(dbinfo, pats[index], ids[index].toString(), function (err, filename, content) {
                 if (err) {
-                    done(err);
+                    callback(err);
                 } else {
                     expect(filename).to.equal(getFileName(index));
                     var expectedContent = contents[index];
                     expect(content).to.equal(expectedContent);
-                    ++count;
-                    if (count === 6) {
-                        done();
-                    }
+                    callback(null);
                 }
             });
         };
-        for (var i = 0; i < 6; ++i) {
-            f(i);
-        }
+        var r = _.range(6);
+        async.each(r, f, done);
     });
 
     it('updateSource', function (done) {
-        var count = 0;
-        var patient_counter = 0;
-
-        function checkSources(patient, pat_len) {
-            storage.getSourceList(dbinfo, patient, function (err, results) {
-                for (var i in results) {
-                    expect(results[i].file_parsed).to.exist;
-                    expect(results[i].file_archived).to.exist;
-                    patient_counter++;
-                    if (patient_counter === pat_len) {
-                        done();
-                    }
-
-                }
+        var f = function (index, callback) {
+            var updateInfo = {
+                'metadata.parsed': testNow,
+                'metadata.archived': testNow
+            };
+            storage.updateSource(dbinfo, pats[index], ids[index].toString(), updateInfo, function (err) {
+                callback(err);
             });
-        }
+        };
+        var r = _.range(6);
+        async.each(r, f, done);
+    });
 
-        var f = function (index) {
-            storage.updateSource(dbinfo, pats[index], ids[index].toString(), {
-                'metadata.parsed': new Date(),
-                'metadata.archived': new Date()
-            }, function (err, content) {
+    it('getSourceList (after update)', function (done) {
+        var f = function (input, callback) {
+            var start = input.start;
+            var end = input.end;
+            storage.getSourceList(dbinfo, pats[start], function (err, result) {
                 if (err) {
-                    done(err);
+                    callback(err);
                 } else {
-                    ++count;
-                    if (count === 6) {
-                        for (var pat_i in pats) {
-                            checkSources(pats[pat_i], pats.length);
-                        }
+                    var n = result.length;
+                    expect(n).to.equal(end - start);
+                    for (var i = start; i < end; ++i) {
+                        var r = result[i - start];
+                        expect(r.file_parsed).to.equalTime(testNow);
+                        expect(r.file_archived).to.equalTime(testNow);
                     }
+                    callback();
                 }
             });
         };
-        for (var i = 0; i < 6; ++i) {
-            f(i);
-        }
+        var inputs = [[0, 3], [3, 5], [5,6]].map(function(v) {
+            return {start: v[0], end: v[1]};
+        });
+        async.each(inputs, f, done);
     });
 
     it('getSource (wrong patient)', function (done) {
@@ -212,27 +200,20 @@ describe('storage.js methods', function () {
     });
 
     it('sourceCount', function (done) {
-        var count = 0;
-        var doneIf3 = function () {
-            ++count;
-            if (count === 4) {
-                done();
-            }
-        };
-        var f = function (pat, expected) {
-            storage.sourceCount(dbinfo, pat, function (err, num) {
+        var f = function (input, callback) {
+            storage.sourceCount(dbinfo, input.patient, function (err, count) {
                 if (err) {
-                    done(err);
+                    callback(err);
                 } else {
-                    expect(num).to.equal(expected);
-                    doneIf3();
+                    expect(count).to.equal(input.count);
+                    callback();
                 }
             });
         };
-        f('pat1', 3);
-        f('pat2', 2);
-        f('pat3', 1);
-        f('patnone', 0);
+        var inputs = [['pat1', 3], ['pat2', 2], ['pat3', 1], ['patnone', 0]].map(function(a) {
+            return {patient: a[0], count: a[1]};
+        });
+        async.each(inputs, f, done);
     });
 
     after(function (done) {
