@@ -2,7 +2,7 @@
     "author": "Dmitry Kachaev, Matthew McCall and Afsin Ustundag",
     "name": "blue-button-record",
     "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
-    "version": "1.0.2",
+    "version": "1.1.0-beta.1",
     "repository": {
         "type": "git",
         "url": "git@github.com:amida-tech/blue-button-record.git"
@@ -19,7 +19,7 @@
         "mongoose": "3.8.8",
         "underscore": "1.6.x",
         "async": "0.9.x",
-        "blue-button-meta": "0.1.1"
+        "blue-button-meta": "^1.1.0"
     },
     "devDependencies": {
         "grunt": "0.4.x",
