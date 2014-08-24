@@ -34,7 +34,7 @@
         "grunt-istanbul-coverage": "*",
         "coveralls": "~2.10.0",
         "mocha-lcov-reporter": "0.0.1",
-        "blue-button": "1.0.2"
+        "blue-button": "^1.1.0"
     },
     "engines": {
         "node": "0.10.x"
