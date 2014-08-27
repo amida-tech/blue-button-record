@@ -502,7 +502,7 @@ describe('merge.js methods', function () {
     });
 
     var updateEntry = function (context, secName, ptKey, recordIndex, index, updateObject, sourceIndex, callback) {
-        
+
         var key = refmodel.newEntriesContextKey(secName, recordIndex);
 
         var id = context[key][index];

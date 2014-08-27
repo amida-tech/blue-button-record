@@ -174,7 +174,6 @@ exports.saveMatches = function (context, secName, pat_key, recordIndex, destReco
 
         //console.log(e);
 
-
         var v = {
             partial_entry: e,
             partial_matches: [{

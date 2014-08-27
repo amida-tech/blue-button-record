@@ -91,7 +91,7 @@ describe('match.js methods', function () {
                     //console.log(results);
 
                     var allResults = results[0].concat(results[1]).concat(results[2]).concat(results[3]).concat(results[4]);
-                    
+
                     //console.log(allResults);
 
                     var resultsById = allResults.reduce(function (r, result) {
@@ -381,7 +381,7 @@ describe('match.js methods', function () {
         var suffix = '_' + recordIndex + '.' + index;
         var entry = refmodel.testObjectInstance[secName](suffix);
         var resultEntry = modelutil.mongooseToBBModelDocument(result.entry);
-        
+
         expect(resultEntry).to.deep.equal(entry);
 
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
