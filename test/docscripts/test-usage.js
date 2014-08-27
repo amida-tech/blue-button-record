@@ -168,11 +168,11 @@ describe('Usage Documentation Examples', function () {
     });
 
     it('script 14', function (done) {
-        bbr.getMerges('allergies', 'patientKey', 'allergen severity', 'filename uploadDate', function (err, mergeList) {
+        bbr.getMerges('allergies', 'patientKey', 'observation.allergen.name observation.severity.code.name', 'filename uploadDate', function (err, mergeList) {
             var explMerge = mergeList[0];
             console.log(explMerge.merge_reason);
-            //console.log(explMerge.entry.observation.allergen.name);
-            //console.log(explMerge.entry.severity);
+            console.log(explMerge.entry.observation.allergen.name);
+            console.log(explMerge.entry.observation.severity.code.name);
             console.log(explMerge.record.filename);
             console.log(explMerge.record.uploadDate);
             done();
@@ -236,13 +236,13 @@ describe('Usage Documentation Examples', function () {
     var matchId1;
 
     it('script 19', function (done) {
-        bbr.getMatches('allergies', 'patientKey', 'allergen severity', function (err, result) {
-            //console.log(result[0].entry.allergen.name);
-            //console.log(result[0].entry.severity);
-            //console.log(result[0].match_entry.allergen.name);
-            //console.log(result[0].match_entry.severity);
-            //console.log(result[0].diff.severity);
-            //console.log(result[0].percent);
+        bbr.getMatches('allergies', 'patientKey', 'observation.allergen.name observation.severity.code.name', function (err, result) {
+            console.log(result[0].entry.observation.allergen.name);
+            console.log(result[0].entry.observation.severity.code.name);
+            console.log(result[0].match_entry.observation.allergen.name);
+            console.log(result[0].match_entry.observation.severity.code.name);
+            console.log(result[0].diff.severity);
+            console.log(result[0].percent);
             matchId0 = result[0]._id;
             matchId1 = result[1]._id;
             done();
@@ -251,12 +251,12 @@ describe('Usage Documentation Examples', function () {
 
     it('script 20', function (done) {
         bbr.getMatch('allergies', 'patientKey', matchId0, function (err, result) {
-            //console.log(result.entry.allergen.name);
-            //console.log(result.entry.status);
-            //console.log(result.match_entry.allergen.name);
-            //console.log(result.match_entry.status);
-            //console.log(result.diff.severity);
-            //console.log(result.percent);
+            console.log(result.entry.observation.allergen.name);
+            console.log(result.entry.observation.status.name);
+            console.log(result.match_entry.observation.allergen.name);
+            console.log(result.match_entry.observation.status.name);
+            console.log(result.diff.severity);
+            console.log(result.percent);
             done();
         });
     });
