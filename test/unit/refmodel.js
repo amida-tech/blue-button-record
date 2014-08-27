@@ -151,6 +151,8 @@ var pushToContext = exports.pushToContext = function (context, keyGen, secName, 
         }
         Array.prototype.push.apply(r, values);
     }
+
+    //console.log(context);
 };
 
 var saveSection = exports.saveSection = function (context, secName, pat_key, recordIndex, count, callback) {
@@ -169,14 +171,24 @@ exports.saveMatches = function (context, secName, pat_key, recordIndex, destReco
     var sourceId = context.storageIds[recordIndex];
     var key = newEntriesContextKey(secName, destRecordIndex);
     var extendedData = data.reduce(function (r, e, index) {
+
+        //console.log(e);
+
+
         var v = {
             partial_entry: e,
-            partial_match: extraContent[index].matchObject,
-            match_entry_id: context[key][extraContent[index].destIndex]
+            partial_matches: [{
+                match_entry: context[key][extraContent[index].destIndex],
+                match_object: extraContent[index].matchObject
+            }]
         };
+
+        //console.log(JSON.stringify(v, null, 10));
+
         r.push(v);
         return r;
     }, []);
+
     section.savePartial(context.dbinfo, secName, pat_key, extendedData, sourceId, function (err, result) {
         if (!err) {
             pushToContext(context, partialEntriesContextKey, secName, recordIndex, result);

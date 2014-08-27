@@ -51,6 +51,8 @@ describe('match.js methods', function () {
                         if (err) {
                             done(err);
                         } else {
+
+                            //console.log(results);
                             results.forEach(function (result, index) {
                                 expect(result).to.equal(expected[index]);
                             });
@@ -85,8 +87,15 @@ describe('match.js methods', function () {
                 if (err) {
                     callback(err);
                 } else {
+
+                    //console.log(results);
+
                     var allResults = results[0].concat(results[1]).concat(results[2]).concat(results[3]).concat(results[4]);
+                    
+                    //console.log(allResults);
+
                     var resultsById = allResults.reduce(function (r, result) {
+
                         r[result._id] = result;
                         return r;
                     }, {});
@@ -149,6 +158,9 @@ describe('match.js methods', function () {
     });
 
     it('add partial sections', function (done) {
+
+        //Flip this to new stuff.
+
         var matchInfo0 = refmodel.createMatchInformation('0.1', [4, 0, 2], ['diff', 'partial', 'diffsub']);
         var matchInfo1 = refmodel.createMatchInformation('2.1', [1], ['diffsub']);
         var matchInfo2 = refmodel.createMatchInformation('0.1', [2], ['partialsub']);
@@ -187,10 +199,11 @@ describe('match.js methods', function () {
         var result = resultsById[id];
         expect(result).to.exist;
 
+        //console.log(JSON.stringify(result, null, 10));
         var suffix = '_' + recordIndex + '.' + index;
-        expect(result.match_entry.name).to.equal('name' + suffix);
+        expect(result.entry.name).to.equal('name' + suffix);
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
-        expect(result.entry.name).to.equal('name' + destSuffix);
+        expect(result.matches[0].match_entry.name).to.equal('name' + destSuffix);
         expect(result.entry_type).to.equal(secName);
 
         ['_id', '__v', 'entry_type', 'entry', 'match_entry', 'pat_key'].forEach(function (p) {
@@ -199,14 +212,16 @@ describe('match.js methods', function () {
 
         var diffSuffix = '_' + recordIndex + '.' + destIndex;
         var diffExpect = refmodel.matchObjectInstance[diffType](diffSuffix, destIndex);
-        expect(result).to.deep.equal(diffExpect);
+        expect(result.matches[0].match_object).to.deep.equal(diffExpect);
     };
 
     it('getAll (added partial sections)', function (done) {
+
         callGetAll(function (err, totalCount, resultsById) {
             if (err) {
                 done(err);
             } else {
+
                 expect(totalCount).to.equal(9);
 
                 verifyContent(resultsById, '0.1', 0, '0.0', 4, 'testallergies', 'diff');
@@ -365,12 +380,14 @@ describe('match.js methods', function () {
 
         var suffix = '_' + recordIndex + '.' + index;
         var entry = refmodel.testObjectInstance[secName](suffix);
-        var resultEntry = modelutil.mongooseToBBModelDocument(result.match_entry);
+        var resultEntry = modelutil.mongooseToBBModelDocument(result.entry);
+        
         expect(resultEntry).to.deep.equal(entry);
 
         var destSuffix = '_' + destRecordIndex + '.' + destIndex;
         var destEntry = refmodel.testObjectInstance[secName](destSuffix);
-        var destResultEntry = modelutil.mongooseToBBModelDocument(result.entry);
+
+        var destResultEntry = modelutil.mongooseToBBModelDocument(result.matches[0].match_entry);
         expect(destResultEntry).to.deep.equal(destEntry);
 
         if (reason) {
@@ -385,10 +402,11 @@ describe('match.js methods', function () {
 
         var diffSuffix = '_' + recordIndex + '.' + destIndex;
         var diffExpect = refmodel.matchObjectInstance[diffType](diffSuffix, destIndex);
-        expect(result).to.deep.equal(diffExpect);
+        expect(result.matches[0].match_object).to.deep.equal(diffExpect);
     };
 
     it('get', function (done) {
+
         async.parallel([
 
                 function (callback) {
@@ -423,6 +441,7 @@ describe('match.js methods', function () {
                 if (err) {
                     done(err);
                 } else {
+
                     verifyGetContent(results[0], '0.1', 0, '0.0', 4, 'testallergies', 'diff');
                     verifyGetContent(results[1], '0.1', 1, '0.0', 0, 'testallergies', 'partial');
                     verifyGetContent(results[2], '0.1', 2, '0.0', 2, 'testallergies', 'diffsub', 'cancel');
@@ -457,4 +476,5 @@ describe('match.js methods', function () {
             }
         });
     });
+
 });
