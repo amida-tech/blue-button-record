@@ -323,11 +323,13 @@ describe('API Documentation Examples', function () {
                     display: 'display1'
                 }
             },
-            partial_match: {
-                percent: 80,
-                subelements: ['severity']
-            },
-            match_entry_id: aid1
+            partial_matches: [{
+                match_entry: aid1,
+                match_object: {
+                    percent: 80,
+                    subelements: ['severity']
+                }
+            }]
         }, {
             partial_entry: {
                 name: 'allergy2',
@@ -337,11 +339,13 @@ describe('API Documentation Examples', function () {
                     display: 'display2'
                 }
             },
-            partial_match: {
-                percent: 90,
-                subelements: ['value.code']
-            },
-            match_entry_id: aid2
+            partial_matches: [{
+                match_entry: aid2,
+                match_object: {
+                    percent: 90,
+                    subelements: ['value.code']
+                }
+            }]
         }];
         bbr.saveMatches('allergies', 'testPatient1', inputSection, fileId4, function (err, ids) {
             assert.ifError(err);
@@ -355,14 +359,15 @@ describe('API Documentation Examples', function () {
         bbr.getMatches('allergies', 'testPatient1', 'name severity value.code', function (err, entries) {
             assert.ifError(err);
             var i = [entries[0].entry.name, entries[1].entry.name].indexOf('allergy1');
-            assert.equal(entries[i].entry.severity, 'updatedSev');
-            assert.equal(entries[i].match_entry.severity, 'severity3');
-            assert.equal(entries[i].percent, 80);
-            assert.deepEqual(entries[i].subelements, ['severity']);
-            assert.equal(entries[(i + 1) % 2].entry.value.code, 'code2');
-            assert.equal(entries[(i + 1) % 2].match_entry.value.code, 'code5');
-            assert.equal(entries[(i + 1) % 2].percent, 90);
-            assert.deepEqual(entries[(i + 1) % 2].subelements, ['value.code']);
+
+            assert.equal(entries[i].matches[0].match_entry.severity, 'updatedSev');
+            assert.equal(entries[i].entry.severity, 'severity3');
+            assert.equal(entries[i].matches[0].match_object.percent, 80);
+            assert.deepEqual(entries[i].matches[0].match_object.subelements, ['severity']);
+            assert.equal(entries[(i + 1) % 2].matches[0].match_entry.value.code, 'code2');
+            assert.equal(entries[(i + 1) % 2].entry.value.code, 'code5');
+            assert.equal(entries[(i + 1) % 2].matches[0].match_object.percent, 90);
+            assert.deepEqual(entries[(i + 1) % 2].matches[0].match_object.subelements, ['value.code']);
             done();
         });
     });
@@ -370,10 +375,10 @@ describe('API Documentation Examples', function () {
     it('getMatch', function (done) {
         bbr.getMatch('allergies', 'testPatient1', paid1, function (err, matchInfo) {
             assert.ifError(err);
-            assert.equal(matchInfo.entry.severity, 'updatedSev');
-            assert.equal(matchInfo.match_entry.severity, 'severity3');
-            assert.equal(matchInfo.percent, 80);
-            assert.deepEqual(matchInfo.subelements, ['severity']);
+            assert.equal(matchInfo.matches[0].match_entry.severity, 'updatedSev');
+            assert.equal(matchInfo.entry.severity, 'severity3');
+            assert.equal(matchInfo.matches[0].match_object.percent, 80);
+            assert.deepEqual(matchInfo.matches[0].match_object.subelements, ['severity']);
             done();
         });
     });
