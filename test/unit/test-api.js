@@ -30,7 +30,6 @@ describe('API', function () {
         var filepath = path.join(__dirname, '../artifacts/standard/CCD_demo1.xml');
         var xml = fs.readFileSync(filepath, 'utf-8');
         var result = bb.parseString(xml);
-        //console.log(JSON.stringify(result.meta,null,4));
         ccd = result.data;
         done();
     });
@@ -260,7 +259,11 @@ describe('API', function () {
 
     it('updateEntry', function (done) {
         bbr.updateEntry('allergies', 'pat1', allergyIds[0], sourceIds[5], {
-            severity: 'Severe'
+            "observation.severity.code": {
+                name: 'Severe',
+                code: "24484000",
+                code_sytem_name: "SNOMED CT"
+            }
         }, function (err) {
             allergySeverities[0] = 'Severe';
             done(err);
@@ -269,7 +272,7 @@ describe('API', function () {
 
     it('getEntry', function (done) {
         bbr.getEntry('allergies', 'pat1', allergyIds[0], function (err, result) {
-            expect(result.observation.severity.code.name).to.equal('Moderate to severe');
+            expect(result.observation.severity.code.name).to.equal('Severe');
             expect(result.observation.allergen.name).to.equal(allergyNames[0]);
             expect(result.metadata).to.exist;
             expect(result.metadata.attribution).to.exist;
@@ -287,15 +290,14 @@ describe('API', function () {
     });
 
     it('getMerges', function (done) {
-        bbr.getMerges('allergies', 'pat1', 'allergen.name severity', 'filename', function (err, results) {
+        bbr.getMerges('allergies', 'pat1', 'observation.allergen.name observation.severity.code.name', 'filename', function (err, results) {
             if (err) {
                 done(err);
             } else {
                 expect(results).to.have.length(5);
                 results.forEach(function (result) {
-                    /*
-                    expect(allergyNames).to.include(result.entry.allergen.name);
-                    expect(allergySeverities).to.include(result.entry.severity);
+                    expect(allergyNames).to.include(result.entry.observation.allergen.name);
+                    expect(allergySeverities).to.include(result.entry.observation.severity.code.name);
                     var filename = result.record.filename;
                     if (filename === 'ccd_3.xml') {
                         expect(result.merge_reason).to.equal('new');
@@ -306,7 +308,6 @@ describe('API', function () {
                     } else { // not expected
                         expect(false).to.be.true;
                     }
-                    */
                 });
                 done();
             }
@@ -363,11 +364,19 @@ describe('API', function () {
             percent: 90
         };
         var allergies1 = _.clone(ccd.allergies[1]);
-        expect(allergies1.severity).to.not.equal('Severe');
-        allergies1.severity = 'Severe';
+        expect(allergies1.observation.severity.code.name).to.not.equal('Severe');
+        allergies1.observation.severity.code = {
+            name: 'Severe',
+            code: "24484000",
+            code_sytem_name: "SNOMED CT"
+        };
         var allergies2 = _.clone(ccd.allergies[2]);
-        expect(allergies2.status).to.not.equal('Inactive');
-        allergies2.status = 'Inactive';
+        expect(allergies2.observation.status.name).to.not.equal('Inactive');
+        allergies2.observation.status = {
+            name: "Inactive",
+            code: "73425007",
+            code_system_name: "SNOMED CT"
+        };
         partialInput = [{
             partial_entry: allergies1,
             partial_matches: [{
@@ -388,43 +397,48 @@ describe('API', function () {
     });
 
     it('getMatches', function (done) {
+<<<<<<< HEAD
         bbr.getMatches('allergies', 'pat1', 'observation.allergen.name observation.severity.code.name', function (err, result) {
             if (err) {
                 done(err);
             } else {
                 console.log(JSON.stringify(result, null, 10));
 
+=======
+        bbr.getMatches('allergies', 'pat1', 'observation.allergen.name observation.severity.code.name observation.status.name', function (err, result) {
+            if (err) {
+                done(err);
+            } else {
+>>>>>>> master
                 expect(result).to.have.length(2);
 
-                /*
                 if (result[0].entry.observation.allergen.name !== allergyNames[1]) {
                     var temp = result[0];
                     result[0] = result[1];
                     result[1] = temp;
                 }
-                */
+
                 partialAllergyIds = [result[0].match_entry._id, result[1].match_entry._id];
-                /*
-                expect(result[0].entry.allergen.name).to.equal(allergyNames[1]);
-                expect(result[0].entry.severity).to.equal(allergySeverities[1]);
-                expect(result[0].entry.status).to.equal(allergyStatuses[1]);
-                expect(result[0].match_entry.allergen.name).to.equal(allergyNames[1]);
-                expect(result[0].match_entry.severity).to.equal('Severe');
-                expect(result[0].match_entry.status).to.equal(allergyStatuses[1]);
+
+                expect(result[0].entry.observation.allergen.name).to.equal(allergyNames[1]);
+                expect(result[0].entry.observation.severity.code.name).to.equal(allergySeverities[1]);
+                expect(result[0].entry.observation.status.name).to.equal(allergyStatuses[1]);
+                expect(result[0].match_entry.observation.allergen.name).to.equal(allergyNames[1]);
+                expect(result[0].match_entry.observation.severity.code.name).to.equal('Severe');
+                expect(result[0].match_entry.observation.status.name).to.equal(allergyStatuses[1]);
 
                 expect(result[0].diff.severity).to.equal('new');
                 expect(result[0].percent).to.equal(80);
 
-                expect(result[1].entry.allergen.name).to.equal(allergyNames[2]);
-                expect(result[1].entry.severity).to.equal(allergySeverities[2]);
-                expect(result[1].entry.status).to.equal(allergyStatuses[2]);
-                expect(result[1].match_entry.allergen.name).to.equal(allergyNames[2]);
-                expect(result[1].match_entry.severity).to.equal(allergySeverities[2]);
-                expect(result[1].match_entry.status).to.equal('Inactive');
+                expect(result[1].entry.observation.allergen.name).to.equal(allergyNames[2]);
+                expect(result[1].entry.observation.severity.code.name).to.equal(allergySeverities[2]);
+                expect(result[1].entry.observation.status.name).to.equal(allergyStatuses[2]);
+                expect(result[1].match_entry.observation.allergen.name).to.equal(allergyNames[2]);
+                expect(result[1].match_entry.observation.severity.code.name).to.equal(allergySeverities[2]);
+                expect(result[1].match_entry.observation.status.name).to.equal('Inactive');
 
                 expect(result[1].diff.status).to.equal('new');
                 expect(result[1].percent).to.equal(90);
-                */
 
                 matchIds = [result[0]._id, result[1]._id];
                 done();
@@ -439,17 +453,16 @@ describe('API', function () {
             } else {
                 expect(result.entry._id.toString()).to.equal(allergyIds[1].toString());
                 expect(result.match_entry._id.toString()).to.equal(partialAllergyIds[0].toString());
-                /*
-                expect(result.entry.allergen.name).to.equal(allergyNames[1]);
-                expect(result.entry.severity).to.equal(allergySeverities[1]);
-                expect(result.entry.status).to.equal(allergyStatuses[1]);
-                expect(result.match_entry.allergen.name).to.equal(allergyNames[1]);
-                expect(result.match_entry.severity).to.equal('Severe');
-                expect(result.match_entry.status).to.equal(allergyStatuses[1]);
+
+                expect(result.entry.observation.allergen.name).to.equal(allergyNames[1]);
+                expect(result.entry.observation.severity.code.name).to.equal(allergySeverities[1]);
+                expect(result.entry.observation.status.name).to.equal(allergyStatuses[1]);
+                expect(result.match_entry.observation.allergen.name).to.equal(allergyNames[1]);
+                expect(result.match_entry.observation.severity.code.name).to.equal('Severe');
+                expect(result.match_entry.observation.status.name).to.equal(allergyStatuses[1]);
 
                 expect(result.diff.severity).to.equal('new');
                 expect(result.percent).to.equal(80);
-                */
 
                 done();
             }
