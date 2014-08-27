@@ -177,14 +177,18 @@ bbr.mergeCount('allergies', 'patientKey', {merge_reason: 'duplicate'}, function(
 blue-button-record also stores Match List; entries which cannot immediately become part of the Master Health Record since they are similar enough to existing entries but not identical to become duplicates.  In addition to blue-button health data, blue-button-record requires a pointer to an existing Master Health Record entry and match information to persist partial entries
 ``` javascript
 var partialAllergy = {
-    partial_entry: ccdJSON.allergies[0],
-    partial_match: {
-        diff: {severity: 'new'},
-        percent: 80,
-        subelements: []
-    },
-    match_entry_id: id
-};
+            partial_entry: ccdJSON.allergies[0],
+            partial_matches: [{
+                match_entry: id,
+                match_object: {
+                    diff: {
+                        severity: 'new'
+                    },
+                    percent: 80,
+                    subelements: []
+                }
+            }]
+        };
 ```
 Here match information is assumed to have three fields: diff, subelements, and percent.  The match fields are application specific and are not validated.
 
@@ -199,25 +203,24 @@ bbr.saveMatches('allergies', 'patientKey', partialAllergies, fileId, function(er
 Match List is available as a list
 ``` javascript
 bbr.getMatches('allergies', 'patientKey', 'allergen severity', function(err, result) {
-    console.log(result[0].entry.allergen.name);
-    console.log(result[0].entry.severity);
-    console.log(result[0].match_entry.allergen.name);   
-    console.log(result[0].match_entry.severity);
-    console.log(result[0].diff.severity);        
-    console.log(result[0].percent);
-    var matchId0 = result[0]._id;
-    var matchId1 = result[1]._id;
+    console.log(result[0].matches[0].match_entry.observation.severity.code.name);
+    console.log(result[0].entry.observation.allergen.name);
+    console.log(result[0].entry.observation.severity.code.name);
+    console.log(result[0].matches[0].match_object.diff.severity);
+    console.log(result[0].matches[0].match_object.percent);
+    matchId0 = result[0]._id;
+    matchId1 = result[1]._id;
 });
 ```
 Individual Match List entry access is also available and will return the full blue-button data both for the Master Health Record enty and the Match List entry
 ``` javascript
 bbr.getMatch('allergies', 'patientKey', matchId0, function(err, result) {
-    console.log(result.entry.allergen.name);
-    console.log(result.entry.status);
-    console.log(result.match_entry.allergen.name);   
-    console.log(result.match_entry.status);
-    console.log(result.diff.severity);        
-    console.log(result.percent);
+     console.log(result.matches[0].match_entry.observation.allergen.name);
+     console.log(result.matches[0].match_entry.observation.status.name);
+     console.log(result.matches[0].match_entry.observation.allergen.name);
+     console.log(result.matches[0].match_entry.observation.status.name);
+     console.log(result.matches[0].match_object.diff.severity);
+     console.log(result.matches[0].match_object.percent);
 });   
 ```
 Only count of matches can be accessed instead of full list
@@ -788,41 +791,44 @@ __Examples__
 
 ```js
 var inputSection = [{
-    partial_entry : {
-        name: 'allergy1',
-        severity: 'severity3',
-        value: {
-            code: 'code1', 
-            display: 'display1'
-        }
-    },
-    partial_match: {
-        percent: 80,
-        subelements: ['severity']
-    },
-    match_entry_id: aid1
-},
-{
-    partial_entry: {
-        name: 'allergy2',
-        severity: 'severity2',
-        value: {
-            code: 'code5', 
-            display: 'display2'
-        }
-    },
-    partial_match: {
-        percent: 90,
-        subelements: ['value.code']
-    },
-    match_entry_id: aid2
-}];
-var paid1;
-var paid2;
-bbr.saveMatches('allergies', 'testPatient1', inputSection, fileId4, function(err, ids) {
-    assert.ifError(err);
-    paid1 = ids[0];
-    paid2 = ids[1];
+            partial_entry: {
+                name: 'allergy1',
+                severity: 'severity3',
+                value: {
+                    code: 'code1',
+                    display: 'display1'
+                }
+            },
+            partial_matches: [{
+                match_entry: aid1,
+                match_object: {
+                    percent: 80,
+                    subelements: ['severity']
+                }
+            }]
+        }, {
+            partial_entry: {
+                name: 'allergy2',
+                severity: 'severity2',
+                value: {
+                    code: 'code5',
+                    display: 'display2'
+                }
+            },
+            partial_matches: [{
+                match_entry: aid2,
+                match_object: {
+                    percent: 90,
+                    subelements: ['value.code']
+                }
+            }]
+        }];
+        bbr.saveMatches('allergies', 'testPatient1', inputSection, fileId4, function (err, ids) {
+            assert.ifError(err);
+            paid1 = ids[0];
+            paid2 = ids[1];
+            done();
+        });
 });
 ```
 ---------------------------------------
@@ -840,18 +846,20 @@ __Arguments__
 __Examples__
 
 ```js
-bbr.getMatches('allergies', 'testPatient1', 'name severity value.code', function(err, entries) {
-    assert.ifError(err);
-    var i = [entries[0].entry.name, entries[1].entry.name].indexOf('allergy1');
-    assert.equal(entries[i].entry.severity, 'updatedSev');
-    assert.equal(entries[i].match_entry.severity, 'severity3');
-    assert.equal(entries[i].percent, 80);
-    assert.deepEqual(entries[i].subelements, ['severity']);
-    assert.equal(entries[i+1 % 2].entry.value.code, 'code2');
-    assert.equal(entries[i+1 % 2].match_entry.value.code, 'code5');
-    assert.equal(entries[i+1 % 2].percent, 90);
-    assert.deepEqual(entries[i+1 % 2].subelements, ['value.code']);            
-});
+bbr.getMatches('allergies', 'testPatient1', 'name severity value.code', function (err, entries) {
+            assert.ifError(err);
+            var i = [entries[0].entry.name, entries[1].entry.name].indexOf('allergy1');
+
+            assert.equal(entries[i].matches[0].match_entry.severity, 'updatedSev');
+            assert.equal(entries[i].entry.severity, 'severity3');
+            assert.equal(entries[i].matches[0].match_object.percent, 80);
+            assert.deepEqual(entries[i].matches[0].match_object.subelements, ['severity']);
+            assert.equal(entries[(i + 1) % 2].matches[0].match_entry.value.code, 'code2');
+            assert.equal(entries[(i + 1) % 2].entry.value.code, 'code5');
+            assert.equal(entries[(i + 1) % 2].matches[0].match_object.percent, 90);
+            assert.deepEqual(entries[(i + 1) % 2].matches[0].match_object.subelements, ['value.code']);
+            done();
+        });
 ```
 ---------------------------------------
 
