@@ -380,14 +380,14 @@ describe('API', function () {
         partialInput = [{
             partial_entry: allergies1,
             partial_matches: [{
-                match_entry_id: allergyIds[1],
+                match_entry: allergyIds[1],
                 match_object: match1
 
             }],
         }, {
             partial_entry: allergies2,
             partial_matches: [{
-                match_entry_id: allergyIds[2],
+                match_entry: allergyIds[2],
                 match_object: match2
             }]
         }];
@@ -397,19 +397,13 @@ describe('API', function () {
     });
 
     it('getMatches', function (done) {
-<<<<<<< HEAD
-        bbr.getMatches('allergies', 'pat1', 'observation.allergen.name observation.severity.code.name', function (err, result) {
-            if (err) {
-                done(err);
-            } else {
-                console.log(JSON.stringify(result, null, 10));
 
-=======
         bbr.getMatches('allergies', 'pat1', 'observation.allergen.name observation.severity.code.name observation.status.name', function (err, result) {
             if (err) {
                 done(err);
             } else {
->>>>>>> master
+
+                //console.log(JSON.stringify(result, null, 10));
                 expect(result).to.have.length(2);
 
                 if (result[0].entry.observation.allergen.name !== allergyNames[1]) {
@@ -418,27 +412,27 @@ describe('API', function () {
                     result[1] = temp;
                 }
 
-                partialAllergyIds = [result[0].match_entry._id, result[1].match_entry._id];
+                partialAllergyIds = [result[0].entry._id, result[1].entry._id];
 
-                expect(result[0].entry.observation.allergen.name).to.equal(allergyNames[1]);
-                expect(result[0].entry.observation.severity.code.name).to.equal(allergySeverities[1]);
+                expect(result[0].matches[0].match_entry.observation.severity.code.name).to.equal(allergySeverities[1]);
+                expect(result[0].matches[0].match_entry.observation.status.name).to.equal(allergyStatuses[1]);
+                expect(result[0].matches[0].match_entry.observation.allergen.name).to.equal(allergyNames[1]);
+                expect(result[0].entry.observation.severity.code.name).to.equal('Severe');
                 expect(result[0].entry.observation.status.name).to.equal(allergyStatuses[1]);
-                expect(result[0].match_entry.observation.allergen.name).to.equal(allergyNames[1]);
-                expect(result[0].match_entry.observation.severity.code.name).to.equal('Severe');
-                expect(result[0].match_entry.observation.status.name).to.equal(allergyStatuses[1]);
+                expect(result[0].entry.observation.allergen.name).to.equal(allergyNames[1]);
 
-                expect(result[0].diff.severity).to.equal('new');
-                expect(result[0].percent).to.equal(80);
+                expect(result[0].matches[0].match_object.diff.severity).to.equal('new');
+                expect(result[0].matches[0].match_object.percent).to.equal(80);
 
+                expect(result[1].matches[0].match_entry.observation.allergen.name).to.equal(allergyNames[2]);
+                expect(result[1].matches[0].match_entry.observation.severity.code.name).to.equal(allergySeverities[2]);
+                expect(result[1].matches[0].match_entry.observation.status.name).to.equal(allergyStatuses[2]);
                 expect(result[1].entry.observation.allergen.name).to.equal(allergyNames[2]);
                 expect(result[1].entry.observation.severity.code.name).to.equal(allergySeverities[2]);
-                expect(result[1].entry.observation.status.name).to.equal(allergyStatuses[2]);
-                expect(result[1].match_entry.observation.allergen.name).to.equal(allergyNames[2]);
-                expect(result[1].match_entry.observation.severity.code.name).to.equal(allergySeverities[2]);
-                expect(result[1].match_entry.observation.status.name).to.equal('Inactive');
+                expect(result[1].entry.observation.status.name).to.equal('Inactive');
 
-                expect(result[1].diff.status).to.equal('new');
-                expect(result[1].percent).to.equal(90);
+                expect(result[1].matches[0].match_object.diff.status).to.equal('new');
+                expect(result[1].matches[0].match_object.percent).to.equal(90);
 
                 matchIds = [result[0]._id, result[1]._id];
                 done();
@@ -446,30 +440,31 @@ describe('API', function () {
         });
     });
 
-    xit('getMatch', function (done) {
+    it('getMatch', function (done) {
         bbr.getMatch('allergies', 'pat1', matchIds[0], function (err, result) {
             if (err) {
                 done(err);
             } else {
-                expect(result.entry._id.toString()).to.equal(allergyIds[1].toString());
-                expect(result.match_entry._id.toString()).to.equal(partialAllergyIds[0].toString());
 
+                expect(result.matches[0].match_entry._id.toString()).to.equal(allergyIds[1].toString());
+                expect(result.entry._id.toString()).to.equal(partialAllergyIds[0].toString());
+
+                expect(result.matches[0].match_entry.observation.allergen.name).to.equal(allergyNames[1]);
+                expect(result.matches[0].match_entry.observation.severity.code.name).to.equal(allergySeverities[1]);
+                expect(result.matches[0].match_entry.observation.status.name).to.equal(allergyStatuses[1]);
                 expect(result.entry.observation.allergen.name).to.equal(allergyNames[1]);
-                expect(result.entry.observation.severity.code.name).to.equal(allergySeverities[1]);
+                expect(result.entry.observation.severity.code.name).to.equal('Severe');
                 expect(result.entry.observation.status.name).to.equal(allergyStatuses[1]);
-                expect(result.match_entry.observation.allergen.name).to.equal(allergyNames[1]);
-                expect(result.match_entry.observation.severity.code.name).to.equal('Severe');
-                expect(result.match_entry.observation.status.name).to.equal(allergyStatuses[1]);
 
-                expect(result.diff.severity).to.equal('new');
-                expect(result.percent).to.equal(80);
+                expect(result.matches[0].match_object.diff.severity).to.equal('new');
+                expect(result.matches[0].match_object.percent).to.equal(80);
 
                 done();
             }
         });
     });
 
-    xit('matchCount', function (done) {
+    it('matchCount', function (done) {
         async.parallel([
 
                 function (cb) {
@@ -495,6 +490,7 @@ describe('API', function () {
                 if (err) {
                     done(err);
                 } else {
+
                     expect(results[0]).to.equal(2);
                     expect(results[1]).to.equal(1);
                     expect(results[2]).to.equal(1);
@@ -505,7 +501,7 @@ describe('API', function () {
         );
     });
 
-    xit('-- verify state', function (done) {
+    it('-- verify state', function (done) {
         async.parallel([
 
                 function (cb) {
@@ -539,13 +535,13 @@ describe('API', function () {
         );
     });
 
-    xit('cancelMatch', function (done) {
+    it('cancelMatch', function (done) {
         bbr.cancelMatch('allergies', 'pat1', matchIds[0], 'ignored', function (err) {
             done(err);
         });
     });
 
-    xit('-- verify state', function (done) {
+    it('-- verify state', function (done) {
         async.parallel([
 
                 function (cb) {
@@ -579,13 +575,13 @@ describe('API', function () {
         );
     });
 
-    xit('acceptMatch', function (done) {
+    it('acceptMatch', function (done) {
         bbr.acceptMatch('allergies', 'pat1', matchIds[1], 'added', function (err) {
             done(err);
         });
     });
 
-    xit('-- verify state', function (done) {
+    it('-- verify state', function (done) {
         async.parallel([
 
                 function (cb) {
@@ -619,7 +615,7 @@ describe('API', function () {
         );
     });
 
-    xit('clearDatabase', function (done) {
+    it('clearDatabase', function (done) {
         bbr.clearDatabase(function (err) {
             done(err);
         });
