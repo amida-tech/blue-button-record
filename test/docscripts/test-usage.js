@@ -209,21 +209,26 @@ describe('Usage Documentation Examples', function () {
     it('script 16', function (done) {
         partialAllergy = {
             partial_entry: ccdJSON.allergies[0],
-            partial_match: {
-                diff: {
-                    severity: 'new'
-                },
-                percent: 80,
-                subelements: []
-            },
-            match_entry_id: id
+            partial_matches: [{
+                match_entry: id,
+                match_object: {
+                    diff: {
+                        severity: 'new'
+                    },
+                    percent: 80,
+                    subelements: []
+                }
+            }]
         };
         done();
     });
 
+    //console.log(partialAllergy);
+
     it('script 17', function (done) {
         // for simplicity use the same here, these would be different in reality
         var partialAllergies = [partialAllergy, partialAllergy];
+
         bbr.saveMatches('allergies', 'patientKey', partialAllergies, fileId, function (err) {
             if (err) {
                 throw err;
@@ -237,12 +242,12 @@ describe('Usage Documentation Examples', function () {
 
     it('script 19', function (done) {
         bbr.getMatches('allergies', 'patientKey', 'observation.allergen.name observation.severity.code.name', function (err, result) {
+            console.log(result[0].matches[0].match_entry.observation.allergen.name);
+            console.log(result[0].matches[0].match_entry.observation.severity.code.name);
             console.log(result[0].entry.observation.allergen.name);
             console.log(result[0].entry.observation.severity.code.name);
-            console.log(result[0].match_entry.observation.allergen.name);
-            console.log(result[0].match_entry.observation.severity.code.name);
-            console.log(result[0].diff.severity);
-            console.log(result[0].percent);
+            console.log(result[0].matches[0].match_object.diff.severity);
+            console.log(result[0].matches[0].match_object.percent);
             matchId0 = result[0]._id;
             matchId1 = result[1]._id;
             done();
@@ -251,12 +256,12 @@ describe('Usage Documentation Examples', function () {
 
     it('script 20', function (done) {
         bbr.getMatch('allergies', 'patientKey', matchId0, function (err, result) {
-            console.log(result.entry.observation.allergen.name);
-            console.log(result.entry.observation.status.name);
-            console.log(result.match_entry.observation.allergen.name);
-            console.log(result.match_entry.observation.status.name);
-            console.log(result.diff.severity);
-            console.log(result.percent);
+            console.log(result.matches[0].match_entry.observation.allergen.name);
+            console.log(result.matches[0].match_entry.observation.status.name);
+            console.log(result.matches[0].match_entry.observation.allergen.name);
+            console.log(result.matches[0].match_entry.observation.status.name);
+            console.log(result.matches[0].match_object.diff.severity);
+            console.log(result.matches[0].match_object.percent);
             done();
         });
     });

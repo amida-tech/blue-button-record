@@ -200,9 +200,9 @@ describe('section.js methods', function () {
 
     it('entry.remove', function (done) {
         var key0 = refmodel.partialEntriesContextKey('testallergies', '2.1');
-        var id0 = context[key0][0].match_entry;
+        var id0 = context[key0][0].entry;
         var key1 = refmodel.partialEntriesContextKey('testprocedures', '1.2');
-        var id1 = context[key1][1].match_entry;
+        var id1 = context[key1][1].entry;
         async.parallel([
 
                 function (callback) {
@@ -230,6 +230,7 @@ describe('section.js methods', function () {
             ],
             function (err, results) {
                 if (!err) {
+
                     expect(results[0]).to.have.length(0);
                     expect(results[1]).to.have.length(3);
                     var cntFilename = {};
