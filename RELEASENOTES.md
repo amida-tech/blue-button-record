@@ -1,5 +1,9 @@
 # blue-button-record.js Release Notes
 
+# v1.1.0 - September 2, 2014
+
+
+
 # v1.0.1 - July 21, 2014
 
 Incremental patch, includes archived field for identifying archived stored files.
