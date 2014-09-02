@@ -2,7 +2,9 @@
 
 # v1.1.0 - September 2, 2014
 
-
+- Removed schema inheritance from blue button library.
+- Introduced blue button meta library.
+- Adapted to latest schema changes.
 
 # v1.0.1 - July 21, 2014
 
