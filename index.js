@@ -9,6 +9,8 @@ var entry = require('./lib/entry');
 var allsections = require('./lib/allsections');
 var modelutil = require('./lib/modelutil');
 
+var pim = require('./lib/pim');
+
 // db
 
 var dbinfo = null;
