@@ -14,7 +14,7 @@ var refmodel = require('./refmodel');
 var expect = chai.expect;
 chai.config.includeStack = true;
 
-describe('pim.js methods', function () {
+xdescribe('pim.js methods', function () {
     var context = {}; // populated by refmodel common methods
 
     refmodel.prepareConnection('sectiontest', context)();
@@ -44,8 +44,6 @@ describe('pim.js methods', function () {
             }
         );
     });
-
-
 
     var checkBBData = function (getResult, original) {
         var bbClean = modelutil.mongooseToBBModelSection(getResult);
@@ -127,7 +125,6 @@ describe('pim.js methods', function () {
             }
         );
     });
-
 
     after(function (done) {
         context.dbinfo.db.dropDatabase(function (err) {

@@ -147,4 +147,3 @@ exports.cleanSection = function (input) {
 exports.getCandidates = function (ptInfo, callback) {
     pim.get(dbinfo, ptInfo, callback);
 };
-
