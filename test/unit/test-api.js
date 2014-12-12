@@ -180,9 +180,14 @@ describe('API', function () {
                     var expected = ccd[secName];
                     if (secName === 'demographics') {
                         expected = [expected];
+
+                        //cleanup PIM stuff before comparing
+                        delete actual[0].pim;
+
                     }
                     expect(actual).to.deep.include.members(expected);
                     expect(expected).to.deep.include.members(actual);
+
                 });
                 done();
             }
