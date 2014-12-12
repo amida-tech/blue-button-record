@@ -1,42 +1,46 @@
 {
-    "author": "Dmitry Kachaev, Matthew McCall and Afsin Ustundag",
-    "name": "blue-button-record",
-    "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
-    "version": "1.1.0",
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:amida-tech/blue-button-record.git"
-    },
-    "bugs": {
-        "url": "https://github.com/amida-tech/blue-button-record/issues"
-    },
-    "licenses": [{
-        "type": "Apache 2.0",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    }],
-    "dependencies": {
-        "mongodb": "1.4.x",
-        "mongoose": "3.8.8",
-        "underscore": "1.6.x",
-        "async": "0.9.x",
-        "blue-button-meta": "^1.1.0"
-    },
-    "devDependencies": {
-        "grunt": "0.4.x",
-        "grunt-contrib-jshint": "0.8.x",
-        "grunt-contrib-watch": "0.6.x",
-        "grunt-mocha-test": "0.10.x",
-        "grunt-jsbeautifier": "^0.2.7",
-        "mocha": "1.18.x",
-        "chai": "1.9.x",
-        "chai-datetime": "1.3.x",
-        "grunt-coveralls": "*",
-        "grunt-istanbul-coverage": "*",
-        "coveralls": "~2.10.0",
-        "mocha-lcov-reporter": "0.0.1",
-        "blue-button": "^1.1.0"
-    },
-    "engines": {
-        "node": "0.10.x"
+  "author": "Dmitry Kachaev, Matthew McCall and Afsin Ustundag",
+  "name": "blue-button-record",
+  "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
+  "version": "1.2.0-beta.20",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:amida-tech/blue-button-record.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amida-tech/blue-button-record/issues"
+  },
+  "licenses": [
+    {
+      "type": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
+  ],
+  "dependencies": {
+    "async": "0.9.x",
+    "blue-button-meta": "^1.1.0",
+    "blue-button-pim": "0.0.6",
+    "doublemetaphone": "^0.1.2",
+    "mongodb": "1.4.x",
+    "mongoose": "3.8.8",
+    "underscore": "1.6.x"
+  },
+  "devDependencies": {
+    "grunt": "0.4.x",
+    "grunt-contrib-jshint": "0.8.x",
+    "grunt-contrib-watch": "0.6.x",
+    "grunt-mocha-test": "0.10.x",
+    "grunt-jsbeautifier": "^0.2.7",
+    "mocha": "1.18.x",
+    "chai": "1.9.x",
+    "chai-datetime": "1.3.x",
+    "grunt-coveralls": "*",
+    "grunt-istanbul-coverage": "*",
+    "coveralls": "~2.10.0",
+    "mocha-lcov-reporter": "0.0.1",
+    "blue-button": "^1.1.0"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
 }

@@ -1,5 +1,11 @@
 # blue-button-record.js Release Notes
 
+# v1.2.0 - December 12, 2014
+
+- Blocking/Filtering for Patient Identification and Matching
+- Calculation of blockers on database level (in demographics section)
+
+
 # v1.1.0 - September 2, 2014
 
 - Removed schema inheritance from blue button library.

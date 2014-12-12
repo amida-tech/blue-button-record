@@ -9,6 +9,8 @@ var entry = require('./lib/entry');
 var allsections = require('./lib/allsections');
 var modelutil = require('./lib/modelutil');
 
+var pim = require('./lib/pim');
+
 // db
 
 var dbinfo = null;
@@ -139,4 +141,9 @@ exports.duplicateEntry = function (secName, ptKey, id, sourceId, callback) {
 
 exports.cleanSection = function (input) {
     return modelutil.mongooseToBBModelSection(input);
+};
+
+// PIM query
+exports.getCandidates = function (ptInfo, callback) {
+    pim.get(dbinfo, ptInfo, callback);
 };
