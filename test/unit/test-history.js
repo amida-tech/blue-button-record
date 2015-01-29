@@ -1,6 +1,6 @@
 "use strict";
 
-var hist = require('../../lib/history.js');
+var record = require('../../index.js');
 
 var chai = require('chai');
 var async = require('async');
@@ -14,10 +14,23 @@ chai.config.includeStack = true;
 describe('history.js methods', function () {
 
     it('add account history', function (done) {
-        hist.saveEvent("loggedIn", "username", "note", "file", function () {
-            console.log("test save Event");
-            done();
+        //record.
+
+        var options = {
+            dbName: 'dre',
+            supported_sections: ['allergies', 'procedures']
+        };
+
+        record.connectDatabase('localhost', options, function (err) {
+            //assert.ifError(err);
+
+            record.saveEvent("loggedIn", "username", "note", "file", function () {
+                console.log("test save Event");
+                done();
+            });
+
         });
+
     });
 
     /*
