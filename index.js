@@ -13,8 +13,6 @@ var account_history = require('./lib/history');
 
 var pim = require('./lib/pim');
 
-// db
-
 var dbinfo = null;
 
 exports.connectDatabase = function connectDatabase(server, options, callback) {
@@ -28,6 +26,7 @@ exports.connectDatabase = function connectDatabase(server, options, callback) {
                 callback(err);
             } else {
                 dbinfo = result;
+
                 callback(null, dbinfo);
             }
         });
@@ -151,22 +150,23 @@ exports.getCandidates = function (ptInfo, callback) {
 };
 
 //Account History Methods
+//TODO: inject ptKey to all methods, properly
 exports.saveEvent = function (eventName, username, note, file, callback) {
-    account_history.saveEvent(eventName, username, note, file, callback);
+    account_history.saveEvent(dbinfo, eventName, username, note, file, callback);
 };
 
 exports.getFullEventName = function (eventName, callback) {
-    account_history.getFullEventName(eventName, callback);
+    account_history.getFullEventName(dbinfo, eventName, callback);
 };
 
 exports.getAllEvents = function (callback) {
-    account_history.allEventsInOrder(callback);
+    account_history.allEventsInOrder(dbinfo, callback);
 };
 
 exports.getRecentLogin = function (callback) {
-    account_history.lastLogin(callback);
+    account_history.lastLogin(dbinfo, callback);
 };
 
 exports.getRecentUpdate = function (callback) {
-    account_history.lastUpdate(callback);
+    account_history.lastUpdate(dbinfo, callback);
 };

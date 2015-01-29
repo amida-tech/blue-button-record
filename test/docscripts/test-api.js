@@ -1,17 +1,16 @@
 "use strict";
+var bbr;
+bbr = require('../../index');
 
 describe('API Documentation Examples', function () {
-    var bbr;
     var assert;
 
     it('connectDatabase', function (done) {
-        bbr = require('../../index');
         assert = require('assert');
         var options = {
-            dbName: 'test',
+            dbName: 'test-api',
             supported_sections: ['allergies', 'procedures']
         };
-
         bbr.connectDatabase('localhost', options, function (err) {
             assert.ifError(err);
             done();
