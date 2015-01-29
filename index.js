@@ -9,6 +9,8 @@ var entry = require('./lib/entry');
 var allsections = require('./lib/allsections');
 var modelutil = require('./lib/modelutil');
 
+var account_history = require('./lib/history');
+
 var pim = require('./lib/pim');
 
 // db
@@ -146,4 +148,25 @@ exports.cleanSection = function (input) {
 // PIM query
 exports.getCandidates = function (ptInfo, callback) {
     pim.get(dbinfo, ptInfo, callback);
+};
+
+//Account History Methods
+exports.saveEvent = function (eventName, username, note, file, callback) {
+    account_history.saveEvent(eventName, username, note, file, callback);
+};
+
+exports.getFullEventName = function (eventName, callback) {
+    account_history.getFullEventName(eventName, callback);
+};
+
+exports.getAllEvents = function (callback) {
+    account_history.allEventsInOrder(callback);
+};
+
+exports.getRecentLogin = function (callback) {
+    account_history.lastLogin(callback);
+};
+
+exports.getRecentUpdate = function (callback) {
+    account_history.lastUpdate(callback);
 };
