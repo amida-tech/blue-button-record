@@ -5,34 +5,83 @@ var record = require('../../index.js');
 var chai = require('chai');
 var async = require('async');
 
+var assert = require('assert');
+
 var db = require('../../lib/db');
 var modelutil = require('../../lib/modelutil');
 
 var expect = chai.expect;
 chai.config.includeStack = true;
 
+var dbinfo = {};
+
 describe('history.js methods', function () {
 
-    it('add account history', function (done) {
-        //record.
-
+    before(function (done) {
         var options = {
-            dbName: 'dre',
+            dbName: 'dre-record-test',
             supported_sections: ['allergies', 'procedures']
         };
 
-        record.connectDatabase('localhost', options, function (err) {
+        dbinfo = record.connectDatabase('localhost', options, function (err) {
             //assert.ifError(err);
 
-            record.saveEvent("loggedIn", "username", "note", "file", function () {
-                console.log("test save Event");
-                done();
-            });
+            done();
 
         });
 
     });
 
+    it('add account history - loggedIn', function (done) {
+        //record.
+        record.saveEvent("loggedIn", "username", "note", "file", function () {
+
+            record.getRecentLogin(function (err, data) {
+                //console.log("recent login: ", data);
+
+                expect(data.time).to.exist;
+                expect(data._id).to.exist;
+                expect(data.event_type).to.exist;
+                expect(data.event_type).to.be.equal('loggedIn');
+
+                done();
+
+            });
+        });
+
+    });
+
+    it('add account history - fileUploaded', function (done) {
+        //record.
+        record.saveEvent("fileUploaded", "username", "note", "file", function () {
+
+            record.getRecentUpdate(function (err, data) {
+                //console.log("recent login: ", data);
+
+                expect(data.time).to.exist;
+                expect(data._id).to.exist;
+                expect(data.event_type).to.exist;
+                expect(data.event_type).to.be.equal('fileUploaded');
+
+                done();
+
+            });
+        });
+
+    });
+
+    it('get account history ', function (done) {
+        //record.
+        record.getAllEvents(function (err, data) {
+
+            expect(data).to.exist;
+            expect(data).to.have.length(2);
+
+            done();
+
+        });
+
+    });
     /*
         xit('save', function (done) {
             async.parallel([
@@ -79,18 +128,19 @@ describe('history.js methods', function () {
             );
         });
 
-        after(function (done) {
-            context.dbinfo.db.dropDatabase(function (err) {
-                if (err) {
-                    done(err);
-                } else {
-                    context.dbinfo.connection.close(function (err) {
-                        done(err);
-                    });
-                }
-            });
-        });
 
     */
+
+    it('clearDatabase', function (done) {
+        record.clearDatabase(function (err) {
+            done(err);
+        });
+    });
+
+    after(function (done) {
+        record.disconnect(function (err) {
+            done(err);
+        });
+    });
 
 });
