@@ -8,7 +8,8 @@ var section = require('./lib/section');
 var entry = require('./lib/entry');
 var allsections = require('./lib/allsections');
 var modelutil = require('./lib/modelutil');
-var history = require('./lib/history');
+
+var account_history = require('./lib/history');
 
 var pim = require('./lib/pim');
 
@@ -150,23 +151,22 @@ exports.getCandidates = function (ptInfo, callback) {
 };
 
 //Account History Methods
-exports.saveEvent = function(eventName, username, note, file, callback){
-    history.saveEvent(eventName, username, note, file, callback);
+exports.saveEvent = function (eventName, username, note, file, callback) {
+    account_history.saveEvent(eventName, username, note, file, callback);
 };
 
-exports.getFullEventName = function(eventName, callback){
-    history.getFullEventName(eventName, callback);
+exports.getFullEventName = function (eventName, callback) {
+    account_history.getFullEventName(eventName, callback);
 };
 
-exports.getAllEvents = function(callback){
-    history.allEventsInOrder(callback);
-}
+exports.getAllEvents = function (callback) {
+    account_history.allEventsInOrder(callback);
+};
 
-exports.getRecentLogin = function(callback){
-    history.lastLogin(callback);
-}
+exports.getRecentLogin = function (callback) {
+    account_history.lastLogin(callback);
+};
 
-exports.getRecentUpdate = function(callback){
-    history.lastUpdate(callback);
-}
-
+exports.getRecentUpdate = function (callback) {
+    account_history.lastUpdate(callback);
+};
