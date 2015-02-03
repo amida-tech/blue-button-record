@@ -151,22 +151,22 @@ exports.getCandidates = function (ptInfo, callback) {
 
 //Account History Methods
 //TODO: inject ptKey to all methods, properly
-exports.saveEvent = function (eventName, username, note, file, callback) {
-    account_history.saveEvent(dbinfo, eventName, username, note, file, callback);
+exports.saveEvent = function (eventName, ptKey, note, file, callback) {
+    account_history.saveEvent(dbinfo, eventName, ptKey, note, file, callback);
 };
 
 exports.getFullEventName = function (eventName, callback) {
     account_history.getFullEventName(dbinfo, eventName, callback);
 };
 
-exports.getAllEvents = function (callback) {
-    account_history.allEventsInOrder(dbinfo, callback);
+exports.getAllEvents = function (ptKey, callback) {
+    account_history.allEventsInOrder(dbinfo, ptKey, callback);
 };
 
-exports.getRecentLogin = function (callback) {
-    account_history.lastLogin(dbinfo, callback);
+exports.getRecentLogin = function (ptKey, callback) {
+    account_history.lastLogin(dbinfo, ptKey, callback);
 };
 
-exports.getRecentUpdate = function (callback) {
-    account_history.lastUpdate(dbinfo, callback);
+exports.getRecentUpdate = function (ptKey, callback) {
+    account_history.lastUpdate(dbinfo, ptKey, callback);
 };

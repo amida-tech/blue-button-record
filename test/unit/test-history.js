@@ -36,7 +36,7 @@ describe('history.js methods', function () {
         //record.
         record.saveEvent("loggedIn", "username", "note", "file", function () {
 
-            record.getRecentLogin(function (err, data) {
+            record.getRecentLogin("username", function (err, data) {
                 //console.log("recent login: ", data);
 
                 expect(data.time).to.exist;
@@ -55,7 +55,7 @@ describe('history.js methods', function () {
         //record.
         record.saveEvent("fileUploaded", "username", "note", "file", function () {
 
-            record.getRecentUpdate(function (err, data) {
+            record.getRecentUpdate("username", function (err, data) {
                 //console.log("recent login: ", data);
 
                 expect(data.time).to.exist;
@@ -72,7 +72,7 @@ describe('history.js methods', function () {
 
     it('get account history ', function (done) {
         //record.
-        record.getAllEvents(function (err, data) {
+        record.getAllEvents("username", function (err, data) {
 
             expect(data).to.exist;
             expect(data).to.have.length(2);
