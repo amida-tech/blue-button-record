@@ -10,6 +10,7 @@ var allsections = require('./lib/allsections');
 var modelutil = require('./lib/modelutil');
 
 var account_history = require('./lib/history');
+var notes = require('./lib/notes');
 
 var pim = require('./lib/pim');
 
@@ -150,7 +151,6 @@ exports.getCandidates = function (ptInfo, callback) {
 };
 
 //Account History Methods
-//TODO: inject ptKey to all methods, properly
 exports.saveEvent = function (eventName, ptKey, note, file, callback) {
     account_history.saveEvent(dbinfo, eventName, ptKey, note, file, callback);
 };
@@ -169,4 +169,16 @@ exports.getRecentLogin = function (ptKey, callback) {
 
 exports.getRecentUpdate = function (ptKey, callback) {
     account_history.lastUpdate(dbinfo, ptKey, callback);
+};
+
+exports.addNote = function (ptKey, section, entry, note, callback) {
+    notes.addNote(dbinfo, ptKey, section, entry, note, callback);
+};
+
+exports.starNote = function (ptKey, id, star, callback) {
+    notes.starNote(dbinfo, ptKey, id, star, callback);
+};
+
+exports.getAllNotes = function (ptKey, callback) {
+    notes.allNotesInOrder(dbinfo, ptKey, callback);
 };
