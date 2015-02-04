@@ -59,6 +59,46 @@ describe('notes.js methods', function () {
 
     });
 
+    it('star notes ', function (done) {
+        //record.
+        record.getAllNotes("username", function (err, data) {
+
+            expect(data).to.exist;
+            expect(data).to.have.length(1);
+            expect(data[0].star).to.be.false;
+
+            record.starNote("username", data[0]._id, true, function (err, data) {
+
+                expect(data).to.exist;
+                expect(data.star).to.be.true;
+
+                done();
+            });
+
+        });
+
+    });
+
+    it('unstar notes ', function (done) {
+        //record.
+        record.getAllNotes("username", function (err, data) {
+
+            expect(data).to.exist;
+            expect(data).to.have.length(1);
+            expect(data[0].star).to.be.true;
+
+            record.starNote("username", data[0]._id, false, function (err, data) {
+
+                expect(data).to.exist;
+                expect(data.star).to.be.false;
+
+                done();
+            });
+
+        });
+
+    });
+
     it('clearDatabase', function (done) {
         record.clearDatabase(function (err) {
             done(err);
