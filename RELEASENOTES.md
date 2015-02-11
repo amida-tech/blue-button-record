@@ -1,5 +1,10 @@
 # blue-button-record.js Release Notes
 
+# v1.3.0 - Fenruary 11, 2014
+
+- Added extra data models for new functionality of DRE UI (account history)
+
+
 # v1.2.0 - December 12, 2014
 
 - Blocking/Filtering for Patient Identification and Matching
