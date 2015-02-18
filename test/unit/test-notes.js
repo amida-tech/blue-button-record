@@ -46,12 +46,39 @@ describe('notes.js methods', function () {
 
     });
 
+    it('add and edit note', function (done) {
+        //record.
+        record.addNote("username", "section", "entry", "note", function (err, data) {
+
+            expect(data.datetime).to.exist;
+            expect(data._id).to.exist;
+            expect(data.section).to.exist;
+            expect(data.entry).to.exist;
+            expect(data.note).to.equal("note");
+
+            var id = data._id;
+
+            record.editNote("username", id, "note2", function (err, data) {
+
+                expect(data.datetime).to.exist;
+                expect(data._id).to.exist;
+                expect(data.section).to.exist;
+                expect(data.entry).to.exist;
+                //console.log("note", data);
+                expect(data.note).to.equal("note2");
+
+                done();
+            });
+        });
+
+    });
+
     it('get notes ', function (done) {
         //record.
         record.getAllNotes("username", function (err, data) {
 
             expect(data).to.exist;
-            expect(data).to.have.length(1);
+            expect(data).to.have.length(2);
 
             done();
 
@@ -64,7 +91,7 @@ describe('notes.js methods', function () {
         record.getAllNotes("username", function (err, data) {
 
             expect(data).to.exist;
-            expect(data).to.have.length(1);
+            expect(data).to.have.length(2);
             expect(data[0].star).to.be.false;
 
             record.starNote("username", data[0]._id, true, function (err, data) {
@@ -84,7 +111,7 @@ describe('notes.js methods', function () {
         record.getAllNotes("username", function (err, data) {
 
             expect(data).to.exist;
-            expect(data).to.have.length(1);
+            expect(data).to.have.length(2);
             expect(data[0].star).to.be.true;
 
             record.starNote("username", data[0]._id, false, function (err, data) {

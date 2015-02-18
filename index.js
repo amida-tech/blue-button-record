@@ -175,6 +175,10 @@ exports.addNote = function (ptKey, section, entry, note, callback) {
     notes.addNote(dbinfo, ptKey, section, entry, note, callback);
 };
 
+exports.editNote = function (ptKey, id, note, callback) {
+    notes.editNote(dbinfo, ptKey, id, note, callback);
+};
+
 exports.starNote = function (ptKey, id, star, callback) {
     notes.starNote(dbinfo, ptKey, id, star, callback);
 };
