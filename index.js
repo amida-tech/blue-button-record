@@ -183,6 +183,10 @@ exports.starNote = function (ptKey, id, star, callback) {
     notes.starNote(dbinfo, ptKey, id, star, callback);
 };
 
+exports.deleteNote = function (ptKey, id, callback) {
+    notes.deleteNote(dbinfo, ptKey, id, callback);
+};
+
 exports.getAllNotes = function (ptKey, callback) {
     notes.allNotesInOrder(dbinfo, ptKey, callback);
 };
