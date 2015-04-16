@@ -31,6 +31,8 @@ exports.connectDatabase = function connectDatabase(server, options, callback) {
                 callback(null, dbinfo);
             }
         });
+    } else {
+        callback(new Error('Multiple database connections from same client is not supported.'));
     }
 };
 
@@ -40,6 +42,8 @@ exports.disconnect = function (callback) {
             dbinfo = null;
             callback(err);
         });
+    } else {
+        callback(new Error('No connection has been established'));
     }
 };
 
