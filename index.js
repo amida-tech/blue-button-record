@@ -129,6 +129,10 @@ exports.saveAllSections = function (ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
 };
 
+exports.getMultiSection = function(secName, callback) {
+    section.getMulti(dbinfo, secName, callback);
+};
+
 // entry
 
 exports.getEntry = function (secName, ptKey, id, callback) {
