@@ -31,6 +31,8 @@ exports.connectDatabase = function connectDatabase(server, options, callback) {
                 callback(null, dbinfo);
             }
         });
+    } else {
+        callback(new Error('Multiple database connections from same client is not supported.'));
     }
 };
 
@@ -40,6 +42,8 @@ exports.disconnect = function (callback) {
             dbinfo = null;
             callback(err);
         });
+    } else {
+        callback(new Error('No connection has been established'));
     }
 };
 
@@ -127,6 +131,10 @@ exports.saveAllSections = function (ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
 };
 
+exports.getMultiSection = function (secName, callback) {
+    section.getMulti(dbinfo, secName, callback);
+};
+
 // entry
 
 exports.getEntry = function (secName, ptKey, id, callback) {
@@ -137,8 +145,20 @@ exports.updateEntry = function (secName, ptKey, id, sourceId, updateObject, call
     entry.update(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
 };
 
+exports.replaceEntry = function (secName, ptKey, id, sourceId, updateObject, callback) {
+    entry.replace(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
+};
+
 exports.duplicateEntry = function (secName, ptKey, id, sourceId, callback) {
     entry.duplicate(dbinfo, secName, ptKey, id, sourceId, callback);
+};
+
+exports.removeEntry = function (secName, ptKey, id, callback) {
+    entry.remove(dbinfo, secName, ptKey, id, callback);
+};
+
+exports.idToPatientKey = function (secName, id, callback) {
+    entry.idToPatientKey(dbinfo, secName, id, callback);
 };
 
 // utility
