@@ -129,7 +129,7 @@ exports.saveAllSections = function (ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
 };
 
-exports.getMultiSection = function(secName, callback) {
+exports.getMultiSection = function (secName, callback) {
     section.getMulti(dbinfo, secName, callback);
 };
 
@@ -143,8 +143,16 @@ exports.updateEntry = function (secName, ptKey, id, sourceId, updateObject, call
     entry.update(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
 };
 
+exports.replaceEntry = function (secName, ptKey, id, sourceId, updateObject, callback) {
+    entry.replace(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
+};
+
 exports.duplicateEntry = function (secName, ptKey, id, sourceId, callback) {
     entry.duplicate(dbinfo, secName, ptKey, id, sourceId, callback);
+};
+
+exports.idToPatientKey = function (secName, id, callback) {
+    entry.idToPatientKey(dbinfo, secName, id, callback);
 };
 
 // utility
