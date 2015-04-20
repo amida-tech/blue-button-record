@@ -151,6 +151,10 @@ exports.duplicateEntry = function (secName, ptKey, id, sourceId, callback) {
     entry.duplicate(dbinfo, secName, ptKey, id, sourceId, callback);
 };
 
+exports.removeEntry = function (secName, ptKey, id, callback) {
+    entry.remove(dbinfo, secName, ptKey, id, callback);
+};
+
 exports.idToPatientKey = function (secName, id, callback) {
     entry.idToPatientKey(dbinfo, secName, id, callback);
 };

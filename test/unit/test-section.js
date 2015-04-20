@@ -206,10 +206,10 @@ describe('section.js methods', function () {
         async.parallel([
 
                 function (callback) {
-                    entry.remove(context.dbinfo, 'testallergies', id0, callback);
+                    entry.remove(context.dbinfo, 'testallergies', key0, id0, callback);
                 },
                 function (callback) {
-                    entry.remove(context.dbinfo, 'testprocedures', id1, callback);
+                    entry.remove(context.dbinfo, 'testprocedures', key1, id1, callback);
                 },
             ],
             function (err) {
