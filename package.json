@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "async": "0.9.x",
-    "blue-button-meta": "^1.1.0",
+    "blue-button-meta": "1.5.0-beta.4",
     "blue-button-pim": "~1.0.0",
     "doublemetaphone": "^0.1.2",
     "mongodb": "1.4.x",
@@ -38,7 +38,7 @@
     "grunt-istanbul-coverage": "*",
     "coveralls": "~2.10.0",
     "mocha-lcov-reporter": "0.0.1",
-    "blue-button": "^1.1.0"
+    "blue-button": "1.5.0-beta.5"
   },
   "engines": {
     "node": "0.10.x"
