@@ -70,7 +70,8 @@ describe('storage.js methods', function () {
     it('check connection and models', function (done) {
         expect(dbinfo).to.exist;
         expect(dbinfo.db).to.exist;
-        expect(dbinfo.grid).to.exist;
+        expect(dbinfo.GridStore).to.exist;
+        expect(dbinfo.ObjectID).to.exist;
         expect(dbinfo.storageModel).to.exist;
         done();
     });
