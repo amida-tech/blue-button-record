@@ -43,13 +43,15 @@ exports.disconnect = function (callback) {
             callback(err);
         });
     } else {
-        callback(new Error('No connection has been established'));
+        callback(new Error('No connection has been established.'));
     }
 };
 
 exports.clearDatabase = function (callback) {
     if (dbinfo) {
         dbinfo.dropCollections(callback);
+    } else {
+        callback(new Error('No connection has been established.'))
     }
 };
 
@@ -131,8 +133,8 @@ exports.saveAllSections = function (ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
 };
 
-exports.getMultiSection = function (secName, callback) {
-    section.getMulti(dbinfo, secName, callback);
+exports.getMultiSection = function (secName, queryObject, callback) {
+    section.getMulti(dbinfo, secName, queryObject, callback);
 };
 
 // entry
@@ -159,6 +161,10 @@ exports.removeEntry = function (secName, ptKey, id, callback) {
 
 exports.idToPatientKey = function (secName, id, callback) {
     entry.idToPatientKey(dbinfo, secName, id, callback);
+};
+
+exports.patientKeyToId = function (secName, ptKey, callback) {
+    entry.patientKeyToId(dbinfo, secName, ptKey, callback);
 };
 
 // utility
