@@ -4,6 +4,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-jsbeautifier');
+    grunt.loadNpmTasks('grunt-shell');
 
     grunt.registerTask('default', ['jshint', 'jsbeautifier', 'mochaTest']);
 
@@ -60,6 +61,15 @@ module.exports = function (grunt) {
                 },
                 src: ['test/unit/*.js', 'test/docscripts/*.js']
             }
+        },
+        shell: {
+            run_istanbul: {
+                command: "istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec --recursive"
+            }
         }
     });
+
+    grunt.registerTask('mocha', ['mochaTest']);
+    grunt.registerTask('coverage', ['shell:run_istanbul']);
+    grunt.registerTask('default', ['jsbeautifier', 'jshint', 'mocha']);
 };
