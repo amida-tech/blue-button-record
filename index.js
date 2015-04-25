@@ -51,7 +51,7 @@ exports.clearDatabase = function (callback) {
     if (dbinfo) {
         dbinfo.dropCollections(callback);
     } else {
-        callback(new Error('No connection has been established.'))
+        callback(new Error('No connection has been established.'));
     }
 };
 
