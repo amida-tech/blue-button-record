@@ -36,13 +36,6 @@ var schemas = {
     }
 };
 
-var getConnectionOptions = function (dbName) {
-    return {
-        dbName: dbName,
-        supported_sections: ['testallergies', 'testprocedures', 'testdemographics']
-    };
-};
-
 var testObjectInstance = exports.testObjectInstance = {
     testallergies: function (suffix) {
         return {
@@ -196,8 +189,14 @@ exports.saveMatches = function (context, secName, pat_key, sourceIndex, destsour
     });
 };
 
-var setConnectionContext = function (dbName, context, callback) {
-    var options = getConnectionOptions(dbName);
+var setConnectionContext = function (overrideOptions, context, callback) {
+    var options = {
+        dbName: 'testrefModel',
+        supported_sections: ['testallergies', 'testprocedures', 'testdemographics']
+    };
+    if (overrideOptions) {
+        _.merge(options, overrideOptions);
+    }
     db.connect('localhost', options, function (err, result) {
         if (err) {
             callback(err);
@@ -208,10 +207,16 @@ var setConnectionContext = function (dbName, context, callback) {
     });
 };
 
-exports.prepareConnection = function (dbname, context) {
+exports.prepareConnection = function (options, context) {
+    if (typeof options === 'string') {
+        options = {
+            dbName: options
+        };
+    }
+
     return function () {
         before(function (done) {
-            setConnectionContext(dbname, context, done);
+            setConnectionContext(options, context, done);
         });
 
         it('check connection and models', function (done) {
