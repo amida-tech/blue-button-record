@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 var async = require('async');
-var _ = require('underscore');
+var _ = require('lodash');
 var util = require('util');
 
 var db = require('../../lib/db');
@@ -196,7 +196,7 @@ exports.saveMatches = function (context, secName, pat_key, sourceIndex, destsour
     });
 };
 
-var setConnectionContext = exports.setConnectionContext = function (dbName, context, callback) {
+var setConnectionContext = function (dbName, context, callback) {
     var options = getConnectionOptions(dbName);
     db.connect('localhost', options, function (err, result) {
         if (err) {
