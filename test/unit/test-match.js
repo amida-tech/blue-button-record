@@ -118,8 +118,8 @@ describe('match.js methods', function () {
         });
     });
 
-    it('add records', function (done) {
-        refmodel.addRecordsPerPatient(context, [3, 3, 2], done);
+    it('add sources', function (done) {
+        refmodel.addSourcesPerPatient(context, [3, 3, 2], done);
     });
 
     it('add sections', function (done) {
@@ -193,16 +193,16 @@ describe('match.js methods', function () {
 
     verifyCount(' (added partial sections)', [3, 1, 0, 4, 1, 0])();
 
-    var verifyContent = function (resultsById, recordIndex, index, destRecordIndex, destIndex, secName, diffType) {
-        var key = refmodel.partialEntriesContextKey(secName, recordIndex);
+    var verifyContent = function (resultsById, sourceIndex, index, destsourceIndex, destIndex, secName, diffType) {
+        var key = refmodel.partialEntriesContextKey(secName, sourceIndex);
         var id = context[key][index]._id;
         var result = resultsById[id];
         expect(result).to.exist;
 
         //console.log(JSON.stringify(result, null, 10));
-        var suffix = '_' + recordIndex + '.' + index;
+        var suffix = '_' + sourceIndex + '.' + index;
         expect(result.entry.name).to.equal('name' + suffix);
-        var destSuffix = '_' + destRecordIndex + '.' + destIndex;
+        var destSuffix = '_' + destsourceIndex + '.' + destIndex;
         expect(result.matches[0].match_entry.name).to.equal('name' + destSuffix);
         expect(result.entry_type).to.equal(secName);
 
@@ -210,7 +210,7 @@ describe('match.js methods', function () {
             delete result[p];
         });
 
-        var diffSuffix = '_' + recordIndex + '.' + destIndex;
+        var diffSuffix = '_' + sourceIndex + '.' + destIndex;
         var diffExpect = refmodel.matchObjectInstance[diffType](diffSuffix, destIndex);
         expect(result.matches[0].match_object).to.deep.equal(diffExpect);
     };
@@ -291,8 +291,8 @@ describe('match.js methods', function () {
 
     verifyCount(' (some canceled)', [2, 1, 0, 3, 1, 0])();
 
-    var verifyDropped = function (resultsById, recordIndex, index, secName) {
-        var key = refmodel.partialEntriesContextKey(secName, recordIndex);
+    var verifyDropped = function (resultsById, sourceIndex, index, secName) {
+        var key = refmodel.partialEntriesContextKey(secName, sourceIndex);
         var id = context[key][index]._id;
         var result = resultsById[id];
         expect(result).to.not.exist;
@@ -369,22 +369,22 @@ describe('match.js methods', function () {
         });
     });
 
-    var callGet = function (secName, ptKey, recordIndex, index, callback) {
-        var key = refmodel.partialEntriesContextKey(secName, recordIndex);
+    var callGet = function (secName, ptKey, sourceIndex, index, callback) {
+        var key = refmodel.partialEntriesContextKey(secName, sourceIndex);
         var id = context[key][index]._id;
         match.get(context.dbinfo, secName, ptKey, id, callback);
     };
 
-    var verifyGetContent = function (result, recordIndex, index, destRecordIndex, destIndex, secName, diffType, reason) {
+    var verifyGetContent = function (result, sourceIndex, index, destsourceIndex, destIndex, secName, diffType, reason) {
         expect(result).to.exist;
 
-        var suffix = '_' + recordIndex + '.' + index;
+        var suffix = '_' + sourceIndex + '.' + index;
         var entry = refmodel.testObjectInstance[secName](suffix);
         var resultEntry = modelutil.mongooseToBBModelDocument(result.entry);
 
         expect(resultEntry).to.deep.equal(entry);
 
-        var destSuffix = '_' + destRecordIndex + '.' + destIndex;
+        var destSuffix = '_' + destsourceIndex + '.' + destIndex;
         var destEntry = refmodel.testObjectInstance[secName](destSuffix);
 
         var destResultEntry = modelutil.mongooseToBBModelDocument(result.matches[0].match_entry);
@@ -400,7 +400,7 @@ describe('match.js methods', function () {
             delete result[p];
         });
 
-        var diffSuffix = '_' + recordIndex + '.' + destIndex;
+        var diffSuffix = '_' + sourceIndex + '.' + destIndex;
         var diffExpect = refmodel.matchObjectInstance[diffType](diffSuffix, destIndex);
         expect(result.matches[0].match_object).to.deep.equal(diffExpect);
     };

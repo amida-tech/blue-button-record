@@ -79,8 +79,8 @@ describe('merge.js methods', function () {
         merge_reason: 'update'
     }, [0, 0, 0, 0, 0, 0])();
 
-    it('add records', function (done) {
-        refmodel.addRecordsPerPatient(context, [3, 5, 1], done);
+    it('add sources', function (done) {
+        refmodel.addSourcesPerPatient(context, [3, 5, 1], done);
     });
 
     it('add sections', function (done) {
@@ -196,19 +196,19 @@ describe('merge.js methods', function () {
         );
     });
 
-    var verifyGetAll = function (context, resultsById, secName, recordIndex, index, sourceIndex) {
-        var key = refmodel.newEntriesContextKey(secName, recordIndex);
+    var verifyGetAll = function (context, resultsById, secName, sourceIndex, index, expectedSourceIndex) {
+        var key = refmodel.newEntriesContextKey(secName, sourceIndex);
         var id = context[key][index];
         var result = resultsById[id];
-        if (!sourceIndex) {
-            sourceIndex = recordIndex;
+        if (!expectedSourceIndex) {
+            expectedSourceIndex = sourceIndex;
         }
         expect(result).to.exist;
-        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[expectedSourceIndex].toString());
     };
 
-    var verifyGetAllNegative = function (context, resultsById, secName, recordIndex, index) {
-        var key = refmodel.newEntriesContextKey(secName, recordIndex);
+    var verifyGetAllNegative = function (context, resultsById, secName, sourceIndex, index) {
+        var key = refmodel.newEntriesContextKey(secName, sourceIndex);
         var id = context[key][index];
         var result = resultsById[id];
 
@@ -280,10 +280,10 @@ describe('merge.js methods', function () {
         });
     });
 
-    var duplicateEntry = function (context, secName, ptKey, recordIndex, index, callback) {
-        var key = refmodel.newEntriesContextKey(secName, recordIndex);
+    var duplicateEntry = function (context, secName, ptKey, sourceIndex, index, callback) {
+        var key = refmodel.newEntriesContextKey(secName, sourceIndex);
         var id = context[key][index];
-        var rid = context.storageIds[recordIndex];
+        var rid = context.storageIds[sourceIndex];
         entry.duplicate(context.dbinfo, secName, ptKey, id, rid, callback);
     };
 
@@ -447,22 +447,22 @@ describe('merge.js methods', function () {
         merge_reason: 'update'
     }, [0, 0, 0, 0, 0, 0])();
 
-    var verifyGetAllPartial = function (context, resultsById, secName, recordIndex, index, sourceIndex) {
-        var key = refmodel.partialEntriesContextKey(secName, recordIndex);
+    var verifyGetAllPartial = function (context, resultsById, secName, sourceIndex, index, expectedSourceIndex) {
+        var key = refmodel.partialEntriesContextKey(secName, sourceIndex);
 
         var id = context[key][index].entry;
 
         var result = resultsById[id];
-        if (!sourceIndex) {
-            sourceIndex = recordIndex;
+        if (!expectedSourceIndex) {
+            expectedSourceIndex = sourceIndex;
         }
 
         expect(result).to.exist;
-        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[expectedSourceIndex].toString());
     };
 
-    var verifyGetAllPartialNegative = function (context, resultsById, secName, recordIndex, index) {
-        var key = refmodel.partialEntriesContextKey(secName, recordIndex);
+    var verifyGetAllPartialNegative = function (context, resultsById, secName, sourceIndex, index) {
+        var key = refmodel.partialEntriesContextKey(secName, sourceIndex);
         var id = context[key][index].entry;
         var result = resultsById[id];
 
@@ -501,19 +501,19 @@ describe('merge.js methods', function () {
         });
     });
 
-    var updateEntry = function (context, secName, ptKey, recordIndex, index, updateObject, sourceIndex, callback) {
+    var updateEntry = function (context, secName, ptKey, sourceIndex, index, updateObject, expectedSourceIndex, callback) {
 
-        var key = refmodel.newEntriesContextKey(secName, recordIndex);
+        var key = refmodel.newEntriesContextKey(secName, sourceIndex);
 
         var id = context[key][index];
-        var rid = context.storageIds[sourceIndex];
+        var rid = context.storageIds[expectedSourceIndex];
         entry.update(context.dbinfo, secName, ptKey, id, rid, updateObject, callback);
     };
 
-    var updateEntryPartial = function (context, secName, ptKey, recordIndex, index, updateObject, sourceIndex, callback) {
-        var key = refmodel.partialEntriesContextKey(secName, recordIndex);
+    var updateEntryPartial = function (context, secName, ptKey, sourceIndex, index, updateObject, expectedSourceIndex, callback) {
+        var key = refmodel.partialEntriesContextKey(secName, sourceIndex);
         var id = context[key][index].entry;
-        var rid = context.storageIds[sourceIndex];
+        var rid = context.storageIds[expectedSourceIndex];
         entry.update(context.dbinfo, secName, ptKey, id, rid, updateObject, callback);
     };
 
@@ -598,34 +598,34 @@ describe('merge.js methods', function () {
         });
     });
 
-    var getEntry = function (context, secName, ptKey, recordIndex, index, callback) {
-        var key = refmodel.newEntriesContextKey(secName, recordIndex);
+    var getEntry = function (context, secName, ptKey, sourceIndex, index, callback) {
+        var key = refmodel.newEntriesContextKey(secName, sourceIndex);
         var id = context[key][index];
         entry.get(context.dbinfo, secName, ptKey, id, callback);
     };
 
-    var getEntryPartial = function (context, secName, ptKey, recordIndex, index, callback) {
-        var key = refmodel.partialEntriesContextKey(secName, recordIndex);
+    var getEntryPartial = function (context, secName, ptKey, sourceIndex, index, callback) {
+        var key = refmodel.partialEntriesContextKey(secName, sourceIndex);
         var id = context[key][index].entry;
         entry.get(context.dbinfo, secName, ptKey, id, callback);
     };
 
-    var verifyEntryGet = function (context, result, secName, recordIndex, index, sourceIndex) {
-        var key = refmodel.newEntriesContextKey(secName, recordIndex);
+    var verifyEntryGet = function (context, result, secName, sourceIndex, index, expectedSourceIndex) {
+        var key = refmodel.newEntriesContextKey(secName, sourceIndex);
         var id = context[key][index];
-        if (!sourceIndex) {
-            sourceIndex = recordIndex;
+        if (!expectedSourceIndex) {
+            expectedSourceIndex = sourceIndex;
         }
-        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[expectedSourceIndex].toString());
     };
 
-    var verifyEntryGetPartial = function (context, result, secName, recordIndex, index, sourceIndex) {
-        var key = refmodel.partialEntriesContextKey(secName, recordIndex);
+    var verifyEntryGetPartial = function (context, result, secName, sourceIndex, index, expectedSourceIndex) {
+        var key = refmodel.partialEntriesContextKey(secName, sourceIndex);
         var id = context[key][index].match_entry;
-        if (!sourceIndex) {
-            sourceIndex = recordIndex;
+        if (!expectedSourceIndex) {
+            expectedSourceIndex = sourceIndex;
         }
-        expect(result.record._id.toString()).to.equal(context.storageIds[sourceIndex].toString());
+        expect(result.record._id.toString()).to.equal(context.storageIds[expectedSourceIndex].toString());
     };
 
     var verifyMergeReason = function (attr, expectedReasons) {
@@ -638,14 +638,14 @@ describe('merge.js methods', function () {
         expect(reasons).to.deep.equal(expectedReasons);
     };
 
-    var verifyEntryGetContent = function (context, result, secName, recordIndex, index, updRecordIndex, updIndex) {
+    var verifyEntryGetContent = function (context, result, secName, sourceIndex, index, updsourceIndex, updIndex) {
         expect(result).to.exist;
         var r = modelutil.mongooseToBBModelDocument(result);
 
-        var suffix = '_' + recordIndex + '.' + index;
+        var suffix = '_' + sourceIndex + '.' + index;
         var expected = refmodel.testObjectInstance[secName](suffix);
-        if (updRecordIndex && updIndex !== null) {
-            var updSuffix = '_upd_' + updRecordIndex + '.' + updIndex;
+        if (updsourceIndex && updIndex !== null) {
+            var updSuffix = '_upd_' + updsourceIndex + '.' + updIndex;
             expected.name = 'name' + updSuffix;
         }
 

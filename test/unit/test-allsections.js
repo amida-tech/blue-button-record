@@ -17,20 +17,20 @@ describe('allsections.js methods', function () {
 
     refmodel.prepareConnection('allsectionstest2', context)();
 
-    it('add records', function (done) {
-        refmodel.addRecordsPerPatient(context, [1, 1], done);
+    it('add sources', function (done) {
+        refmodel.addSourcesPerPatient(context, [1, 1], done);
     });
 
-    var save = function (ptKey, recordIndex, counts, callback) {
-        var a = refmodel.createTestSection('testallergies', recordIndex, counts[0]);
-        var p = refmodel.createTestSection('testprocedures', recordIndex, counts[1]);
-        var d = refmodel.createTestSection('testdemographics', recordIndex, 1);
+    var save = function (ptKey, sourceIndex, counts, callback) {
+        var a = refmodel.createTestSection('testallergies', sourceIndex, counts[0]);
+        var p = refmodel.createTestSection('testprocedures', sourceIndex, counts[1]);
+        var d = refmodel.createTestSection('testdemographics', sourceIndex, 1);
         var r = {
             testallergies: a,
             testprocedures: p,
             testdemographics: d[0]
         };
-        var sourceId = context.storageIds[recordIndex];
+        var sourceId = context.storageIds[sourceIndex];
         allsections.save(context.dbinfo, ptKey, r, sourceId, callback);
     };
 
@@ -50,8 +50,8 @@ describe('allsections.js methods', function () {
         );
     });
 
-    var verify = function (actual, secName, recordIndex, count) {
-        var expected = refmodel.createTestSection(secName, recordIndex, count);
+    var verify = function (actual, secName, sourceIndex, count) {
+        var expected = refmodel.createTestSection(secName, sourceIndex, count);
         var actualSection = actual[secName];
         expect(expected).to.deep.include.members(actualSection);
         expect(actualSection).to.deep.include.members(expected);

@@ -121,20 +121,20 @@ var createStorage = function (context, pat, filename, index, callback) {
     });
 };
 
-var createTestSection = exports.createTestSection = function (secName, recordIndex, count) {
+var createTestSection = exports.createTestSection = function (secName, sourceIndex, count) {
     return _.range(count).reduce(function (r, i) {
-        var suffix = '_' + recordIndex + '.' + i;
+        var suffix = '_' + sourceIndex + '.' + i;
         r[i] = testObjectInstance[secName](suffix);
         return r;
     }, []);
 };
 
-var newEntriesContextKey = exports.newEntriesContextKey = function (secName, recordIndex) {
-    return util.format("new.%s.%s", secName, recordIndex);
+var newEntriesContextKey = exports.newEntriesContextKey = function (secName, sourceIndex) {
+    return util.format("new.%s.%s", secName, sourceIndex);
 };
 
-var partialEntriesContextKey = exports.partialEntriesContextKey = function (secName, recordIndex) {
-    return util.format("partial.%s.%s", secName, recordIndex);
+var partialEntriesContextKey = exports.partialEntriesContextKey = function (secName, sourceIndex) {
+    return util.format("partial.%s.%s", secName, sourceIndex);
 };
 
 exports.propertyToFilename = function (value) {
@@ -142,9 +142,9 @@ exports.propertyToFilename = function (value) {
     return util.format('c%s%s.xml', value.charAt(n - 5), value.charAt(n - 3));
 };
 
-var pushToContext = exports.pushToContext = function (context, keyGen, secName, recordIndex, values) {
+var pushToContext = exports.pushToContext = function (context, keyGen, secName, sourceIndex, values) {
     if (values) {
-        var key = keyGen(secName, recordIndex);
+        var key = keyGen(secName, sourceIndex);
         var r = context[key];
         if (!r) {
             r = context[key] = [];
@@ -155,21 +155,21 @@ var pushToContext = exports.pushToContext = function (context, keyGen, secName, 
     //console.log(context);
 };
 
-var saveSection = exports.saveSection = function (context, secName, pat_key, recordIndex, count, callback) {
-    var data = createTestSection(secName, recordIndex, count);
-    var sourceId = context.storageIds[recordIndex];
+var saveSection = exports.saveSection = function (context, secName, pat_key, sourceIndex, count, callback) {
+    var data = createTestSection(secName, sourceIndex, count);
+    var sourceId = context.storageIds[sourceIndex];
     section.save(context.dbinfo, secName, pat_key, data, sourceId, function (err, ids) {
         if (!err) {
-            pushToContext(context, newEntriesContextKey, secName, recordIndex, ids);
+            pushToContext(context, newEntriesContextKey, secName, sourceIndex, ids);
         }
         callback(err);
     });
 };
 
-exports.saveMatches = function (context, secName, pat_key, recordIndex, destRecordIndex, extraContent, callback) {
-    var data = createTestSection(secName, recordIndex, extraContent.length);
-    var sourceId = context.storageIds[recordIndex];
-    var key = newEntriesContextKey(secName, destRecordIndex);
+exports.saveMatches = function (context, secName, pat_key, sourceIndex, destsourceIndex, extraContent, callback) {
+    var data = createTestSection(secName, sourceIndex, extraContent.length);
+    var sourceId = context.storageIds[sourceIndex];
+    var key = newEntriesContextKey(secName, destsourceIndex);
     var extendedData = data.reduce(function (r, e, index) {
 
         //console.log(e);
@@ -190,7 +190,7 @@ exports.saveMatches = function (context, secName, pat_key, recordIndex, destReco
 
     section.savePartial(context.dbinfo, secName, pat_key, extendedData, sourceId, function (err, result) {
         if (!err) {
-            pushToContext(context, partialEntriesContextKey, secName, recordIndex, result);
+            pushToContext(context, partialEntriesContextKey, secName, sourceIndex, result);
         }
         callback(err);
     });
@@ -227,14 +227,14 @@ exports.prepareConnection = function (dbname, context) {
     };
 };
 
-var addRecordsPerPatient = exports.addRecordsPerPatient = function (context, countPerPatient, callback) {
+var addSourcesPerPatient = exports.addSourcesPerPatient = function (context, countPerPatient, callback) {
     var fs = countPerPatient.reduce(function (r, fileCount, i) {
         var pat_key = util.format('pat%d', i);
         return _.range(fileCount).reduce(function (q, j) {
             var filename = util.format('c%d%d.xml', i, j);
-            var recordIndex = util.format('%d.%d', i, j);
+            var sourceIndex = util.format('%d.%d', i, j);
             var f = function (cb) {
-                createStorage(context, pat_key, filename, recordIndex, cb);
+                createStorage(context, pat_key, filename, sourceIndex, cb);
             };
             q.push(f);
             return q;
@@ -244,10 +244,10 @@ var addRecordsPerPatient = exports.addRecordsPerPatient = function (context, cou
     async.parallel(fs, callback);
 };
 
-exports.createMatchInformation = function (recordIndex, destIndices, matchTypes) {
+exports.createMatchInformation = function (sourceIndex, destIndices, matchTypes) {
     return matchTypes.reduce(function (r, matchType, index) {
         var destIndex = destIndices[index];
-        var suffix = '_' + recordIndex + '.' + destIndex;
+        var suffix = '_' + sourceIndex + '.' + destIndex;
         var v = {
             matchObject: matchObjectInstance[matchType](suffix, destIndex),
             destIndex: destIndex
