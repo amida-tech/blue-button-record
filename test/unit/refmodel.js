@@ -13,29 +13,6 @@ var storage = require('../../lib/storage');
 var expect = chai.expect;
 chai.config.includeStack = true;
 
-var schemas = {
-    testallergies: {
-        name: 'string',
-        severity: 'string',
-        value: {
-            code: 'string',
-            display: 'string'
-        }
-    },
-    testprocedures: {
-        name: 'string',
-        proc_type: 'string',
-        proc_value: {
-            code: 'string',
-            display: 'string'
-        }
-    },
-    testdemographics: {
-        name: 'string',
-        lastname: 'string',
-    }
-};
-
 var testObjectInstance = exports.testObjectInstance = {
     testallergies: function (suffix) {
         return {
@@ -144,8 +121,6 @@ var pushToContext = exports.pushToContext = function (context, keyGen, secName, 
         }
         Array.prototype.push.apply(r, values);
     }
-
-    //console.log(context);
 };
 
 var saveSection = exports.saveSection = function (context, secName, pat_key, sourceIndex, count, callback) {
@@ -164,9 +139,6 @@ exports.saveMatches = function (context, secName, pat_key, sourceIndex, destsour
     var sourceId = context.storageIds[sourceIndex];
     var key = newEntriesContextKey(secName, destsourceIndex);
     var extendedData = data.reduce(function (r, e, index) {
-
-        //console.log(e);
-
         var v = {
             partial_entry: e,
             partial_matches: [{
@@ -174,9 +146,6 @@ exports.saveMatches = function (context, secName, pat_key, sourceIndex, destsour
                 match_object: extraContent[index].matchObject
             }]
         };
-
-        //console.log(JSON.stringify(v, null, 10));
-
         r.push(v);
         return r;
     }, []);
@@ -227,6 +196,7 @@ exports.prepareConnection = function (options, context) {
             expect(context.dbinfo.models).to.exist;
             expect(context.dbinfo.models.testallergies).to.exist;
             expect(context.dbinfo.models.testprocedures).to.exist;
+            expect(context.dbinfo.models.testdemographics).to.exist;
             done();
         });
     };
