@@ -9,6 +9,7 @@ var db = require('../../lib/db');
 var section = require('../../lib/section');
 var match = require('../../lib/match');
 var storage = require('../../lib/storage');
+var allsections = require('../../lib/allsections');
 
 var expect = chai.expect;
 chai.config.includeStack = true;
@@ -112,7 +113,7 @@ exports.propertyToFilename = function (value) {
     return util.format('c%s%s.xml', value.charAt(n - 5), value.charAt(n - 3));
 };
 
-var pushToContext = exports.pushToContext = function (context, keyGen, secName, sourceIndex, values) {
+var pushToContext = function (context, keyGen, secName, sourceIndex, values) {
     if (values) {
         var key = keyGen(secName, sourceIndex);
         var r = context[key];
@@ -121,6 +122,19 @@ var pushToContext = exports.pushToContext = function (context, keyGen, secName, 
         }
         Array.prototype.push.apply(r, values);
     }
+};
+
+exports.saveAllSections = function (ptKey, sourceIndex, counts, context, callback) {
+    var a = createTestSection('testallergies', sourceIndex, counts[0]);
+    var p = createTestSection('testprocedures', sourceIndex, counts[1]);
+    var d = createTestSection('testdemographics', sourceIndex, 1);
+    var r = {
+        testallergies: a,
+        testprocedures: p,
+        testdemographics: d[0]
+    };
+    var sourceId = context.storageIds[sourceIndex];
+    allsections.save(context.dbinfo, ptKey, r, sourceId, callback);
 };
 
 var saveSection = exports.saveSection = function (context, secName, pat_key, sourceIndex, count, callback) {

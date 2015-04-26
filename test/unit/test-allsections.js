@@ -21,33 +21,12 @@ describe('allsections.js methods', function () {
         refmodel.addSourcesPerPatient(context, [1, 1], done);
     });
 
-    var save = function (ptKey, sourceIndex, counts, callback) {
-        var a = refmodel.createTestSection('testallergies', sourceIndex, counts[0]);
-        var p = refmodel.createTestSection('testprocedures', sourceIndex, counts[1]);
-        var d = refmodel.createTestSection('testdemographics', sourceIndex, 1);
-        var r = {
-            testallergies: a,
-            testprocedures: p,
-            testdemographics: d[0]
-        };
-        var sourceId = context.storageIds[sourceIndex];
-        allsections.save(context.dbinfo, ptKey, r, sourceId, callback);
-    };
+    it('save sections for patient 0', function (done) {
+        refmodel.saveAllSections('pat0', '0.0', [3, 3], context, done);
+    });
 
-    it('save', function (done) {
-        async.parallel([
-
-                function (cb) {
-                    save('pat0', '0.0', [3, 3], cb);
-                },
-                function (cb) {
-                    save('pat1', '1.0', [2, 4], cb);
-                }
-            ],
-            function (err) {
-                done(err);
-            }
-        );
+    it('save sections for patient 1', function (done) {
+        refmodel.saveAllSections('pat1', '1.0', [2, 4], context, done);
     });
 
     var verify = function (actual, secName, sourceIndex, count) {
@@ -59,7 +38,6 @@ describe('allsections.js methods', function () {
 
     it('get', function (done) {
         async.parallel([
-
                 function (cb) {
                     allsections.get(context.dbinfo, 'pat0', cb);
                 },
