@@ -7,6 +7,7 @@ var match = require('./lib/match');
 var section = require('./lib/section');
 var entry = require('./lib/entry');
 var allsections = require('./lib/allsections');
+var bundle = require('./lib/bundle');
 var modelutil = require('./lib/modelutil');
 
 var account_history = require('./lib/history');
@@ -165,6 +166,24 @@ exports.idToPatientKey = function (secName, id, callback) {
 
 exports.patientKeyToId = function (secName, ptKey, callback) {
     entry.patientKeyToId(dbinfo, secName, ptKey, callback);
+};
+
+// bundle
+
+exports.saveBundle = function (secName, ptKey, bundleElements, bundleData, sourceId, callback) {
+    bundle.save(dbinfo, ptKey, bundleElements, bundleData, sourceId, callback);
+};
+
+exports.replaceBundle = function (secName, ptKey, id, bundleElements, bundleData, sourceId, callback) {
+    bundle.update(dbinfo, secName, ptKey, id, bundleElements, bundleData, sourceId, callback);
+};
+
+exports.removeBundle = function (secName, ptKey, id, callback) {
+    bundle.remove(dbinfo, secName, ptKey, id, callback);
+};
+
+exports.getMultiBundle = function (secName, queryObject, callback) {
+    bundle.getMulti(dbinfo, secName, queryObject, callback);
 };
 
 // utility
