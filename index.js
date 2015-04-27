@@ -11,6 +11,7 @@ var modelutil = require('./lib/modelutil');
 
 var account_history = require('./lib/history');
 var notes = require('./lib/notes');
+var medications = require('./lib/medications');
 
 var pim = require('./lib/pim');
 
@@ -211,4 +212,20 @@ exports.deleteNote = function (ptKey, id, callback) {
 
 exports.getAllNotes = function (ptKey, callback) {
     notes.allNotesInOrder(dbinfo, ptKey, callback);
+};
+
+exports.addMedication = function (ptKey, medication, callback) {
+    medications.addMedication(dbinfo, ptKey, medication, callback);
+};
+
+exports.editMedication = function (ptKey, id, medication, callback) {
+    medications.editMedication(dbinfo, ptKey, id, medication, callback);
+};
+
+exports.deleteMedication = function (ptKey, id, callback) {
+    medications.deleteMedication(dbinfo, ptKey, id, callback);
+};
+
+exports.getAllMedications = function (ptKey, callback) {
+    medications.allMedicationsInOrder(dbinfo, ptKey, callback);
 };
