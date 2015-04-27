@@ -217,7 +217,8 @@ exports.prepareConnection = function (dbname, context) {
         it('check connection and models', function (done) {
             expect(context.dbinfo).to.exist;
             expect(context.dbinfo.db).to.exist;
-            expect(context.dbinfo.grid).to.exist;
+            expect(context.dbinfo.GridStore).to.exist;
+            expect(context.dbinfo.ObjectID).to.exist;
             expect(context.dbinfo.models).to.exist;
             expect(context.dbinfo.models.testallergies).to.exist;
             expect(context.dbinfo.models.testprocedures).to.exist;

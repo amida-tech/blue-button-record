@@ -70,7 +70,8 @@ describe('storage.js methods', function () {
     it('check connection and models', function (done) {
         expect(dbinfo).to.exist;
         expect(dbinfo.db).to.exist;
-        expect(dbinfo.grid).to.exist;
+        expect(dbinfo.GridStore).to.exist;
+        expect(dbinfo.ObjectID).to.exist;
         expect(dbinfo.storageModel).to.exist;
         done();
     });
@@ -79,7 +80,8 @@ describe('storage.js methods', function () {
         var f = function (index, callback) {
             var fileinfo = {
                 name: getFileName(index),
-                type: getContentType(index)
+                type: getContentType(index),
+                source: "test file"
             };
             storage.saveSource(dbinfo, pats[index], contents[index], fileinfo, classes[index], callback);
         };

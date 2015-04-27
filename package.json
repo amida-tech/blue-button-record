@@ -1,8 +1,18 @@
 {
-  "author": "Dmitry Kachaev, Matthew McCall and Afsin Ustundag",
+  "author": "Dmitry Kachaev",
+  "contributors": [{
+        "name": "Matthew McCall",
+        "email": "matt@amida-tech.com"
+    }, {
+        "name": "Afsin Ustundag",
+        "email": "afsin.ustundag@us.pwc.com"
+    }, {
+        "name": "Matt Martz",
+        "email": "matt.martz@amida-tech.com"
+    }],
   "name": "blue-button-record",
   "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
-  "version": "1.5.0-beta.2",
+  "version": "1.5.0-beta.3a",
   "repository": {
     "type": "git",
     "url": "git@github.com:amida-tech/blue-button-record.git"
@@ -21,23 +31,23 @@
     "blue-button-meta": "amida-tech/blue-button-meta#martz-npi",
     "blue-button-pim": "~1.0.0",
     "doublemetaphone": "^0.1.2",
-    "mongodb": "1.4.x",
-    "mongoose": "3.8.x",
-    "underscore": "1.6.x"
+    "mongodb": "2.0.x",
+    "mongoose": "4.0.x",
+    "underscore": "1.8.x"
   },
   "devDependencies": {
     "grunt": "0.4.x",
-    "grunt-contrib-jshint": "0.8.x",
+    "grunt-contrib-jshint": "0.11.x",
     "grunt-contrib-watch": "0.6.x",
-    "grunt-mocha-test": "0.10.x",
-    "grunt-jsbeautifier": "^0.2.7",
-    "mocha": "1.18.x",
-    "chai": "1.9.x",
+    "grunt-mocha-test": "0.12.x",
+    "grunt-jsbeautifier": "^0.2.10",
+    "mocha": "2.2.x",
+    "chai": "2.2.x",
     "chai-datetime": "1.3.x",
     "grunt-coveralls": "*",
     "grunt-istanbul-coverage": "*",
-    "coveralls": "~2.10.0",
-    "mocha-lcov-reporter": "0.0.1",
+    "coveralls": "~2.11.2",
+    "mocha-lcov-reporter": "0.0.2",
     "blue-button": "amida-tech/blue-button-meta#martz-npi"
   },
   "engines": {
