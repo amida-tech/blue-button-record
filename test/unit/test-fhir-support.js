@@ -132,8 +132,8 @@ describe('fhir support', function () {
 
     var bundles;
 
-    it('create bundle data', function() {
-        bundles = Object.keys(procedures).reduce(function(r, id) {
+    it('create bundle data', function () {
+        bundles = Object.keys(procedures).reduce(function (r, id) {
             expect(typeof id).to.equal('string');
             var name = procedures[id].name;
             if (name.substring(0, 8) === 'name_0.0') {
@@ -142,20 +142,23 @@ describe('fhir support', function () {
                 r[bundleIndex].push(id);
             }
             return r;
-        }, [[], []]);
+        }, [
+            [],
+            []
+        ]);
 
         expect(bundles[0]).to.have.length(3);
-        expect(bundles[1]).to.have.length(3)
+        expect(bundles[1]).to.have.length(3);
     });
 
     var bundleExpected = {};
     var bundleIds = [];
 
-    it('bundle.save (bundle 0)', function(done) {
+    it('bundle.save (bundle 0)', function (done) {
         var bundleData = {
             name: 'name_0.0.0'
         };
-        bundle.save(context.dbinfo, 'testprocedures', 'pat0', bundles[0], bundleData, null, function(err, id) {
+        bundle.save(context.dbinfo, 'testprocedures', 'pat0', bundles[0], bundleData, null, function (err, id) {
             if (err) {
                 done(err);
             } else {
@@ -171,11 +174,11 @@ describe('fhir support', function () {
         });
     });
 
-    it('bundle.save (bundle 1)', function(done) {
+    it('bundle.save (bundle 1)', function (done) {
         var bundleData = {
             name: 'name_1.0.0'
         };
-        bundle.save(context.dbinfo, 'testprocedures', 'pat1', bundles[1], bundleData, null, function(err, id) {
+        bundle.save(context.dbinfo, 'testprocedures', 'pat1', bundles[1], bundleData, null, function (err, id) {
             if (err) {
                 done(err);
             } else {
@@ -191,12 +194,25 @@ describe('fhir support', function () {
         });
     });
 
-    it('bundle.getMulti', function(done) {
-        bundle.getMulti(context.dbinfo, 'testprocedures', {}, function(err, result) {
+    it('bundle.get (bundle 0)', function (done) {
+        bundle.get(context.dbinfo, 'testprocedures', 'pat0', bundleIds[0], function (err, result) {
             if (err) {
                 done(err);
             } else {
-                result.forEach(function(bundle) {
+                var id = bundleIds[0];
+                var expected = bundleExpected[id];
+                expect(result).to.deep.equal(expected);
+                done();
+            }
+        });
+    });
+
+    it('bundle.getMulti', function (done) {
+        bundle.getMulti(context.dbinfo, 'testprocedures', {}, function (err, result) {
+            if (err) {
+                done(err);
+            } else {
+                result.forEach(function (bundle) {
                     var id = bundle._id;
                     var expected = bundleExpected[id];
                     expect(bundle).to.deep.equal(expected);
@@ -206,27 +222,27 @@ describe('fhir support', function () {
         });
     });
 
-    it('bundle.replace', function(done) {
+    it('bundle.replace', function (done) {
         var bundleData = {
             name: 'name_replaced'
         };
         bundles[0].splice(2, 1);
-        bundle.replace(context.dbinfo, 'testprocedures', 'pat0', bundleIds[0], bundles[0], bundleData, null, function(err) {
+        bundle.replace(context.dbinfo, 'testprocedures', 'pat0', bundleIds[0], bundles[0], bundleData, null, function (err) {
             if (err) {
                 done(err);
             } else {
                 bundleExpected[bundleIds[0]].data = bundleData;
-                done()
+                done();
             }
         });
     });
 
-    it('bundle.getMulti (after replace)', function(done) {
-        bundle.getMulti(context.dbinfo, 'testprocedures', {}, function(err, result) {
+    it('bundle.getMulti (after replace)', function (done) {
+        bundle.getMulti(context.dbinfo, 'testprocedures', {}, function (err, result) {
             if (err) {
                 done(err);
             } else {
-                result.forEach(function(bundle) {
+                result.forEach(function (bundle) {
                     var id = bundle._id;
                     var expected = bundleExpected[id];
                     expect(bundle).to.deep.equal(expected);
@@ -236,14 +252,14 @@ describe('fhir support', function () {
         });
     });
 
-    it('bundle.remove', function(done) {
-        bundle.remove(context.dbinfo, 'testprocedures', 'pat0', bundleIds[1], function(err) {
+    it('bundle.remove', function (done) {
+        bundle.remove(context.dbinfo, 'testprocedures', 'pat0', bundleIds[1], function (err) {
             done(err);
         });
     });
 
-    it('bundle.getMulti (after remove)', function(done) {
-        bundle.getMulti(context.dbinfo, 'testprocedures', {}, function(err, result) {
+    it('bundle.getMulti (after remove)', function (done) {
+        bundle.getMulti(context.dbinfo, 'testprocedures', {}, function (err, result) {
             if (err) {
                 done(err);
             } else {

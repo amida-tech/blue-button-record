@@ -174,6 +174,10 @@ exports.saveBundle = function (secName, ptKey, bundleElements, bundleData, sourc
     bundle.save(dbinfo, ptKey, bundleElements, bundleData, sourceId, callback);
 };
 
+exports.getBundle = function (dbinfo, secName, ptKey, id, callback) {
+    bundle.get(dbinfo, secName, ptKey, id, callback);
+};
+
 exports.replaceBundle = function (secName, ptKey, id, bundleElements, bundleData, sourceId, callback) {
     bundle.update(dbinfo, secName, ptKey, id, bundleElements, bundleData, sourceId, callback);
 };
