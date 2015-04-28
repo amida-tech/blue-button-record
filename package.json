@@ -28,6 +28,7 @@
   ],
   "dependencies": {
     "async": "0.9.x",
+    "blue-button": "amida-tech/blue-button#martz-npi",
     "blue-button-meta": "amida-tech/blue-button-meta#martz-npi",
     "blue-button-pim": "~1.0.0",
     "doublemetaphone": "^0.1.2",
@@ -47,8 +48,7 @@
     "grunt-coveralls": "*",
     "grunt-istanbul-coverage": "*",
     "coveralls": "~2.11.2",
-    "mocha-lcov-reporter": "0.0.2",
-    "blue-button": "amida-tech/blue-button-meta#martz-npi"
+    "mocha-lcov-reporter": "0.0.2"
   },
   "engines": {
     "node": "0.10.x"
