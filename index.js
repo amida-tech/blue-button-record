@@ -168,6 +168,10 @@ exports.patientKeyToId = function (secName, ptKey, callback) {
     entry.patientKeyToId(dbinfo, secName, ptKey, callback);
 };
 
+exports.idToPatientInfo = function (secName, id, callback) {
+    entry.idToPatientInfo(dbinfo, secName, id, callback);
+}
+
 // bundle
 
 exports.saveBundle = function (secName, ptKey, bundleElements, bundleData, sourceId, callback) {
