@@ -38,7 +38,7 @@ describe('fhir support', function () {
         var expectedPat0 = refmodel.createTestSection('testdemographics', '0.0', 1);
         var expectedPat1 = refmodel.createTestSection('testdemographics', '1.0', 1);
         var expected = expectedPat0.concat(expectedPat1);
-        section.getMulti(context.dbinfo, 'testdemographics', {}, function (err, result) {
+        section.getMulti(context.dbinfo, 'testdemographics', {}, false, function (err, result) {
             result.forEach(function (entry) {
                 if (entry.name === 'name_0.0.0') {
                     patientIds[0] = entry._id;
@@ -58,7 +58,7 @@ describe('fhir support', function () {
         var expectedPat0 = refmodel.createTestSection('testallergies', '0.0', 4);
         var expectedPat1 = refmodel.createTestSection('testallergies', '1.0', 4);
         var expected = expectedPat0.concat(expectedPat1);
-        section.getMulti(context.dbinfo, 'testallergies', {}, function (err, result) {
+        section.getMulti(context.dbinfo, 'testallergies', {}, false, function (err, result) {
             result.forEach(function (entry) {
                 delete entry._id;
             });
@@ -74,7 +74,7 @@ describe('fhir support', function () {
         var expectedPat0 = refmodel.createTestSection('testprocedures', '0.0', 6);
         var expectedPat1 = refmodel.createTestSection('testprocedures', '1.0', 6);
         var expected = expectedPat0.concat(expectedPat1);
-        section.getMulti(context.dbinfo, 'testprocedures', {}, function (err, result) {
+        section.getMulti(context.dbinfo, 'testprocedures', {}, false, function (err, result) {
             result.forEach(function (entry) {
                 var id = entry._id.toString();
                 procedures[id] = entry;

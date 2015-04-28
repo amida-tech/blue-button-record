@@ -134,8 +134,8 @@ exports.saveAllSections = function (ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
 };
 
-exports.getMultiSection = function (secName, queryObject, callback) {
-    section.getMulti(dbinfo, secName, queryObject, callback);
+exports.getMultiSection = function (secName, queryObject, findPatientInfo, callback) {
+    section.getMulti(dbinfo, secName, queryObject, findPatientInfo, callback);
 };
 
 // entry
@@ -170,7 +170,7 @@ exports.patientKeyToId = function (secName, ptKey, callback) {
 
 exports.idToPatientInfo = function (secName, id, callback) {
     entry.idToPatientInfo(dbinfo, secName, id, callback);
-}
+};
 
 // bundle
 
@@ -190,8 +190,8 @@ exports.removeBundle = function (secName, ptKey, id, callback) {
     bundle.remove(dbinfo, secName, ptKey, id, callback);
 };
 
-exports.getMultiBundle = function (secName, queryObject, callback) {
-    bundle.getMulti(dbinfo, secName, queryObject, callback);
+exports.getMultiBundle = function (secName, queryObject, findPatientInfo, callback) {
+    bundle.getMulti(dbinfo, secName, queryObject, findPatientInfo, callback);
 };
 
 // utility
