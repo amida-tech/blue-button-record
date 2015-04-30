@@ -12,7 +12,7 @@
     }],
   "name": "blue-button-record",
   "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
-  "version": "1.5.0-beta.3a",
+  "version": "1.5.0-beta.4",
   "repository": {
     "type": "git",
     "url": "git@github.com:amida-tech/blue-button-record.git"
@@ -28,8 +28,8 @@
   ],
   "dependencies": {
     "async": "0.9.x",
-    "blue-button": "amida-tech/blue-button#martz-npi",
-    "blue-button-meta": "amida-tech/blue-button-meta#martz-npi",
+    "blue-button": "~1.5.0-beta.5",
+    "blue-button-meta": "~1.5.0-beta.4",
     "blue-button-pim": "~1.0.0",
     "doublemetaphone": "^0.1.2",
     "mongodb": "2.0.x",
