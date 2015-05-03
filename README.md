@@ -7,6 +7,7 @@ Master Health Record and Data Reconciliation Engine Persistance Layer (MongoDB)
 
 [![Build Status](https://travis-ci.org/amida-tech/blue-button-record.svg)](https://travis-ci.org/amida-tech/blue-button-record)
 [![Coverage Status](https://coveralls.io/repos/amida-tech/blue-button-record/badge.png)](https://coveralls.io/r/amida-tech/blue-button-record)
+[![Dependency Status](https://david-dm.org/amida-tech/blue-button-record.svg)](https://david-dm.org/amida-tech/blue-button-record)
 
 blue-button-record is a module to persist patient health data.  It is primarily designed to support [blue-button](https://github.com/amida-tech/blue-button) data model however there is no specific schema dependence and other models can also be [used](#connectDatabase).  This module provides the following functionality:
 
