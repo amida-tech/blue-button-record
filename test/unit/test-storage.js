@@ -5,7 +5,7 @@ var chaidatetime = require('chai-datetime');
 var util = require('util');
 var path = require('path');
 var async = require('async');
-var _ = require('underscore');
+var _ = require('lodash');
 
 var db = require('../../lib/db');
 var storage = require('../../lib/storage');

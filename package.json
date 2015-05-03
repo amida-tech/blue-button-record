@@ -1,18 +1,22 @@
 {
   "author": "Dmitry Kachaev",
-  "contributors": [{
-        "name": "Matthew McCall",
-        "email": "matt@amida-tech.com"
-    }, {
-        "name": "Afsin Ustundag",
-        "email": "afsin.ustundag@us.pwc.com"
-    }, {
-        "name": "Matt Martz",
-        "email": "matt.martz@amida-tech.com"
-    }],
+  "contributors": [
+    {
+      "name": "Matthew McCall",
+      "email": "matt@amida-tech.com"
+    },
+    {
+      "name": "Afsin Ustundag",
+      "email": "afsin.ustundag@us.pwc.com"
+    },
+    {
+      "name": "Matt Martz",
+      "email": "matt.martz@amida-tech.com"
+    }
+  ],
   "name": "blue-button-record",
   "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
-  "version": "1.5.0-beta.4",
+  "version": "1.5.0-beta.5",
   "repository": {
     "type": "git",
     "url": "git@github.com:amida-tech/blue-button-record.git"
@@ -32,9 +36,9 @@
     "blue-button-meta": "~1.5.0-beta.4",
     "blue-button-pim": "~1.0.0",
     "doublemetaphone": "^0.1.2",
+    "lodash": "^3.8.0",
     "mongodb": "2.0.x",
-    "mongoose": "4.0.x",
-    "underscore": "1.8.x"
+    "mongoose": "4.0.x"
   },
   "devDependencies": {
     "grunt": "0.4.x",

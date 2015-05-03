@@ -19,8 +19,8 @@ xdescribe('pim.js methods', function () {
 
     refmodel.prepareConnection('sectiontest', context)();
 
-    it('add records', function (done) {
-        refmodel.addRecordsPerPatient(context, [3, 3, 2], done);
+    it('add sources', function (done) {
+        refmodel.addSourcesPerPatient(context, [3, 3, 2], done);
     });
 
     it('save', function (done) {

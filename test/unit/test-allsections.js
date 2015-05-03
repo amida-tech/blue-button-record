@@ -17,41 +17,20 @@ describe('allsections.js methods', function () {
 
     refmodel.prepareConnection('allsectionstest2', context)();
 
-    it('add records', function (done) {
-        refmodel.addRecordsPerPatient(context, [1, 1], done);
+    it('add sources', function (done) {
+        refmodel.addSourcesPerPatient(context, [1, 1], done);
     });
 
-    var save = function (ptKey, recordIndex, counts, callback) {
-        var a = refmodel.createTestSection('testallergies', recordIndex, counts[0]);
-        var p = refmodel.createTestSection('testprocedures', recordIndex, counts[1]);
-        var d = refmodel.createTestSection('testdemographics', recordIndex, 1);
-        var r = {
-            testallergies: a,
-            testprocedures: p,
-            testdemographics: d[0]
-        };
-        var sourceId = context.storageIds[recordIndex];
-        allsections.save(context.dbinfo, ptKey, r, sourceId, callback);
-    };
-
-    it('save', function (done) {
-        async.parallel([
-
-                function (cb) {
-                    save('pat0', '0.0', [3, 3], cb);
-                },
-                function (cb) {
-                    save('pat1', '1.0', [2, 4], cb);
-                }
-            ],
-            function (err) {
-                done(err);
-            }
-        );
+    it('save sections for patient 0', function (done) {
+        refmodel.saveAllSections('pat0', '0.0', [3, 3], context, done);
     });
 
-    var verify = function (actual, secName, recordIndex, count) {
-        var expected = refmodel.createTestSection(secName, recordIndex, count);
+    it('save sections for patient 1', function (done) {
+        refmodel.saveAllSections('pat1', '1.0', [2, 4], context, done);
+    });
+
+    var verify = function (actual, secName, sourceIndex, count) {
+        var expected = refmodel.createTestSection(secName, sourceIndex, count);
         var actualSection = actual[secName];
         expect(expected).to.deep.include.members(actualSection);
         expect(actualSection).to.deep.include.members(expected);
@@ -59,7 +38,6 @@ describe('allsections.js methods', function () {
 
     it('get', function (done) {
         async.parallel([
-
                 function (cb) {
                     allsections.get(context.dbinfo, 'pat0', cb);
                 },

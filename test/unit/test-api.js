@@ -4,7 +4,7 @@ var chai = require('chai');
 var async = require('async');
 var path = require('path');
 var fs = require('fs');
-var _ = require('underscore');
+var _ = require('lodash');
 
 var bb = require('blue-button');
 

@@ -1,7 +1,7 @@
 "use strict";
 
 var chai = require('chai');
-var _ = require('underscore');
+var _ = require('lodash');
 
 var jsutil = require('../../lib/jsutil');
 
@@ -10,7 +10,7 @@ var assert = chai.assert;
 
 chai.config.includeStack = true;
 
-describe('underscore sanity checks', function () {
+describe('lodash sanity checks', function () {
     it('isEmpty', function (done) {
         assert.ok(_.isEmpty({}), "{}");
         assert.notOk(_.isEmpty({
