@@ -7,7 +7,6 @@ var match = require('./lib/match');
 var section = require('./lib/section');
 var entry = require('./lib/entry');
 var allsections = require('./lib/allsections');
-var bundle = require('./lib/bundle');
 var modelutil = require('./lib/modelutil');
 
 var account_history = require('./lib/history');
@@ -170,28 +169,6 @@ exports.patientKeyToId = function (secName, ptKey, callback) {
 
 exports.idToPatientInfo = function (secName, id, callback) {
     entry.idToPatientInfo(dbinfo, secName, id, callback);
-};
-
-// bundle
-
-exports.saveBundle = function (secName, ptKey, bundleElements, bundleData, sourceId, callback) {
-    bundle.save(dbinfo, ptKey, bundleElements, bundleData, sourceId, callback);
-};
-
-exports.getBundle = function (dbinfo, secName, ptKey, id, callback) {
-    bundle.get(dbinfo, secName, ptKey, id, callback);
-};
-
-exports.replaceBundle = function (secName, ptKey, id, bundleElements, bundleData, sourceId, callback) {
-    bundle.update(dbinfo, secName, ptKey, id, bundleElements, bundleData, sourceId, callback);
-};
-
-exports.removeBundle = function (secName, ptKey, id, callback) {
-    bundle.remove(dbinfo, secName, ptKey, id, callback);
-};
-
-exports.getMultiBundle = function (secName, queryObject, findPatientInfo, callback) {
-    bundle.getMulti(dbinfo, secName, queryObject, findPatientInfo, callback);
 };
 
 // utility
