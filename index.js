@@ -204,6 +204,7 @@ exports.getRecentUpdate = function (ptKey, callback) {
     account_history.lastUpdate(dbinfo, ptKey, callback);
 };
 
+// Notes Methods
 exports.addNote = function (ptKey, section, entry, note, callback) {
     notes.addNote(dbinfo, ptKey, section, entry, note, callback);
 };
@@ -224,6 +225,7 @@ exports.getAllNotes = function (ptKey, callback) {
     notes.allNotesInOrder(dbinfo, ptKey, callback);
 };
 
+// Medications Methods
 exports.addMedication = function (ptKey, medication, callback) {
     medications.addMedication(dbinfo, ptKey, medication, callback);
 };
