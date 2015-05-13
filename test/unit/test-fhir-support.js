@@ -39,10 +39,10 @@ describe('fhir support', function () {
         var expected = expectedPat0.concat(expectedPat1);
         section.getMulti(context.dbinfo, 'testdemographics', {}, false, function (err, result) {
             result.forEach(function (entry) {
-                if (entry.name === 'name_0.0.0') {
+                if (entry.name.first === 'first_0.0.0') {
                     patientIds[0] = entry._id;
                 }
-                if (entry.name === 'name_1.0.0') {
+                if (entry.name.first === 'first_1.0.0') {
                     patientIds[1] = entry._id;
                 }
                 delete entry._id;
@@ -81,6 +81,37 @@ describe('fhir support', function () {
             });
             expect(expected).to.deep.include.members(result);
             expect(result).to.deep.include.members(expected);
+            done();
+        });
+    });
+
+    it('entry.idToPatientInfo (invalid id)', function (done) {
+        entry.idToPatientInfo(context.dbinfo, 'testprocedures', 'x', function (err, patientInfo) {
+            expect(err).not.to.exist;
+            expect(patientInfo).not.to.exist;
+            done();
+        });
+    });
+
+    it('entry.idToPatientInfo (valid id that does not point to a record)', function (done) {
+        entry.idToPatientInfo(context.dbinfo, 'testprocedures', '123456789012345678901234', function (err, patientInfo) {
+            expect(err).not.to.exist;
+            expect(patientInfo).not.to.exist;
+            done();
+        });
+    });
+
+    it('entry.idToPatientInfo (valid id)', function (done) {
+        var id = Object.keys(procedures)[0];
+        var ptNdx = procedures[id].name.split('_')[1].charAt(0);
+        entry.idToPatientInfo(context.dbinfo, 'testprocedures', id, function (err, patientInfo) {
+            expect(err).not.to.exist;
+            var suffix = '_' + ptNdx + ".0.0";
+            expect(patientInfo).to.deep.equal({
+                key: ptNdx === '0' ? 'pat0' : 'pat1',
+                reference: patientIds[ptNdx].toString(),
+                display: 'last' + suffix + ', ' + 'first' + suffix + ' a ' + 'b'
+            });
             done();
         });
     });

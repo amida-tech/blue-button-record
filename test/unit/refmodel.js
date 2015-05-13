@@ -37,8 +37,14 @@ var testObjectInstance = exports.testObjectInstance = {
     },
     testdemographics: function (suffix) {
         return {
-            name: 'name' + suffix,
-            lastname: 'lastname' + suffix
+            name: {
+                first: 'first' + suffix,
+                last: 'last' + suffix,
+                middle: [
+                    'amid' + suffix,
+                    'bmif' + suffix
+                ]
+            }
         };
     }
 };
@@ -175,7 +181,8 @@ exports.saveMatches = function (context, secName, pat_key, sourceIndex, destsour
 var setConnectionContext = function (overrideOptions, context, callback) {
     var options = {
         dbName: 'testrefModel',
-        supported_sections: ['testallergies', 'testprocedures', 'testdemographics']
+        supported_sections: ['testallergies', 'testprocedures', 'testdemographics'],
+        demographicsSection: 'testdemographics'
     };
     if (overrideOptions) {
         _.merge(options, overrideOptions);

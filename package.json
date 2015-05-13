@@ -41,17 +41,18 @@
     "mongoose": "4.0.x"
   },
   "devDependencies": {
+    "chai": "2.2.x",
+    "chai-datetime": "1.3.x",
+    "coveralls": "~2.11.2",
     "grunt": "0.4.x",
     "grunt-contrib-jshint": "0.11.x",
     "grunt-contrib-watch": "0.6.x",
-    "grunt-mocha-test": "0.12.x",
-    "grunt-jsbeautifier": "^0.2.10",
-    "mocha": "2.2.x",
-    "chai": "2.2.x",
-    "chai-datetime": "1.3.x",
     "grunt-coveralls": "*",
     "grunt-istanbul-coverage": "*",
-    "coveralls": "~2.11.2",
+    "grunt-jsbeautifier": "^0.2.10",
+    "grunt-mocha-test": "0.12.x",
+    "grunt-shell": "^1.1.2",
+    "mocha": "2.2.x",
     "mocha-lcov-reporter": "0.0.2"
   },
   "engines": {
