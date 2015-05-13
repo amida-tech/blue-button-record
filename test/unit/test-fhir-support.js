@@ -116,8 +116,35 @@ describe('fhir support', function () {
         });
     });
 
+    it('entry.idToPatientKey (invalid id)', function (done) {
+        entry.idToPatientKey(context.dbinfo, 'testprocedures', 'x', function (err, patientKey) {
+            expect(err).not.to.exist;
+            expect(patientKey).not.to.exist;
+            done();
+        });
+    });
+
+    it('entry.idToPatientKey (valid id that does not point to a record)', function (done) {
+        entry.idToPatientKey(context.dbinfo, 'testprocedures', '123456789012345678901234', function (err, patientKey) {
+            expect(err).not.to.exist;
+            expect(patientKey).not.to.exist;
+            done();
+        });
+    });
+
+    it('entry.idToPatientKey (valid id)', function (done) {
+        var id = Object.keys(procedures)[0];
+        var ptNdx = procedures[id].name.split('_')[1].charAt(0);
+        entry.idToPatientKey(context.dbinfo, 'testprocedures', id, function (err, patientKey) {
+            expect(err).not.to.exist;
+            var ptKey = ptNdx === '0' ? 'pat0' : 'pat1';
+            expect(patientKey).to.equal(ptKey);
+            done();
+        });
+    });
+
     it('entry.idToPatientKey (pat0)', function (done) {
-        entry.idToPatientKey(context.dbinfo, 'testdemographics', patientIds[0], function (err, ptKey) {
+        entry.idToPatientKey(context.dbinfo, 'testdemographics', patientIds[0].toString(), function (err, ptKey) {
             if (err) {
                 done(err);
             } else {
