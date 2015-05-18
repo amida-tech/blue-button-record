@@ -1,7 +1,9 @@
 "use strict";
 
+var util = require('util');
 var chai = require('chai');
 var async = require('async');
+var _ = require('lodash');
 
 var refmodel = require('./refmodel');
 var section = require('../../lib/section');
@@ -15,8 +17,7 @@ describe('fhir support', function () {
 
     refmodel.prepareConnection({
         dbName: 'fhirsupport',
-        bundle_sections: ['testprocedures']
-
+        skipCleanDoc: true
     }, context)();
 
     it('add sources', function (done) {
@@ -85,20 +86,42 @@ describe('fhir support', function () {
         });
     });
 
-    it('entry.idToPatientInfo (invalid id)', function (done) {
-        entry.idToPatientInfo(context.dbinfo, 'testprocedures', 'x', function (err, patientInfo) {
-            expect(err).not.to.exist;
-            expect(patientInfo).not.to.exist;
-            done();
+    ['x', '123456789012345678901234'].forEach(function (id) {
+        var msg = util.format('entry.idToPatientInfo empty result (%s)', id);
+        it(msg, function (done) {
+            entry.idToPatientInfo(context.dbinfo, 'testprocedures', id, function (err, patientInfo) {
+                expect(err).not.to.exist;
+                expect(patientInfo).not.to.exist;
+                done();
+            });
         });
-    });
+    }, this);
 
-    it('entry.idToPatientInfo (valid id that does not point to a record)', function (done) {
-        entry.idToPatientInfo(context.dbinfo, 'testprocedures', '123456789012345678901234', function (err, patientInfo) {
-            expect(err).not.to.exist;
-            expect(patientInfo).not.to.exist;
-            done();
-        });
+    it('read', function (done) {
+        var countProcs = 0;
+        var procKeys = Object.keys(procedures);
+        procKeys.forEach(function (id) {
+            var ptNdx = procedures[id].name.split('_')[1].charAt(0);
+            entry.idToPatientInfo.call(this, context.dbinfo, 'testprocedures', id, function (err, patientInfo) {
+                expect(err).not.to.exist;
+                var suffix = '_' + ptNdx + ".0.0";
+                var ptKey = ptNdx === '0' ? 'pat0' : 'pat1';
+                expect(patientInfo).to.deep.equal({
+                    key: ptKey,
+                    reference: patientIds[ptNdx].toString(),
+                    display: 'last' + suffix + ', ' + 'first' + suffix + ' a ' + 'b'
+                });
+                entry.get.call(this, context.dbinfo, 'testprocedures', ptKey, id, function (err, e) {
+                    expect(err).not.to.exist;
+                    expect(e.data).to.deep.equal(procedures[id]);
+                    expect(e.metadata).to.exist;
+                    ++countProcs;
+                    if (countProcs === procKeys.length) {
+                        done();
+                    }
+                });
+            });
+        }, this);
     });
 
     it('entry.idToPatientInfo (valid id)', function (done) {
