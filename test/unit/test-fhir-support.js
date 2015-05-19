@@ -17,7 +17,7 @@ describe('fhir support', function () {
 
     refmodel.prepareConnection({
         dbName: 'fhirsupport',
-        skipCleanDoc: true
+        fhir: true
     }, context)();
 
     it('add sources', function (done) {
@@ -140,17 +140,17 @@ describe('fhir support', function () {
     });
 
     it('entry.idToPatientKey (invalid id)', function (done) {
-        entry.idToPatientKey(context.dbinfo, 'testprocedures', 'x', function (err, patientKey) {
+        entry.idToPatientKey(context.dbinfo, 'testprocedures', 'x', function (err, result) {
             expect(err).not.to.exist;
-            expect(patientKey).not.to.exist;
+            expect(result.invalid).to.equal(true);
             done();
         });
     });
 
     it('entry.idToPatientKey (valid id that does not point to a record)', function (done) {
-        entry.idToPatientKey(context.dbinfo, 'testprocedures', '123456789012345678901234', function (err, patientKey) {
+        entry.idToPatientKey(context.dbinfo, 'testprocedures', '123456789012345678901234', function (err, result) {
             expect(err).not.to.exist;
-            expect(patientKey).not.to.exist;
+            expect(result).not.to.exist;
             done();
         });
     });
@@ -158,31 +158,32 @@ describe('fhir support', function () {
     it('entry.idToPatientKey (valid id)', function (done) {
         var id = Object.keys(procedures)[0];
         var ptNdx = procedures[id].name.split('_')[1].charAt(0);
-        entry.idToPatientKey(context.dbinfo, 'testprocedures', id, function (err, patientKey) {
+        entry.idToPatientKey(context.dbinfo, 'testprocedures', id, function (err, result) {
             expect(err).not.to.exist;
             var ptKey = ptNdx === '0' ? 'pat0' : 'pat1';
-            expect(patientKey).to.equal(ptKey);
+            expect(result.key).to.equal(ptKey);
+            expect(result.invalid).to.equal(false);
             done();
         });
     });
 
     it('entry.idToPatientKey (pat0)', function (done) {
-        entry.idToPatientKey(context.dbinfo, 'testdemographics', patientIds[0].toString(), function (err, ptKey) {
+        entry.idToPatientKey(context.dbinfo, 'testdemographics', patientIds[0].toString(), function (err, result) {
             if (err) {
                 done(err);
             } else {
-                expect(ptKey).to.equal('pat0');
+                expect(result.key).to.equal('pat0');
                 done();
             }
         });
     });
 
     it('entry.idToPatientKey (pat1)', function (done) {
-        entry.idToPatientKey(context.dbinfo, 'testdemographics', patientIds[1].toString(), function (err, ptKey) {
+        entry.idToPatientKey(context.dbinfo, 'testdemographics', patientIds[1].toString(), function (err, result) {
             if (err) {
                 done(err);
             } else {
-                expect(ptKey).to.equal('pat1');
+                expect(result.key).to.equal('pat1');
                 done();
             }
         });
