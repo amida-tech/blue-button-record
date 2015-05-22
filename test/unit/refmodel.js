@@ -206,7 +206,13 @@ exports.prepareConnection = function (options, context) {
 
     return function () {
         before(function (done) {
-            setConnectionContext(options, context, done);
+            setConnectionContext(options, context, function (err) {
+                if (err) {
+                    done(err);
+                } else {
+                    context.dbinfo.db.dropDatabase(done);
+                }
+            });
         });
 
         it('check connection and models', function (done) {

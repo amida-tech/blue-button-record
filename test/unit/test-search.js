@@ -26,26 +26,22 @@ describe('search.js', function () {
 
     var expectedPatData = _.range(4).map(function (ptIndex) {
         var sourceKey = util.format('%s.%s', ptIndex, 0);
-        return refmodel.createTestSection('testdemographics', sourceKey, 1);
+        return refmodel.createTestSection('testdemographics', sourceKey, 1)[0];
     });
+    expectedPatData.reverse();
 
     _.range(4).forEach(function (ptIndex) {
         var patKey = util.format('pat%s', ptIndex);
         var sourceKey = util.format('%s.%s', ptIndex, 0);
         var title = util.format('save data for %s', patKey);
         it(title, function (done) {
-            refmodel.saveAllSections(patKey, sourceKey, [18, 24], context, done);
+            refmodel.saveAllSections(patKey, sourceKey, [8, 10], context, done);
         });
     }, self);
 
-    var groupByPatient = function (entries) {
-        return _.groupBy(entries, function (entry) {
-            return entry._ptKey;
-        });
-    };
+    var patientIds;
 
     it('search all testdemographics', function (done) {
-        var itself = this;
         var searchSpec = {
             section: 'testdemographics',
             query: {},
@@ -53,15 +49,49 @@ describe('search.js', function () {
         };
         search.search(context.dbinfo, searchSpec, function (err, result) {
             expect(result).to.have.length(4);
-            var groupResults = groupByPatient(result);
+            var resultData = result.map(function (r) {
+                return r.data;
+            });
+            patientIds = result.map(function (r) {
+                return r._id;
+            });
+            expect(resultData).to.deep.equal(expectedPatData);
+            done();
+        });
+    });
+
+    var expectedAllergyData = _.range(4).map(function (ptIndex) {
+        var sourceKey = util.format('%s.%s', ptIndex, 0);
+        return refmodel.createTestSection('testallergies', sourceKey, 8);
+    });
+    expectedAllergyData = _.flatten(expectedAllergyData);
+    expectedAllergyData.reverse();
+
+    it('search all testallergies', function (done) {
+        var searchSpec = {
+            section: 'testallergies',
+            query: {},
+            patientInfo: true
+        };
+        var itself = this;
+        search.search(context.dbinfo, searchSpec, function (err, result) {
+            expect(result).to.have.length(32);
+            var count = 0;
             _.range(4).forEach(function (ptIndex) {
-                var ptKey = util.format('pat%s', ptIndex);
-                var expected = expectedPatData[ptIndex];
-                expect(expected).to.have.length(1);
-                var actual = groupResults[ptKey];
-                expect(actual).to.have.length(1);
-                expect(expected[0]).to.deep.equal(actual[0].data);
+                _.range(8).forEach(function (allergyIndex) {
+                    var e = result[ptIndex * 8 + allergyIndex];
+                    var ptKey = util.format('pat%s', 3 - ptIndex);
+                    expect(e._ptKey).to.be.equal(ptKey);
+                    expect(e._pt).to.exist;
+                    expect(e._pt.reference).to.be.equal(patientIds[ptIndex]);
+                    ++count;
+                }, itself);
             }, itself);
+            expect(count).to.equal(32);
+            var resultData = result.map(function (r) {
+                return r.data;
+            });
+            expect(resultData).to.deep.equal(expectedAllergyData);
             done();
         });
     });
