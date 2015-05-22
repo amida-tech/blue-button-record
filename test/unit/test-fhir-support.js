@@ -8,6 +8,7 @@ var _ = require('lodash');
 var refmodel = require('./refmodel');
 var section = require('../../lib/section');
 var entry = require('../../lib/entry');
+var search = require('../../lib/search');
 
 var expect = chai.expect;
 chai.config.includeStack = true;
@@ -34,11 +35,11 @@ describe('fhir support', function () {
 
     var patientIds = [null, null];
 
-    it('section.getMulti testdemographics', function (done) {
+    it('search.search testdemographics', function (done) {
         var expectedPat0 = refmodel.createTestSection('testdemographics', '0.0', 1);
         var expectedPat1 = refmodel.createTestSection('testdemographics', '1.0', 1);
         var expected = expectedPat0.concat(expectedPat1);
-        section.getMulti(context.dbinfo, 'testdemographics', {}, false, function (err, result) {
+        search.search(context.dbinfo, 'testdemographics', {}, false, function (err, result) {
             result.forEach(function (entry) {
                 if (entry.name.first === 'first_0.0.0') {
                     patientIds[0] = entry._id;
@@ -54,11 +55,11 @@ describe('fhir support', function () {
         });
     });
 
-    it('section.getMulti testallergies', function (done) {
+    it('search.search testallergies', function (done) {
         var expectedPat0 = refmodel.createTestSection('testallergies', '0.0', 4);
         var expectedPat1 = refmodel.createTestSection('testallergies', '1.0', 4);
         var expected = expectedPat0.concat(expectedPat1);
-        section.getMulti(context.dbinfo, 'testallergies', {}, false, function (err, result) {
+        search.search(context.dbinfo, 'testallergies', {}, false, function (err, result) {
             result.forEach(function (entry) {
                 delete entry._id;
             });
@@ -70,11 +71,11 @@ describe('fhir support', function () {
 
     var procedures = {};
 
-    it('section.getMulti testprocedures', function (done) {
+    it('search.search testprocedures', function (done) {
         var expectedPat0 = refmodel.createTestSection('testprocedures', '0.0', 6);
         var expectedPat1 = refmodel.createTestSection('testprocedures', '1.0', 6);
         var expected = expectedPat0.concat(expectedPat1);
-        section.getMulti(context.dbinfo, 'testprocedures', {}, false, function (err, result) {
+        search.search(context.dbinfo, 'testprocedures', {}, false, function (err, result) {
             result.forEach(function (entry) {
                 var id = entry._id.toString();
                 procedures[id] = entry;

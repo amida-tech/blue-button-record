@@ -8,6 +8,7 @@ var section = require('./lib/section');
 var entry = require('./lib/entry');
 var allsections = require('./lib/allsections');
 var modelutil = require('./lib/modelutil');
+var search = require('./lib/search');
 
 var account_history = require('./lib/history');
 var notes = require('./lib/notes');
@@ -134,8 +135,10 @@ exports.saveAllSections = function (ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
 };
 
-exports.getMultiSection = function (secName, queryObject, findPatientInfo, callback) {
-    section.getMulti(dbinfo, secName, queryObject, findPatientInfo, callback);
+// search
+
+exports.search = function (secName, queryObject, findPatientInfo, callback) {
+    search.search(dbinfo, secName, queryObject, findPatientInfo, callback);
 };
 
 // entry
