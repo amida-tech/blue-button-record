@@ -33,24 +33,33 @@ describe('fhir support', function () {
         refmodel.saveAllSections('pat1', '1.0', [4, 6], context, done);
     });
 
+    var expectedPatData = _.range(4).map(function (ptIndex) {
+        var sourceKey = util.format('%s.%s', ptIndex, 0);
+        return refmodel.createTestSection('testdemographics', sourceKey, 1);
+    });
+
     var patientIds = [null, null];
 
-    it('search.search testdemographics', function (done) {
-        var expectedPat0 = refmodel.createTestSection('testdemographics', '0.0', 1);
-        var expectedPat1 = refmodel.createTestSection('testdemographics', '1.0', 1);
-        var expected = expectedPat0.concat(expectedPat1);
+    var groupByPatient = function (entries) {
+        return _.groupBy(entries, function (entry) {
+            return entry._ptKey;
+        });
+    };
+
+    it('search all testdemographics', function (done) {
+        var itself = this;
         search.search(context.dbinfo, 'testdemographics', {}, false, function (err, result) {
-            result.forEach(function (entry) {
-                if (entry.name.first === 'first_0.0.0') {
-                    patientIds[0] = entry._id;
-                }
-                if (entry.name.first === 'first_1.0.0') {
-                    patientIds[1] = entry._id;
-                }
-                delete entry._id;
-            });
-            expect(expected).to.deep.include.members(result);
-            expect(result).to.deep.include.members(expected);
+            expect(result).to.have.length(2);
+            var groupResults = groupByPatient(result);
+            _.range(2).forEach(function (ptIndex) {
+                var ptKey = util.format('pat%s', ptIndex);
+                var expected = expectedPatData[ptIndex];
+                expect(expected).to.have.length(1);
+                var actual = groupResults[ptKey];
+                expect(actual).to.have.length(1);
+                expect(expected[0]).to.deep.equal(actual[0].data);
+                patientIds[ptIndex] = actual[0]._id;
+            }, itself);
             done();
         });
     });
@@ -60,8 +69,8 @@ describe('fhir support', function () {
         var expectedPat1 = refmodel.createTestSection('testallergies', '1.0', 4);
         var expected = expectedPat0.concat(expectedPat1);
         search.search(context.dbinfo, 'testallergies', {}, false, function (err, result) {
-            result.forEach(function (entry) {
-                delete entry._id;
+            result = result.map(function (entry) {
+                return entry.data;
             });
             expect(expected).to.deep.include.members(result);
             expect(result).to.deep.include.members(expected);
@@ -76,11 +85,11 @@ describe('fhir support', function () {
         var expectedPat1 = refmodel.createTestSection('testprocedures', '1.0', 6);
         var expected = expectedPat0.concat(expectedPat1);
         search.search(context.dbinfo, 'testprocedures', {}, false, function (err, result) {
-            result.forEach(function (entry) {
-                var id = entry._id.toString();
-                procedures[id] = entry;
-                delete entry._id;
+            result = result.map(function (entry) {
+                procedures[entry._id] = entry.data;
+                return entry.data;
             });
+            //console.log(procedures);
             expect(expected).to.deep.include.members(result);
             expect(result).to.deep.include.members(expected);
             done();
@@ -195,7 +204,7 @@ describe('fhir support', function () {
             if (err) {
                 done(err);
             } else {
-                expect(id).to.deep.equal(patientIds[0]);
+                expect(id.toString()).to.equal(patientIds[0]);
                 done();
             }
         });
@@ -206,7 +215,7 @@ describe('fhir support', function () {
             if (err) {
                 done(err);
             } else {
-                expect(id).to.deep.equal(patientIds[1]);
+                expect(id.toString()).to.deep.equal(patientIds[1]);
                 done();
             }
         });

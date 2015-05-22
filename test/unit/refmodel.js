@@ -237,7 +237,7 @@ var addSourcesPerPatient = exports.addSourcesPerPatient = function (context, cou
         }, r);
     }, []);
 
-    async.parallel(fs, callback);
+    async.series(fs, callback);
 };
 
 exports.createMatchInformation = function (sourceIndex, destIndices, matchTypes) {
