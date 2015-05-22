@@ -137,8 +137,8 @@ exports.saveAllSections = function (ptKey, ptRecord, sourceId, callback) {
 
 // search
 
-exports.search = function (secName, queryObject, findPatientInfo, callback) {
-    search.search(dbinfo, secName, queryObject, findPatientInfo, callback);
+exports.search = function (searchSpec, callback) {
+    search.search(dbinfo, searchSpec, callback);
 };
 
 // entry

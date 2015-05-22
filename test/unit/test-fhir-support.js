@@ -48,7 +48,12 @@ describe('fhir support', function () {
 
     it('search all testdemographics', function (done) {
         var itself = this;
-        search.search(context.dbinfo, 'testdemographics', {}, false, function (err, result) {
+        var searchSpec = {
+            section: 'testdemographics',
+            query: {},
+            patientInfo: false
+        };
+        search.search(context.dbinfo, searchSpec, function (err, result) {
             expect(result).to.have.length(2);
             var groupResults = groupByPatient(result);
             _.range(2).forEach(function (ptIndex) {
@@ -68,7 +73,12 @@ describe('fhir support', function () {
         var expectedPat0 = refmodel.createTestSection('testallergies', '0.0', 4);
         var expectedPat1 = refmodel.createTestSection('testallergies', '1.0', 4);
         var expected = expectedPat0.concat(expectedPat1);
-        search.search(context.dbinfo, 'testallergies', {}, false, function (err, result) {
+        var searchSpec = {
+            section: 'testallergies',
+            query: {},
+            patientInfo: false
+        };
+        search.search(context.dbinfo, searchSpec, function (err, result) {
             result = result.map(function (entry) {
                 return entry.data;
             });
@@ -84,7 +94,12 @@ describe('fhir support', function () {
         var expectedPat0 = refmodel.createTestSection('testprocedures', '0.0', 6);
         var expectedPat1 = refmodel.createTestSection('testprocedures', '1.0', 6);
         var expected = expectedPat0.concat(expectedPat1);
-        search.search(context.dbinfo, 'testprocedures', {}, false, function (err, result) {
+        var searchSpec = {
+            section: 'testprocedures',
+            query: {},
+            patientInfo: false
+        };
+        search.search(context.dbinfo, searchSpec, function (err, result) {
             result = result.map(function (entry) {
                 procedures[entry._id] = entry.data;
                 return entry.data;

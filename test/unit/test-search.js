@@ -46,7 +46,12 @@ describe('search.js', function () {
 
     it('search all testdemographics', function (done) {
         var itself = this;
-        search.search(context.dbinfo, 'testdemographics', {}, false, function (err, result) {
+        var searchSpec = {
+            section: 'testdemographics',
+            query: {},
+            patientInfo: false
+        };
+        search.search(context.dbinfo, searchSpec, function (err, result) {
             expect(result).to.have.length(4);
             var groupResults = groupByPatient(result);
             _.range(4).forEach(function (ptIndex) {
