@@ -14,15 +14,19 @@ var expect = chai.expect;
 describe('search.js', function () {
     var self = this;
     var context = {}; // populated by refmodel common methods
+    var maxSearch = 5;
+    var numPatients = 4;
+    var numAllersPerPt = 8;
+    var numProcsPerPt = 10;
 
     refmodel.prepareConnection({
         dbName: 'search',
         fhir: true,
-        maxSearch: 5
+        maxSearch: maxSearch
     }, context)();
 
     it('add sources', function (done) {
-        refmodel.addSourcesPerPatient(context, [1, 1, 1, 1], done);
+        refmodel.addSourcesPerPatient(context, _.times(numPatients, _.constant(1)), done);
     });
 
     it('search testallergies when empty', function (done) {
@@ -35,25 +39,25 @@ describe('search.js', function () {
             expect(searchInfo).to.exist;
             expect(searchInfo.searchId).not.to.exist;
             expect(searchInfo.page).to.equal(0);
-            expect(searchInfo.pageSize).to.equal(5);
+            expect(searchInfo.pageSize).to.equal(maxSearch);
             expect(searchInfo.total).to.equal(0);
             expect(result).to.have.length(0);
             done();
         });
     });
 
-    var expectedPatData = _.range(4).map(function (ptIndex) {
+    var expectedPatData = _.range(numPatients).map(function (ptIndex) {
         var sourceKey = util.format('%s.%s', ptIndex, 0);
         return refmodel.createTestSection('testdemographics', sourceKey, 1)[0];
     });
     expectedPatData.reverse();
 
-    _.range(4).forEach(function (ptIndex) {
+    _.range(numPatients).forEach(function (ptIndex) {
         var patKey = util.format('pat%s', ptIndex);
         var sourceKey = util.format('%s.%s', ptIndex, 0);
         var title = util.format('save data for %s', patKey);
         it(title, function (done) {
-            refmodel.saveAllSections(patKey, sourceKey, [8, 10], context, done);
+            refmodel.saveAllSections(patKey, sourceKey, [numAllersPerPt, numProcsPerPt], context, done);
         });
     }, self);
 
@@ -66,12 +70,12 @@ describe('search.js', function () {
             patientInfo: false
         };
         search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
-            expect(result).to.have.length(4);
+            expect(result).to.have.length(numPatients);
             expect(searchInfo).to.exist;
             expect(searchInfo.searchId).not.to.exist;
             expect(searchInfo.page).to.equal(0);
-            expect(searchInfo.pageSize).to.equal(5);
-            expect(searchInfo.total).to.equal(4);
+            expect(searchInfo.pageSize).to.equal(maxSearch);
+            expect(searchInfo.total).to.equal(numPatients);
             var resultData = result.map(function (r) {
                 return r.data;
             });
@@ -83,20 +87,11 @@ describe('search.js', function () {
         });
     });
 
-    var expectedAllergyData = _.range(4).map(function (ptIndex) {
-        var sourceKey = util.format('%s.%s', ptIndex, 0);
-        return refmodel.createTestSection('testallergies', sourceKey, 8);
-    });
-    expectedAllergyData = _.flatten(expectedAllergyData);
-    expectedAllergyData.reverse();
-
-    var searchIdAllergies;
-
-    var verifyTestAllergies = function (actual, offset) {
+    var verify = function (numPerPt, actual, expected, offset) {
         var itself = this;
         var count = 0;
         _.range(actual.length).forEach(function (index) {
-            var ptIndex = Math.floor((offset + index) / 8);
+            var ptIndex = Math.floor((offset + index) / numPerPt);
             var e = actual[index];
             var ptKey = util.format('pat%s', 3 - ptIndex);
             expect(e._ptKey).to.be.equal(ptKey);
@@ -109,48 +104,73 @@ describe('search.js', function () {
         var actualData = actual.map(function (r) {
             return r.data;
         });
-        var expectedData = expectedAllergyData.slice(offset, offset + actual.length);
+        var expectedData = expected.slice(offset, offset + actual.length);
         expect(actualData).to.deep.equal(expectedData);
     };
 
-    it('search testallergies page:0 (initial call)', function (done) {
-        var itself = this;
-        var searchSpec = {
-            section: 'testallergies',
-            patientInfo: true
-        };
-        search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
-            expect(searchInfo).to.exist;
-            expect(searchInfo.searchId).to.exist;
-            expect(searchInfo.page).to.equal(0);
-            expect(searchInfo.pageSize).to.equal(5);
-            expect(searchInfo.total).to.equal(32);
-            expect(result).to.have.length(5);
-            searchIdAllergies = searchInfo.searchId;
-            verifyTestAllergies.call(itself, result, 0);
-            done();
-        });
-    });
+    var testPaging = function (sectionName, numPerPt) {
+        describe('page test for ' + sectionName, function () {
+            var dself = this;
+            var total = numPerPt * numPatients;
 
-    _.range(0, 7).forEach(function (index) {
-        it('search testallergies page:' + index, function (done) {
-            var itself = this;
-            var searchSpec = {
-                searchId: searchIdAllergies,
-                section: 'testallergies',
-                patientInfo: true,
-                page: index
-            };
-            search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
-                expect(searchInfo).to.exist;
-                expect(searchInfo.searchId).to.equal(searchIdAllergies);
-                expect(searchInfo.page).to.equal(index);
-                expect(searchInfo.pageSize).to.equal(5);
-                expect(searchInfo.total).to.equal(32);
-                expect(result).to.have.length(index === 6 ? 2 : 5);
-                verifyTestAllergies.call(itself, result, index * 5);
-                done();
+            var expectedData = _.range(numPatients).map(function (ptIndex) {
+                var sourceKey = util.format('%s.%s', ptIndex, 0);
+                return refmodel.createTestSection(sectionName, sourceKey, numPerPt);
             });
+            expectedData = _.flatten(expectedData);
+            expectedData.reverse();
+
+            var searchId;
+
+            it('page:0 (initial call)', function (done) {
+                var itself = this;
+                var searchSpec = {
+                    section: sectionName,
+                    patientInfo: true
+                };
+                search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
+                    expect(searchInfo).to.exist;
+                    expect(searchInfo.searchId).to.exist;
+                    expect(searchInfo.page).to.equal(0);
+                    expect(searchInfo.pageSize).to.equal(maxSearch);
+                    expect(searchInfo.total).to.equal(total);
+                    expect(result).to.have.length(maxSearch);
+                    searchId = searchInfo.searchId;
+                    verify.call(itself, numPerPt, result, expectedData, 0);
+                    done();
+                });
+            });
+
+            var lastPage = Math.ceil(total / maxSearch) - 1;
+            _.range(0, lastPage + 1).forEach(function (index) {
+                it('page:' + index, function (done) {
+                    var itself = this;
+                    var searchSpec = {
+                        searchId: searchId,
+                        section: sectionName,
+                        patientInfo: true,
+                        page: index
+                    };
+                    var expectedLength = maxSearch;
+                    if ((index === lastPage) && ((total % maxSearch) !== 0)) {
+                        expectedLength = total % maxSearch;
+                    }
+                    search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
+                        expect(searchInfo).to.exist;
+                        expect(searchInfo.searchId).to.equal(searchId);
+                        expect(searchInfo.page).to.equal(index);
+                        expect(searchInfo.pageSize).to.equal(maxSearch);
+                        expect(searchInfo.total).to.equal(total);
+                        expect(result).to.have.length(expectedLength);
+                        verify.call(itself, numPerPt, result, expectedData, index * maxSearch);
+                        done();
+                    });
+                });
+            }, dself);
         });
-    }, self);
+    };
+
+    testPaging.call(this, 'testallergies', numAllersPerPt);
+    testPaging.call(this, 'testprocedures', numProcsPerPt);
+
 });
