@@ -11,7 +11,7 @@ var refmodel = require('./refmodel');
 
 var expect = chai.expect;
 
-describe('search.js', function () {
+describe('search', function () {
     var self = this;
     var context = {}; // populated by refmodel common methods
     var maxSearch = 5;
@@ -29,22 +29,24 @@ describe('search.js', function () {
         refmodel.addSourcesPerPatient(context, _.times(numPatients, _.constant(1)), done);
     });
 
-    it('search testallergies when empty', function (done) {
-        var itself = this;
-        var searchSpec = {
-            section: 'testallergies',
-            patientInfo: true
-        };
-        search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
-            expect(searchInfo).to.exist;
-            expect(searchInfo.searchId).not.to.exist;
-            expect(searchInfo.page).to.equal(0);
-            expect(searchInfo.pageSize).to.equal(maxSearch);
-            expect(searchInfo.total).to.equal(0);
-            expect(result).to.have.length(0);
-            done();
+    ['testdemographics', 'testallergies', 'testprocedures'].forEach(function(sectionName) {
+        it('search ' + sectionName + ' when empty', function (done) {
+            var itself = this;
+            var searchSpec = {
+                section: sectionName,
+                patientInfo: true
+            };
+            search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
+                expect(searchInfo).to.exist;
+                expect(searchInfo.searchId).not.to.exist;
+                expect(searchInfo.page).to.equal(0);
+                expect(searchInfo.pageSize).to.equal(maxSearch);
+                expect(searchInfo.total).to.equal(0);
+                expect(result).to.have.length(0);
+                done();
+            });
         });
-    });
+    }, self);
 
     var expectedPatData = _.range(numPatients).map(function (ptIndex) {
         var sourceKey = util.format('%s.%s', ptIndex, 0);
@@ -109,7 +111,7 @@ describe('search.js', function () {
     };
 
     var testPaging = function (sectionName, numPerPt) {
-        describe('page test for ' + sectionName, function () {
+        describe(sectionName, function () {
             var dself = this;
             var total = numPerPt * numPatients;
 
@@ -172,5 +174,4 @@ describe('search.js', function () {
 
     testPaging.call(this, 'testallergies', numAllersPerPt);
     testPaging.call(this, 'testprocedures', numProcsPerPt);
-
 });

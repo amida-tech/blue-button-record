@@ -143,14 +143,16 @@ exports.saveAllSections = function (ptKey, sourceIndex, counts, context, callbac
     allsections.save(context.dbinfo, ptKey, r, sourceId, callback);
 };
 
-var saveSection = exports.saveSection = function (context, secName, pat_key, sourceIndex, count, callback) {
+exports.saveSection = function (context, secName, pat_key, sourceIndex, count, callback) {
     var data = createTestSection(secName, sourceIndex, count);
     var sourceId = context.storageIds[sourceIndex];
     section.save(context.dbinfo, secName, pat_key, data, sourceId, function (err, ids) {
-        if (!err) {
+        if (err) {
+            callback(err);
+        } else {
             pushToContext(context, newEntriesContextKey, secName, sourceIndex, ids);
+            callback(null);
         }
-        callback(err);
     });
 };
 
@@ -171,10 +173,12 @@ exports.saveMatches = function (context, secName, pat_key, sourceIndex, destsour
     }, []);
 
     section.savePartial(context.dbinfo, secName, pat_key, extendedData, sourceId, function (err, result) {
-        if (!err) {
+        if (err) {
+            callback(err);
+        } else {
             pushToContext(context, partialEntriesContextKey, secName, sourceIndex, result);
+            callback(null);
         }
-        callback(err);
     });
 };
 
