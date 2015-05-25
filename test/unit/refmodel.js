@@ -151,7 +151,7 @@ exports.saveSection = function (context, secName, pat_key, sourceIndex, count, c
             callback(err);
         } else {
             pushToContext(context, newEntriesContextKey, secName, sourceIndex, ids);
-            callback(null);
+            callback(null, ids);
         }
     });
 };
