@@ -66,6 +66,7 @@ describe('search', function () {
     var patientIds;
 
     it('search all testdemographics', function (done) {
+        var itself = this;
         var searchSpec = {
             section: 'testdemographics',
             query: {},
@@ -84,12 +85,15 @@ describe('search', function () {
             patientIds = result.map(function (r) {
                 return r._id;
             });
+            result.forEach(function (e) {
+                expect(e._section).to.equal('testdemographics');
+            }, itself);
             expect(resultData).to.deep.equal(expectedPatData);
             done();
         });
     });
 
-    var verify = function (numPerPt, actual, expected, offset) {
+    var verify = function (numPerPt, actual, expected, sectionName, offset) {
         var itself = this;
         var count = 0;
         _.range(actual.length).forEach(function (index) {
@@ -99,6 +103,7 @@ describe('search', function () {
             expect(e._ptKey).to.be.equal(ptKey);
             expect(e._pt).to.exist;
             expect(e._pt.reference).to.be.equal(patientIds[ptIndex]);
+            expect(e._section).to.be.equal(sectionName);
             ++count;
         }, itself);
         expect(count).to.not.equal(0);
@@ -138,7 +143,7 @@ describe('search', function () {
                     expect(searchInfo.total).to.equal(total);
                     expect(result).to.have.length(maxSearch);
                     searchId = searchInfo.searchId;
-                    verify.call(itself, numPerPt, result, expectedData, 0);
+                    verify.call(itself, numPerPt, result, expectedData, sectionName, 0);
                     done();
                 });
             });
@@ -164,7 +169,7 @@ describe('search', function () {
                         expect(searchInfo.pageSize).to.equal(maxSearch);
                         expect(searchInfo.total).to.equal(total);
                         expect(result).to.have.length(expectedLength);
-                        verify.call(itself, numPerPt, result, expectedData, index * maxSearch);
+                        verify.call(itself, numPerPt, result, expectedData, sectionName, index * maxSearch);
                         done();
                     });
                 });
@@ -254,7 +259,7 @@ describe('search mixed', function () {
         });
     });
 
-    var verify = function (numPerPt, actual, expected, offset) {
+    var verify = function (numPerPt, actual, expected, expectedSections, offset) {
         var itself = this;
         var count = 0;
         _.range(actual.length).forEach(function (index) {
@@ -273,6 +278,11 @@ describe('search mixed', function () {
         });
         var expectedData = expected.slice(offset, offset + actual.length);
         expect(actualData).to.deep.equal(expectedData);
+        var actualSectionsData = actual.map(function (r) {
+            return r._section;
+        });
+        var expectedSectionsData = expectedSections.slice(offset, offset + actual.length);
+        expect(actualSectionsData).to.deep.equal(expectedSectionsData);
     };
 
     var numPerPt = 24;
@@ -288,6 +298,16 @@ describe('search mixed', function () {
     });
     expectedData = _.flatten(expectedData, true);
     expectedData.reverse();
+
+    var expectedSections = _.range(numPatients).map(function (ptIndex) {
+        return _.range(4).map(function () {
+            return ['testallergies', 'testprocedures'].map(function (sectionName) {
+                return [sectionName, sectionName, sectionName];
+            });
+        });
+    });
+    expectedSections = _.flatten(expectedSections, true);
+    expectedSections.reverse();
 
     var sectionNames = ['testallergies', 'testprocedures'];
     var searchId;
@@ -305,7 +325,7 @@ describe('search mixed', function () {
             expect(searchInfo.total).to.equal(total);
             expect(result).to.have.length(maxSearch);
             searchId = searchInfo.searchId;
-            verify.call(itself, numPerPt, result, expectedData, 0);
+            verify.call(itself, numPerPt, result, expectedData, expectedSections, 0);
             done();
         });
     });
@@ -330,7 +350,7 @@ describe('search mixed', function () {
                 expect(searchInfo.pageSize).to.equal(maxSearch);
                 expect(searchInfo.total).to.equal(total);
                 expect(result).to.have.length(expectedLength);
-                verify.call(itself, numPerPt, result, expectedData, index * maxSearch);
+                verify.call(itself, numPerPt, result, expectedData, expectedSections, index * maxSearch);
                 done();
             });
         });
