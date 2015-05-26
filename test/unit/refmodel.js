@@ -93,7 +93,7 @@ var createStorage = function (context, pat, filename, index, callback) {
                 context.storageIds = {};
             }
             context.storageIds[index] = id;
-            callback();
+            callback(null, id);
         }
     });
 };

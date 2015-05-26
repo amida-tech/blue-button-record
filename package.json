@@ -53,7 +53,8 @@
     "grunt-mocha-test": "0.12.x",
     "grunt-shell": "^1.1.2",
     "mocha": "2.2.x",
-    "mocha-lcov-reporter": "0.0.2"
+    "mocha-lcov-reporter": "0.0.2",
+    "moment": "^2.10.3"
   },
   "engines": {
     "node": "0.10.x"
