@@ -5,9 +5,9 @@ var util = require('util');
 var chai = require('chai');
 var _ = require('lodash');
 
-var search = require('../../lib/search');
+var search = require('../../../lib/search');
 
-var refmodel = require('./refmodel');
+var refmodel = require('../refmodel');
 
 var expect = chai.expect;
 

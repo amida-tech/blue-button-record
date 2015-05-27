@@ -6,10 +6,11 @@ var async = require('async');
 var _ = require('lodash');
 var moment = require('moment');
 
-var refmodel = require('./refmodel');
-var section = require('../../lib/section');
-var entry = require('../../lib/entry');
-var search = require('../../lib/search');
+var refmodel = require('../refmodel');
+var section = require('../../../lib/section');
+var entry = require('../../../lib/entry');
+var search = require('../../../lib/search');
+var common = require('./common');
 
 var expect = chai.expect;
 chai.config.includeStack = true;
@@ -20,14 +21,6 @@ describe('fhir support', function () {
     var numPatients = 3;
     var numAllersPerPt = 3;
     var numProcsPerPt = 4;
-
-    var verifyMoment = function (momentBefore, instant) {
-        var momentAction = moment(instant);
-        expect(momentAction.isValid()).to.equal(true);
-        var momentNow = moment();
-        expect(momentNow.isBefore(momentAction)).to.equal(false);
-        expect(momentBefore.isAfter(momentAction)).to.equal(false);
-    };
 
     refmodel.prepareConnection({
         dbName: 'fhirsupport',
@@ -73,7 +66,7 @@ describe('fhir support', function () {
                 } else {
                     expect(result).to.exist;
                     expect(result.versionId).to.equal('1');
-                    verifyMoment.call(itself, momentBefore, result.lastUpdated);
+                    common.verifyMoment.call(itself, momentBefore, result.lastUpdated);
                     patientIds.push(result.id);
                     done();
                 }
@@ -129,7 +122,7 @@ describe('fhir support', function () {
             } else {
                 expect(result.id).to.equal(patientIds[2]);
                 expect(result.versionId).to.equal('2');
-                verifyMoment.call(itself, momentBefore, result.lastUpdated);
+                common.verifyMoment.call(itself, momentBefore, result.lastUpdated);
                 done();
             }
         });
@@ -171,7 +164,7 @@ describe('fhir support', function () {
                 expect(entry.archived_on).to.exist;
                 expect(entry.data).to.deep.equal(patientSamples[3]);
                 expect(entry.archived).to.equal(true);
-                verifyMoment.call(itself, momentBeforeDelete, entry.archived_on.toISOString());
+                common.verifyMoment.call(itself, momentBeforeDelete, entry.archived_on.toISOString());
                 done();
             }
         });
@@ -199,7 +192,7 @@ describe('fhir support', function () {
                 } else {
                     expect(result).to.exist;
                     expect(result.versionId).to.equal('1');
-                    verifyMoment.call(itself, momentBefore, result.lastUpdated);
+                    common.verifyMoment.call(itself, momentBefore, result.lastUpdated);
                     allergiesIds.push(result.id);
                     done();
                 }
@@ -299,7 +292,7 @@ describe('fhir support', function () {
             } else {
                 expect(result.id).to.equal(allergiesIds[3]);
                 expect(result.versionId).to.equal('2');
-                verifyMoment.call(itself, momentBefore, result.lastUpdated);
+                common.verifyMoment.call(itself, momentBefore, result.lastUpdated);
                 done();
             }
         });
@@ -340,7 +333,7 @@ describe('fhir support', function () {
                 expect(entry.archived_on).to.exist;
                 expect(entry.data).to.deep.equal(allergySamples[2]);
                 expect(entry.archived).to.equal(true);
-                verifyMoment.call(itself, momentBeforeDelete, entry.archived_on.toISOString());
+                common.verifyMoment.call(itself, momentBeforeDelete, entry.archived_on.toISOString());
                 done();
             }
         });
@@ -356,7 +349,7 @@ describe('fhir support', function () {
             } else {
                 expect(result.id).to.equal(allergiesIds[7]);
                 expect(result.versionId).to.equal('2');
-                verifyMoment.call(itself, momentBefore, result.lastUpdated);
+                common.verifyMoment.call(itself, momentBefore, result.lastUpdated);
                 done();
             }
         });
@@ -397,7 +390,7 @@ describe('fhir support', function () {
                 expect(entry.archived_on).to.exist;
                 expect(entry.data).to.deep.equal(allergySamples[6]);
                 expect(entry.archived).to.equal(true);
-                verifyMoment.call(itself, momentBeforeDelete, entry.archived_on.toISOString());
+                common.verifyMoment.call(itself, momentBeforeDelete, entry.archived_on.toISOString());
                 done();
             }
         });
