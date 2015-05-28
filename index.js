@@ -96,7 +96,6 @@ exports.saveMatches = function (secName, ptKey, inputSection, sourceId, callback
 };
 
 exports.getMatches = function (secName, ptKey, fields, callback) {
-    //console.log('matches: '+dbinfo.db.options.url);
     match.getAll(dbinfo, secName, ptKey, fields, callback);
 };
 
@@ -119,7 +118,6 @@ exports.acceptMatch = function (secName, ptKey, id, reason, callback) {
 // section
 
 exports.getSection = function (secName, ptKey, callback) {
-    //console.log(dbinfo.db.options.url);
     section.get(dbinfo, secName, ptKey, callback);
 };
 
