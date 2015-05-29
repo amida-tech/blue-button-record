@@ -38,7 +38,7 @@
     "doublemetaphone": "^0.1.2",
     "lodash": "^3.8.0",
     "mongodb": "2.0.x",
-    "mongoose": "4.0.x"
+    "mongoose": "4.0.3"
   },
   "devDependencies": {
     "chai": "2.2.x",
