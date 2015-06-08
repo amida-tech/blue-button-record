@@ -37,8 +37,14 @@ var testObjectInstance = exports.testObjectInstance = {
     },
     testdemographics: function (suffix) {
         return {
-            name: 'name' + suffix,
-            lastname: 'lastname' + suffix
+            name: {
+                first: 'first' + suffix,
+                last: 'last' + suffix,
+                middle: [
+                    'amid' + suffix,
+                    'bmif' + suffix
+                ]
+            }
         };
     }
 };
@@ -87,7 +93,7 @@ var createStorage = function (context, pat, filename, index, callback) {
                 context.storageIds = {};
             }
             context.storageIds[index] = id;
-            callback();
+            callback(null, id);
         }
     });
 };
@@ -137,14 +143,16 @@ exports.saveAllSections = function (ptKey, sourceIndex, counts, context, callbac
     allsections.save(context.dbinfo, ptKey, r, sourceId, callback);
 };
 
-var saveSection = exports.saveSection = function (context, secName, pat_key, sourceIndex, count, callback) {
+exports.saveSection = function (context, secName, pat_key, sourceIndex, count, callback) {
     var data = createTestSection(secName, sourceIndex, count);
     var sourceId = context.storageIds[sourceIndex];
     section.save(context.dbinfo, secName, pat_key, data, sourceId, function (err, ids) {
-        if (!err) {
+        if (err) {
+            callback(err);
+        } else {
             pushToContext(context, newEntriesContextKey, secName, sourceIndex, ids);
+            callback(null, ids);
         }
-        callback(err);
     });
 };
 
@@ -165,17 +173,20 @@ exports.saveMatches = function (context, secName, pat_key, sourceIndex, destsour
     }, []);
 
     section.savePartial(context.dbinfo, secName, pat_key, extendedData, sourceId, function (err, result) {
-        if (!err) {
+        if (err) {
+            callback(err);
+        } else {
             pushToContext(context, partialEntriesContextKey, secName, sourceIndex, result);
+            callback(null);
         }
-        callback(err);
     });
 };
 
 var setConnectionContext = function (overrideOptions, context, callback) {
     var options = {
         dbName: 'testrefModel',
-        supported_sections: ['testallergies', 'testprocedures', 'testdemographics']
+        supported_sections: ['testallergies', 'testprocedures', 'testdemographics'],
+        demographicsSection: 'testdemographics'
     };
     if (overrideOptions) {
         _.merge(options, overrideOptions);
@@ -199,7 +210,13 @@ exports.prepareConnection = function (options, context) {
 
     return function () {
         before(function (done) {
-            setConnectionContext(options, context, done);
+            setConnectionContext(options, context, function (err) {
+                if (err) {
+                    done(err);
+                } else {
+                    context.dbinfo.db.dropDatabase(done);
+                }
+            });
         });
 
         it('check connection and models', function (done) {
@@ -230,7 +247,7 @@ var addSourcesPerPatient = exports.addSourcesPerPatient = function (context, cou
         }, r);
     }, []);
 
-    async.parallel(fs, callback);
+    async.series(fs, callback);
 };
 
 exports.createMatchInformation = function (sourceIndex, destIndices, matchTypes) {

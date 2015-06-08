@@ -8,6 +8,7 @@ var section = require('./lib/section');
 var entry = require('./lib/entry');
 var allsections = require('./lib/allsections');
 var modelutil = require('./lib/modelutil');
+var search = require('./lib/search');
 
 var account_history = require('./lib/history');
 var notes = require('./lib/notes');
@@ -95,7 +96,6 @@ exports.saveMatches = function (secName, ptKey, inputSection, sourceId, callback
 };
 
 exports.getMatches = function (secName, ptKey, fields, callback) {
-    //console.log('matches: '+dbinfo.db.options.url);
     match.getAll(dbinfo, secName, ptKey, fields, callback);
 };
 
@@ -118,12 +118,11 @@ exports.acceptMatch = function (secName, ptKey, id, reason, callback) {
 // section
 
 exports.getSection = function (secName, ptKey, callback) {
-    //console.log(dbinfo.db.options.url);
     section.get(dbinfo, secName, ptKey, callback);
 };
 
-exports.saveSection = function (secName, ptKey, inputSection, sourceId, callback) {
-    section.save(dbinfo, secName, ptKey, inputSection, sourceId, callback);
+exports.saveSection = function (secName, ptKey, inputSection, sourceId, options, callback) {
+    section.save(dbinfo, secName, ptKey, inputSection, sourceId, options, callback);
 };
 
 exports.getAllSections = function (ptKey, callback) {
@@ -134,22 +133,24 @@ exports.saveAllSections = function (ptKey, ptRecord, sourceId, callback) {
     allsections.save(dbinfo, ptKey, ptRecord, sourceId, callback);
 };
 
-exports.getMultiSection = function (secName, queryObject, findPatientInfo, callback) {
-    section.getMulti(dbinfo, secName, queryObject, findPatientInfo, callback);
+// search
+
+exports.search = function (searchSpec, callback) {
+    search.search(dbinfo, searchSpec, callback);
 };
 
 // entry
 
-exports.getEntry = function (secName, ptKey, id, callback) {
-    entry.get(dbinfo, secName, ptKey, id, callback);
+exports.getEntry = function (secName, ptKey, id, options, callback) {
+    entry.get(dbinfo, secName, ptKey, id, options, callback);
 };
 
-exports.updateEntry = function (secName, ptKey, id, sourceId, updateObject, callback) {
-    entry.update(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
+exports.updateEntry = function (secName, ptKey, id, sourceId, updateObject, options, callback) {
+    entry.update(dbinfo, secName, ptKey, id, sourceId, updateObject, options, callback);
 };
 
-exports.replaceEntry = function (secName, ptKey, id, sourceId, updateObject, callback) {
-    entry.replace(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
+exports.replaceEntry = function (secName, ptKey, id, sourceId, updateObject, options, callback) {
+    entry.replace(dbinfo, secName, ptKey, id, sourceId, updateObject, options, callback);
 };
 
 exports.duplicateEntry = function (secName, ptKey, id, sourceId, callback) {
