@@ -16,7 +16,7 @@
   ],
   "name": "blue-button-record",
   "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
-  "version": "1.5.0-beta.7",
+  "version": "1.5.0-beta.10",
   "repository": {
     "type": "git",
     "url": "git@github.com:amida-tech/blue-button-record.git"
@@ -36,6 +36,8 @@
     "blue-button-meta": "~1.5.0-beta.4",
     "blue-button-pim": "~1.0.0",
     "doublemetaphone": "^0.1.2",
+    "grunt-shell": "^1.1.2",
+    "lodash": "^3.9.3",
     "mongodb": "2.0.x",
     "mongoose": "4.0.3"
   },
@@ -50,7 +52,6 @@
     "grunt-istanbul-coverage": "*",
     "grunt-jsbeautifier": "^0.2.10",
     "grunt-mocha-test": "0.12.x",
-    "grunt-shell": "^1.1.2",
     "mocha": "2.2.x",
     "mocha-lcov-reporter": "0.0.2",
     "moment": "^2.10.3"
