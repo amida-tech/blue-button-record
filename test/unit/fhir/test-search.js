@@ -21,7 +21,6 @@ describe('search', function () {
 
     refmodel.prepareConnection({
         dbName: 'search',
-        fhir: true,
         maxSearch: maxSearch
     }, context)();
 
@@ -191,7 +190,6 @@ describe('search mixed', function () {
 
     refmodel.prepareConnection({
         dbName: 'search',
-        fhir: true,
         maxSearch: maxSearch
     }, context)();
 

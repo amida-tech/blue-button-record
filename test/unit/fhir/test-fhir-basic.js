@@ -21,10 +21,12 @@ describe('fhir support', function () {
     var numPatients = 3;
     var numAllersPerPt = 3;
     var numProcsPerPt = 4;
+    var options = {
+        fhir: true
+    };
 
     refmodel.prepareConnection({
-        dbName: 'fhirsupport',
-        fhir: true
+        dbName: 'fhirsupport'
     }, context)();
 
     var sourceIds;
@@ -60,7 +62,7 @@ describe('fhir support', function () {
         var momentBefore = moment();
         it(title, function (done) {
             var itself = this;
-            section.save(context.dbinfo, 'testdemographics', patKey, sampleClone, sourceIds[ptIndex], function (err, result) {
+            section.save(context.dbinfo, 'testdemographics', patKey, sampleClone, sourceIds[ptIndex], options, function (err, result) {
                 if (err) {
                     done(err);
                 } else {
@@ -101,7 +103,7 @@ describe('fhir support', function () {
     _.range(numPatients).forEach(function (ptIndex) {
         var patKey = util.format('pat%s', ptIndex);
         it('entry.get testdemographics ' + patKey, function (done) {
-            entry.get(context.dbinfo, 'testdemographics', patKey, patientIds[ptIndex], function (err, entry) {
+            entry.get(context.dbinfo, 'testdemographics', patKey, patientIds[ptIndex], options, function (err, entry) {
                 if (err) {
                     done(err);
                 } else {
@@ -116,7 +118,7 @@ describe('fhir support', function () {
         var itself = this;
         var sampleClone = _.cloneDeep(patientSamples[3]);
         var momentBefore = moment();
-        entry.replace(context.dbinfo, 'testdemographics', 'pat2', patientIds[2], sourceIds[3], sampleClone, function (err, result) {
+        entry.replace(context.dbinfo, 'testdemographics', 'pat2', patientIds[2], sourceIds[3], sampleClone, options, function (err, result) {
             if (err) {
                 done(err);
             } else {
@@ -129,7 +131,7 @@ describe('fhir support', function () {
     });
 
     it('entry.get testdemographics pat2 after replace', function (done) {
-        entry.get(context.dbinfo, 'testdemographics', 'pat2', patientIds[2], function (err, entry) {
+        entry.get(context.dbinfo, 'testdemographics', 'pat2', patientIds[2], options, function (err, entry) {
             if (err) {
                 done(err);
             } else {
@@ -157,7 +159,7 @@ describe('fhir support', function () {
 
     it('entry.get testdemographics pat2 after remove', function (done) {
         var itself = this;
-        entry.get(context.dbinfo, 'testdemographics', 'pat2', patientIds[2], function (err, entry) {
+        entry.get(context.dbinfo, 'testdemographics', 'pat2', patientIds[2], options, function (err, entry) {
             if (err) {
                 done(err);
             } else {
@@ -186,7 +188,7 @@ describe('fhir support', function () {
         var momentBefore = moment();
         it(title, function (done) {
             var itself = this;
-            section.save(context.dbinfo, 'testallergies', patKey, sampleClone, sourceIds[ptIndex], function (err, result) {
+            section.save(context.dbinfo, 'testallergies', patKey, sampleClone, sourceIds[ptIndex], options, function (err, result) {
                 if (err) {
                     done(err);
                 } else {
@@ -270,7 +272,7 @@ describe('fhir support', function () {
             var index = 4 * ptIndex + allergiesIndex;
             var title = util.format('entry.get testallergies %s for %s', index, patKey);
             it(title, function (done) {
-                entry.get(context.dbinfo, 'testallergies', patKey, allergiesIds[index], function (err, entry) {
+                entry.get(context.dbinfo, 'testallergies', patKey, allergiesIds[index], options, function (err, entry) {
                     if (err) {
                         done(err);
                     } else {
@@ -286,7 +288,7 @@ describe('fhir support', function () {
         var itself = this;
         var sampleClone = _.cloneDeep(allergySamples[2]);
         var momentBefore = moment();
-        entry.replace(context.dbinfo, 'testallergies', 'pat0', allergiesIds[3], sourceIds[3], sampleClone, function (err, result) {
+        entry.replace(context.dbinfo, 'testallergies', 'pat0', allergiesIds[3], sourceIds[3], sampleClone, options, function (err, result) {
             if (err) {
                 done(err);
             } else {
@@ -299,7 +301,7 @@ describe('fhir support', function () {
     });
 
     it('entry.get testallergies 3 after replace', function (done) {
-        entry.get(context.dbinfo, 'testallergies', 'pat0', allergiesIds[3], function (err, entry) {
+        entry.get(context.dbinfo, 'testallergies', 'pat0', allergiesIds[3], options, function (err, entry) {
             if (err) {
                 done(err);
             } else {
@@ -326,7 +328,7 @@ describe('fhir support', function () {
 
     it('entry.get testallergies 3 after remove', function (done) {
         var itself = this;
-        entry.get(context.dbinfo, 'testallergies', 'pat0', allergiesIds[3], function (err, entry) {
+        entry.get(context.dbinfo, 'testallergies', 'pat0', allergiesIds[3], options, function (err, entry) {
             if (err) {
                 done(err);
             } else {
@@ -343,7 +345,7 @@ describe('fhir support', function () {
         var itself = this;
         var sampleClone = _.cloneDeep(allergySamples[6]);
         var momentBefore = moment();
-        entry.replace(context.dbinfo, 'testallergies', 'pat1', allergiesIds[7], sourceIds[7], sampleClone, function (err, result) {
+        entry.replace(context.dbinfo, 'testallergies', 'pat1', allergiesIds[7], sourceIds[7], sampleClone, options, function (err, result) {
             if (err) {
                 done(err);
             } else {
@@ -356,7 +358,7 @@ describe('fhir support', function () {
     });
 
     it('entry.get testallergies 7 after replace', function (done) {
-        entry.get(context.dbinfo, 'testallergies', 'pat1', allergiesIds[7], function (err, entry) {
+        entry.get(context.dbinfo, 'testallergies', 'pat1', allergiesIds[7], options, function (err, entry) {
             if (err) {
                 done(err);
             } else {
@@ -383,7 +385,7 @@ describe('fhir support', function () {
 
     it('entry.get testallergies 7 after remove', function (done) {
         var itself = this;
-        entry.get(context.dbinfo, 'testallergies', 'pat1', allergiesIds[7], function (err, entry) {
+        entry.get(context.dbinfo, 'testallergies', 'pat1', allergiesIds[7], options, function (err, entry) {
             if (err) {
                 done(err);
             } else {

@@ -23,10 +23,12 @@ describe('section with linked entries', function () {
     var self = this;
     var numPatients = 2;
     var numAllergiesPerPt = 4;
+    var options = {
+        fhir: true
+    };
 
     refmodel.prepareConnection({
-        dbName: 'fhirlinkedentries',
-        fhir: true
+        dbName: 'fhirlinkedentries'
     }, context)();
 
     var sourceIds;
@@ -54,7 +56,7 @@ describe('section with linked entries', function () {
         var momentBefore = moment();
         it(title, function (done) {
             var itself = this;
-            section.save(context.dbinfo, 'testdemographics', patKey, sampleClone, sourceIds[ptIndex], function (err, result) {
+            section.save(context.dbinfo, 'testdemographics', patKey, sampleClone, sourceIds[ptIndex], options, function (err, result) {
                 if (err) {
                     done(err);
                 } else {
@@ -87,7 +89,7 @@ describe('section with linked entries', function () {
         var momentBefore = moment();
         it(title, function (done) {
             var itself = this;
-            section.save(context.dbinfo, 'testallergies', patKey, sampleClone, sourceIds[ptIndex], function (err, result) {
+            section.save(context.dbinfo, 'testallergies', patKey, sampleClone, sourceIds[ptIndex], options, function (err, result) {
                 if (err) {
                     done(err);
                 } else {
@@ -142,7 +144,7 @@ describe('section with linked entries', function () {
                 var sampleClone = _.cloneDeep(allergySamples[allergyIndex + numAllergies * ptIndex]);
                 sampleClone._link = allergiesIds[actualIndex];
                 var momentBefore = moment();
-                section.save(context.dbinfo, 'testallergies', patKey, sampleClone, sourceIds[ptIndex], function (err, result) {
+                section.save(context.dbinfo, 'testallergies', patKey, sampleClone, sourceIds[ptIndex], options, function (err, result) {
                     if (err) {
                         done(err);
                     } else {

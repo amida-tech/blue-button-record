@@ -121,8 +121,8 @@ exports.getSection = function (secName, ptKey, callback) {
     section.get(dbinfo, secName, ptKey, callback);
 };
 
-exports.saveSection = function (secName, ptKey, inputSection, sourceId, callback) {
-    section.save(dbinfo, secName, ptKey, inputSection, sourceId, callback);
+exports.saveSection = function (secName, ptKey, inputSection, sourceId, options, callback) {
+    section.save(dbinfo, secName, ptKey, inputSection, sourceId, options, callback);
 };
 
 exports.getAllSections = function (ptKey, callback) {
@@ -141,16 +141,16 @@ exports.search = function (searchSpec, callback) {
 
 // entry
 
-exports.getEntry = function (secName, ptKey, id, callback) {
-    entry.get(dbinfo, secName, ptKey, id, callback);
+exports.getEntry = function (secName, ptKey, id, options, callback) {
+    entry.get(dbinfo, secName, ptKey, id, options, callback);
 };
 
-exports.updateEntry = function (secName, ptKey, id, sourceId, updateObject, callback) {
-    entry.update(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
+exports.updateEntry = function (secName, ptKey, id, sourceId, updateObject, options, callback) {
+    entry.update(dbinfo, secName, ptKey, id, sourceId, updateObject, options, callback);
 };
 
-exports.replaceEntry = function (secName, ptKey, id, sourceId, updateObject, callback) {
-    entry.replace(dbinfo, secName, ptKey, id, sourceId, updateObject, callback);
+exports.replaceEntry = function (secName, ptKey, id, sourceId, updateObject, options, callback) {
+    entry.replace(dbinfo, secName, ptKey, id, sourceId, updateObject, options, callback);
 };
 
 exports.duplicateEntry = function (secName, ptKey, id, sourceId, callback) {
