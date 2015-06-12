@@ -1,5 +1,11 @@
 # blue-button-record.js Release Notes
 
+# v1.5.0 - June 15, 2015
+
+- Patient entered medication API
+- FHIR implementation support
+- Additional history items
+
 # v1.3.0 - Fenruary 11, 2014
 
 - Added extra data models for new functionality of DRE UI (account history)
