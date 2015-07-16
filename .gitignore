@@ -5,3 +5,6 @@ coverage
 
 # Mac OSX
 .DS_Store
+
+.idea
+.idea/*
