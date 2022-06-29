@@ -1,4 +1,7 @@
 {
+  "name": "@amida-tech/blue-button-record",
+  "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
+  "version": "1.7.0-beta.1",
   "author": "Dmitry Kachaev",
   "contributors": [
     {
@@ -7,16 +10,17 @@
     },
     {
       "name": "Afsin Ustundag",
-      "email": "afsin.ustundag@us.pwc.com"
+      "email": "afsin@amida-tech.com"
     },
     {
       "name": "Matt Martz",
       "email": "matt.martz@amida-tech.com"
+    },
+    {
+      "name": "Marc Sylvestre",
+      "email": "marc.sylvestre@manhydra.com"
     }
   ],
-  "name": "blue-button-record",
-  "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
-  "version": "1.6.0-beta.1",
   "repository": {
     "type": "git",
     "url": "git@github.com:amida-tech/blue-button-record.git"
@@ -31,36 +35,26 @@
     }
   ],
   "dependencies": {
-    "async": "0.9.x",
-    "blue-button-meta": "~1.5.0",
-    "blue-button-pim": "~1.0.0",
+    "@amida-tech/blue-button-meta": "^1.7.3",
+    "@amida-tech/blue-button-pim": "^2.2.3",
+    "async": "^3.2.4",
     "doublemetaphone": "^0.1.2",
-    "lodash": "~3.9.3",
-    "mongodb": "2.0.x",
-    "mongoose": "4.0.3"
+    "lodash": "^4.17.21",
+    "mongoose": "^6.4.1"
   },
   "devDependencies": {
-    "blue-button": "~1.5.0",
-    "brfs": "^1.4.0",
-    "chai": "~3.0.0",
-    "chai-datetime": "1.3.x",
-    "coveralls": "~2.11.2",
-    "grunt": "^0.4.5",
-    "grunt-browserify": "~3.7.0",
-    "grunt-contrib-connect": "^0.10.1",
-    "grunt-contrib-jshint": "0.11.x",
-    "grunt-contrib-watch": "0.6.x",
-    "grunt-coveralls": "*",
-    "grunt-istanbul-coverage": "*",
-    "grunt-jsbeautifier": "^0.2.10",
-    "grunt-mocha-phantomjs": "~0.6.1",
-    "grunt-mocha-test": "0.12.x",
-    "grunt-shell": "~1.1.2",
-    "mocha": "2.2.x",
-    "mocha-lcov-reporter": "0.0.2",
-    "moment": "^2.10.3"
+    "@amida-tech/blue-button": "^1.10.6",
+    "brfs": "^2.0.2",
+    "grunt": "^1.5.3",
+    "grunt-contrib-connect": "^3.0.0",
+    "grunt-contrib-jshint": "^3.2.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-jsbeautifier": "^0.2.13",
+    "grunt-run": "^0.8.1",
+    "jest": "^27.5.1",
+    "moment": "^2.29.3"
   },
   "engines": {
-    "node": "0.10.x"
+    "node": ">=14.19.3"
   }
 }

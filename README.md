@@ -1,13 +1,12 @@
-blue-button-record.js
+Blue Button Record
 ======================
 
 Master Health Record and Data Reconciliation Engine Persistance Layer (MongoDB)
 
-[![NPM](https://nodei.co/npm/blue-button-record.png)](https://nodei.co/npm/blue-button-record/)
+[![NPM](https://nodei.co/npm/@amida-tech/blue-button-record.png)](https://nodei.co/npm/@amida-tech/blue-button-record/)
 
 [![Build Status](https://travis-ci.org/amida-tech/blue-button-record.svg)](https://travis-ci.org/amida-tech/blue-button-record)
 [![Coverage Status](https://coveralls.io/repos/amida-tech/blue-button-record/badge.png)](https://coveralls.io/r/amida-tech/blue-button-record)
-[![Dependency Status](https://david-dm.org/amida-tech/blue-button-record.svg)](https://david-dm.org/amida-tech/blue-button-record)
 
 blue-button-record is a module to persist patient health data.  It is primarily designed to support [blue-button](https://github.com/amida-tech/blue-button) data model however there is no specific schema dependence and other models can also be [used](#connectDatabase).  This module provides the following functionality:
 
@@ -22,8 +21,8 @@ This implementation of blue-button-record uses MongoDB.
 
 Require [blue-button](https://github.com/amida-tech/blue-button) and blue-button-record 
 ``` javascript
-var bb = require("blue-button");
-var bbr = require("blue-button-record");
+var bb = require("@amida-tech/blue-button");
+var bbr = require("@amida-tech/blue-button-record");
 ```
 blue-button-record assumes MongoDB is already running.  Connect to the database
 ``` javascript
@@ -277,7 +276,7 @@ __Arguments__
 __Examples__
 
 ```js
-var bbr = require('blue-button-record');
+var bbr = require('@amida-tech/blue-button-record');
 var assert = require('assert');
 var options = {
     dbName: 'test',
@@ -502,8 +501,8 @@ bbr.saveSection('allergies', 'testPatient1', inputSection, fileId1, function(err
 ```
 ---------------------------------------
 
-<a name="getSection" />
-### getSection(secName, ptKey, callback)
+
+### <a id="getSection"></a>getSection(secName, ptKey, callback) ###
 
 Gets section entries in Master Health Record
 

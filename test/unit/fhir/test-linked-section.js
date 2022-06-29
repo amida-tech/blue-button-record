@@ -1,7 +1,6 @@
 "use strict";
 
 var util = require('util');
-var chai = require('chai');
 var async = require('async');
 var _ = require('lodash');
 var moment = require('moment');
@@ -11,8 +10,6 @@ var section = require('../../../lib/section');
 var entry = require('../../../lib/entry');
 var search = require('../../../lib/search');
 var common = require('./common');
-
-var expect = chai.expect;
 
 // Multiple FHIR medication related resources map to CCDA medications.  This 
 // test simulates the case where multiple linked entries exist in the record
@@ -60,8 +57,8 @@ describe('section with linked entries', function () {
                 if (err) {
                     done(err);
                 } else {
-                    expect(result).to.exist;
-                    expect(result.versionId).to.equal('1');
+                    expect(result).toBeDefined();
+                    expect(result.versionId).toBe('1');
                     common.verifyMoment.call(itself, momentBefore, result.lastUpdated);
                     patientIds.push(result.id);
                     done();
@@ -93,8 +90,8 @@ describe('section with linked entries', function () {
                 if (err) {
                     done(err);
                 } else {
-                    expect(result).to.exist;
-                    expect(result.versionId).to.equal('1');
+                    expect(result).toBeDefined();
+                    expect(result.versionId).toBe('1');
                     common.verifyMoment.call(itself, momentBefore, result.lastUpdated);
                     allergiesIds.push(result.id);
                     done();
@@ -105,14 +102,14 @@ describe('section with linked entries', function () {
 
     var verifySection = function (section, ids, done) {
         try {
-            expect(section.length).to.equal(numAllergies);
+            expect(section.length).toBe(numAllergies);
             section.forEach(function (entry) {
                 var index = ids.indexOf(entry._id.toString());
-                expect(index).to.be.above(-1);
+                expect(index).toBeGreaterThan(-1);
                 delete entry._id;
                 delete entry.metadata;
                 delete entry._link;
-                expect(entry).to.deep.equal(allergySamples[index]);
+                expect(entry).toEqual(allergySamples[index]);
             });
             done();
         } catch (err) {
@@ -148,8 +145,8 @@ describe('section with linked entries', function () {
                     if (err) {
                         done(err);
                     } else {
-                        expect(result).to.exist;
-                        expect(result.versionId).to.equal('1');
+                        expect(result).toBeDefined();
+                        expect(result.versionId).toBe('1');
                         common.verifyMoment(momentBefore, result.lastUpdated);
                         linkedAllergyIds.push(result.id);
                         done();
@@ -187,14 +184,14 @@ describe('section with linked entries', function () {
             mustLink: true
         };
         search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
-            expect(result).to.have.length(4);
-            expect(searchInfo).to.exist;
-            expect(searchInfo.searchId).not.to.exist;
-            expect(searchInfo.page).to.equal(0);
-            expect(searchInfo.total).to.equal(4);
+            expect(result).toHaveLength(4);
+            expect(searchInfo).toBeDefined();
+            expect(searchInfo.searchId).not.toBeDefined();
+            expect(searchInfo.page).toBe(0);
+            expect(searchInfo.total).toBe(4);
             var resultData = result.map(function (r) {
                 result.forEach(function (e) {
-                    expect(e._section).to.equal('testallergies');
+                    expect(e._section).toBe('testallergies');
                 });
             });
             done();
@@ -208,21 +205,21 @@ describe('section with linked entries', function () {
             patientInfo: false
         };
         search.search(context.dbinfo, searchSpec, function (err, result, searchInfo) {
-            expect(result).to.have.length(12);
-            expect(searchInfo).to.exist;
-            expect(searchInfo.searchId).not.to.exist;
-            expect(searchInfo.page).to.equal(0);
-            expect(searchInfo.total).to.equal(12);
+            expect(result).toHaveLength(12);
+            expect(searchInfo).toBeDefined();
+            expect(searchInfo.searchId).not.toBeDefined();
+            expect(searchInfo.page).toBe(0);
+            expect(searchInfo.total).toBe(12);
             var resultData = result.map(function (r) {
                 result.forEach(function (e) {
-                    expect(e._section).to.equal('testallergies');
+                    expect(e._section).toBe('testallergies');
                 });
             });
             done();
         });
     });
 
-    after(function (done) {
+    afterAll(function (done) {
         context.dbinfo.db.dropDatabase(function (err) {
             if (err) {
                 done(err);
