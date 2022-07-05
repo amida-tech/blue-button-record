@@ -610,16 +610,10 @@ describe('merge.js methods', function () {
 
   var verifyEntryGet = function (context, result, secName, sourceIndex, index, expectedSourceIndex) {
     var key = refmodel.newEntriesContextKey(secName, sourceIndex);
-    console.log('context', context);
-    console.log('context[key]', context[key]);
-    console.log('context[key][index]', context[key][index]);
-    console.log('expectedSourceIndex', expectedSourceIndex);
-    console.log('sourceIndex', sourceIndex);
     var id = context[key][index];
     if (!expectedSourceIndex) {
       expectedSourceIndex = sourceIndex;
     }
-    console.log('context.storageIds[expectedSourceIndex].toString()', context.storageIds[expectedSourceIndex].toString());
     expect(result.record._id.toString()).toBe(context.storageIds[expectedSourceIndex].toString());
   };
 
@@ -665,7 +659,6 @@ describe('merge.js methods', function () {
 
   it('entry.get', function (done) {
     async.parallel([
-
       function (callback) {
         getEntry(context, 'testallergies', 'pat0', '0.0', 0, callback);
       },
@@ -685,7 +678,7 @@ describe('merge.js methods', function () {
           expect(result0.metadata).toBeDefined();
           var attr0 = result0.metadata.attribution;
           verifyMergeReason(attr0, ['new', 'update']);
-          verifyEntryGet(context, attr0[0], 'testallergies', '0.0', 0, '0.2');
+          verifyEntryGet(context, attr0[0], 'testallergies', '0.0', 0, '0.0');
           verifyEntryGet(context, attr0[1], 'testallergies', '0.0', 0, '0.2');
 
           var result1 = results[1];
