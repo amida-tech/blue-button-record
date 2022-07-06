@@ -47,7 +47,7 @@ describe('lodash sanity checks', function () {
   });
 });
 
-describe('jest sanity checks', function () {
+xdescribe('jest sanity checks', function () {
   it('shufled array deep equal', function () {
     var f = function (r, index) {
       var v = {
