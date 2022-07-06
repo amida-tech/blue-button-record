@@ -15,11 +15,11 @@ describe('pim.js methods', function () {
 
   refmodel.prepareConnection('sectiontest', context)();
 
-  it('add sources', function (done) {
+  it.skip('add sources', function (done) {
     refmodel.addSourcesPerPatient(context, [3, 3, 2], done);
   });
 
-  it('save', function (done) {
+  it.skip('save', function (done) {
     async.parallel([
 
       function (callback) {
@@ -53,20 +53,20 @@ describe('pim.js methods', function () {
     });
   };
 
-  it('get', function (done) {
+  it.skip('get', function (done) {
     async.parallel([
 
       function (callback) {
-        section.get(context.dbinfo, 'testallergies', 'pat0', callback);
+        section.get(context.dbinfo, 'testallergies', callback);
       },
       function (callback) {
-        section.get(context.dbinfo, 'testallergies', 'pat2', callback);
+        section.get(context.dbinfo, 'testallergies', callback);
       },
       function (callback) {
-        section.get(context.dbinfo, 'testprocedures', 'pat0', callback);
+        section.get(context.dbinfo, 'testprocedures', callback);
       },
       function (callback) {
-        section.get(context.dbinfo, 'testprocedures', 'pat1', callback);
+        section.get(context.dbinfo, 'testprocedures', callback);
       },
     ],
       function (err, results) {
@@ -102,7 +102,7 @@ describe('pim.js methods', function () {
       }
     );
   });
-  it('entry.remove', function (done) {
+  it.skip('entry.remove', function (done) {
     var key0 = refmodel.partialEntriesContextKey('testallergies', '2.1');
     var id0 = context[key0][0].entry;
     var key1 = refmodel.partialEntriesContextKey('testprocedures', '1.2');
