@@ -1,7 +1,7 @@
 {
   "name": "@amida-tech/blue-button-record",
   "description": "Master Health Record and Data Reconciliation Engine Persistance Layer",
-  "version": "1.7.0-beta.2",
+  "version": "1.7.0",
   "author": "Dmitry Kachaev",
   "contributors": [
     {
