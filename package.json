@@ -40,7 +40,7 @@
     "async": "^3.2.4",
     "doublemetaphone": "^0.1.2",
     "lodash": "^4.17.21",
-    "mongoose": "^6.4.4"
+    "mongoose": "^6.4.6"
   },
   "devDependencies": {
     "@amida-tech/blue-button": "^1.10.7",
