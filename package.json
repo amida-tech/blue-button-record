@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "@amida-tech/blue-button-meta": "^1.7.3",
-    "@amida-tech/blue-button-pim": "^2.2.4",
+    "@amida-tech/blue-button-pim": "^2.2.5",
     "async": "^3.2.4",
     "doublemetaphone": "^0.1.2",
     "lodash": "^4.17.21",
