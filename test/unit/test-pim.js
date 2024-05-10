@@ -3,7 +3,7 @@
 var async = require('async');
 
 var db = require('../../lib/db');
-var section = require('../../lib/pim');
+var section = require('../../lib/section');
 var entry = require('../../lib/entry');
 var storage = require('../../lib/storage');
 var modelutil = require('../../lib/modelutil');
@@ -15,11 +15,11 @@ describe('pim.js methods', function () {
 
   refmodel.prepareConnection('sectiontest', context)();
 
-  it.skip('add sources', function (done) {
+  it('add sources', function (done) {
     refmodel.addSourcesPerPatient(context, [3, 3, 2], done);
   });
 
-  it.skip('save', function (done) {
+  it('save', function (done) {
     async.parallel([
 
       function (callback) {
@@ -53,20 +53,20 @@ describe('pim.js methods', function () {
     });
   };
 
-  it.skip('get', function (done) {
+  it('get', function (done) {
     async.parallel([
 
       function (callback) {
-        section.get(context.dbinfo, 'testallergies', callback);
+        section.get(context.dbinfo, 'testallergies', 'pat0', callback);
       },
       function (callback) {
-        section.get(context.dbinfo, 'testallergies', callback);
+        section.get(context.dbinfo, 'testallergies', 'pat2', callback);
       },
       function (callback) {
-        section.get(context.dbinfo, 'testprocedures', callback);
+        section.get(context.dbinfo, 'testprocedures', 'pat0', callback);
       },
       function (callback) {
-        section.get(context.dbinfo, 'testprocedures', callback);
+        section.get(context.dbinfo, 'testprocedures', 'pat1', callback);
       },
     ],
       function (err, results) {
@@ -102,6 +102,7 @@ describe('pim.js methods', function () {
       }
     );
   });
+  
   it.skip('entry.remove', function (done) {
     var key0 = refmodel.partialEntriesContextKey('testallergies', '2.1');
     var id0 = context[key0][0].entry;

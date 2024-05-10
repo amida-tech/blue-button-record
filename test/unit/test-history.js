@@ -20,7 +20,7 @@ describe('history.js methods', function () {
     dbinfo = record.connectDatabase('localhost', options, function (err) {
       //assert.ifError(err);
 
-      done();
+      done(err);
 
     });
 
@@ -38,7 +38,7 @@ describe('history.js methods', function () {
         expect(data.event_type).toBeDefined();
         expect(data.event_type).toBe('loggedIn');
 
-        done();
+        done(err);
 
       });
     });
@@ -57,7 +57,7 @@ describe('history.js methods', function () {
         expect(data.event_type).toBeDefined();
         expect(data.event_type).toBe('fileUploaded');
 
-        done();
+        done(err);
 
       });
     });
@@ -71,7 +71,32 @@ describe('history.js methods', function () {
       expect(data).toBeDefined();
       expect(data).toHaveLength(2);
 
-      done();
+      done(err);
+
+    });
+
+  });
+
+  it('get account history: loggedIn', function (done) {
+    //record.
+    record.getFullEventName("loggedIn", function (err, data) {
+
+      expect(data).toBeDefined();
+      expect(data).toEqual('Logged in');
+
+      done(err);
+
+    });
+
+  });
+
+  it('get all events', function (done) {
+    //record.
+    record.getAllEvents("username", function (err, data) {
+
+      expect(data).toBeDefined();
+
+      done(err);
 
     });
 
