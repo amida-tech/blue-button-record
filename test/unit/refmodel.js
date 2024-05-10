@@ -229,7 +229,7 @@ exports.prepareConnection = function (options, context) {
   };
 };
 
-var addSourcesPerPatient = exports.addSourcesPerPatient = function (context, countPerPatient, callback) {
+exports.addSourcesPerPatient = function (context, countPerPatient, callback) {
   var fs = countPerPatient.reduce(function (r, fileCount, i) {
     var pat_key = util.format('pat%d', i);
     return _.range(fileCount).reduce(function (q, j) {

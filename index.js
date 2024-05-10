@@ -45,7 +45,8 @@ exports.disconnect = function (callback) {
       callback(err);
     });
   } else {
-    callback(new Error('No connection has been established.'));
+    //callback(new Error('No connection has been established.'));
+    db.disconnect(callback);
   }
 };
 
